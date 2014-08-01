@@ -17,12 +17,19 @@
 package org.openmhealth.dsu.repository;
 
 import org.openmhealth.dsu.domain.User;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.Repository;
+
+import java.util.Optional;
 
 
 /**
  * @author Emerson Farrugia
  */
-public interface UserRepository extends CrudRepository<User, String> {
+public interface UserRepository extends Repository<User, String> {
 
+    Optional<User> findOne(String username);
+
+    Optional<User> findByRegistrationKey(String registrationKey);
+
+    void save(User user);
 }
