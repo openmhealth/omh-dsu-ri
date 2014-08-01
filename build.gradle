@@ -1,0 +1,68 @@
+apply plugin: 'java'
+apply plugin: 'maven' // used for deploying artifacts to Maven repositories
+apply plugin: 'spring-boot' // used for blessed dependencies and auto-configuration
+
+group = 'org.openmhealth'
+version = '1.1.0-SNAPSHOT'
+description = 'The Open mHealth DSU reference implementation.'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.1.4.RELEASE'
+    }
+}
+
+dependencies {
+    // Spring IO (http://platform.spring.io/platform) gives us curated and harmonised dependencies, and you can find
+    // their versions at http://docs.spring.io/platform/docs/1.0.1.RELEASE/reference/htmlsingle/#appendix-dependency-versions
+    versionManagement 'io.spring.platform:platform-versions:1.0.1.RELEASE@properties'
+
+    compile 'org.apache.httpcomponents:httpclient'
+    compile 'com.fasterxml.jackson.core:jackson-core'
+    compile 'com.fasterxml.jackson.core:jackson-databind'
+    compile 'com.fasterxml.jackson.datatype:jackson-datatype-joda'
+    compile 'org.slf4j:jcl-over-slf4j'
+    compile 'joda-time:joda-time'
+    compile 'org.slf4j:log4j-over-slf4j'
+    compile 'ch.qos.logback:logback-classic'
+    compile 'javax.mail:javax.mail-api'
+    compile 'org.slf4j:slf4j-api'
+    compile 'org.springframework:spring-beans'
+// compile 'org.springframework.boot:spring-boot-autoconfigure'
+    compile 'org.springframework:spring-context'
+    compile 'org.springframework:spring-jdbc'
+    compile 'org.springframework.security.oauth:spring-security-oauth2'
+    compile 'org.springframework:spring-tx'
+    compile 'org.springframework:spring-web'
+    compile 'org.springframework:spring-webmvc'
+    compile 'javax.validation:validation-api'
+
+    // optional dependencies
+    compile 'org.mongodb:mongo-java-driver'
+//    compile 'com.mchange:c3p0' // TODO replace this with DBCP2, BoneCP or HikariCP
+//    compile 'mysql:mysql-connector-java'
+//    compile group: 'org.postgresql', name: 'postgresql', version: '9.3-1102-jdbc41'
+    compile 'org.springframework.data:spring-data-mongodb'
+
+    testCompile 'org.hamcrest:hamcrest-library'
+    testCompile 'junit:junit'
+    testCompile 'org.mockito:mockito-core'
+    testCompile 'org.springframework:spring-test'
+}
+
+// TODO either remove this for release or address IDEA error on "options."
+gradle.projectsEvaluated {
+    tasks.withType(JavaCompile) {
+//        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    }
+}
