@@ -16,17 +16,25 @@
 
 package org.openmhealth.dsu.configuration;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 
 /**
- * A configuration for the application as a whole. This also serves as the application launcher when using Spring Boot.
+ * A configuration for the application as a whole. This also serves as the application entry point when
+ * launching the application using Spring Boot.
  *
  * @author Emerson Farrugia
  */
 @Configuration
+@PropertySource("classpath:application.properties")
+@PropertySource(value = "file:/etc/omh/dsu-ri.conf", ignoreResourceNotFound = true)
 @ComponentScan("org.openmhealth")
 public class Application {
 
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
 }

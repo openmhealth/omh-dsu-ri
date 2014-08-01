@@ -23,8 +23,8 @@ buildscript {
 }
 
 dependencies {
-    // Spring IO (http://platform.spring.io/platform) gives us curated and harmonised dependencies, and you can find
-    // their versions at http://docs.spring.io/platform/docs/1.0.1.RELEASE/reference/htmlsingle/#appendix-dependency-versions
+    // Spring IO (http://platform.spring.io/platform) gives us curated and harmonised dependencies, whose versions
+    // you can find at http://docs.spring.io/platform/docs/1.0.1.RELEASE/reference/htmlsingle/#appendix-dependency-versions
     versionManagement 'io.spring.platform:platform-versions:1.0.1.RELEASE@properties'
 
     compile 'org.apache.httpcomponents:httpclient'
@@ -38,7 +38,7 @@ dependencies {
     compile 'javax.mail:javax.mail-api'
     compile 'org.slf4j:slf4j-api'
     compile 'org.springframework:spring-beans'
-// compile 'org.springframework.boot:spring-boot-autoconfigure'
+    compile 'org.springframework.boot:spring-boot-autoconfigure'
     compile 'org.springframework:spring-context'
     compile 'org.springframework:spring-jdbc'
     compile 'org.springframework.security.oauth:spring-security-oauth2'
