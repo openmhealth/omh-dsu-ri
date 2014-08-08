@@ -23,6 +23,10 @@ public class UserRegistrationException extends RuntimeException {
 
     private UserRegistrationData registrationData;
 
+    public UserRegistrationException(UserRegistrationData registrationData) {
+        this.registrationData = registrationData;
+    }
+
     public UserRegistrationException(UserRegistrationData registrationData, Throwable cause) {
         super(cause);
         this.registrationData = registrationData;

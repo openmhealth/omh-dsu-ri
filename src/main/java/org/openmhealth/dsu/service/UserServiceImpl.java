@@ -53,6 +53,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void registerUser(UserRegistrationData registrationData) {
 
+        if (doesUserExist(registrationData.getUsername())) {
+            throw new UserRegistrationException(registrationData);
+        }
+
         User user = new User();
         user.setUsername(registrationData.getUsername());
 
