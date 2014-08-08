@@ -31,11 +31,9 @@ import java.util.Optional;
 public class User {
 
     private String username;
-    private String password;
+    private String passwordHash;
     private InternetAddress emailAddress;
-    private String registrationKey;
     private OffsetDateTime registrationTimestamp;
-    private OffsetDateTime activationTimestamp;
 
     @Id
     public String getUsername() {
@@ -46,12 +44,15 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
+    /**
+     * @return a hash of the user's password
+     */
+    public String getPasswordHash() {
+        return passwordHash;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPasswordHash(String passwordHash) {
+        this.passwordHash = passwordHash;
     }
 
     public Optional<InternetAddress> getEmailAddress() {
@@ -62,13 +63,6 @@ public class User {
         this.emailAddress = emailAddress;
     }
 
-    public String getRegistrationKey() {
-        return registrationKey;
-    }
-
-    public void setRegistrationKey(String registrationKey) {
-        this.registrationKey = registrationKey;
-    }
 
     public OffsetDateTime getRegistrationTimestamp() {
         return registrationTimestamp;
@@ -76,13 +70,5 @@ public class User {
 
     public void setRegistrationTimestamp(OffsetDateTime registrationTimestamp) {
         this.registrationTimestamp = registrationTimestamp;
-    }
-
-    public Optional<OffsetDateTime> getActivationTimestamp() {
-        return Optional.ofNullable(activationTimestamp);
-    }
-
-    public void setActivationTimestamp(OffsetDateTime activationTimestamp) {
-        this.activationTimestamp = activationTimestamp;
     }
 }
