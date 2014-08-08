@@ -30,9 +30,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Emerson Farrugia
  */
 @ControllerAdvice
-public class ExceptionHandlingControllerAdvice {
+public class GenericExceptionHandlingControllerAdvice {
 
-    private static final Logger log = LoggerFactory.getLogger(ExceptionHandlingControllerAdvice.class);
+    private static final Logger log = LoggerFactory.getLogger(GenericExceptionHandlingControllerAdvice.class);
 
 
     @ExceptionHandler(Exception.class)

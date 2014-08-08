@@ -20,6 +20,7 @@ import org.springframework.data.annotation.Id;
 
 import javax.mail.internet.InternetAddress;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 
 /**
@@ -53,8 +54,8 @@ public class User {
         this.password = password;
     }
 
-    public InternetAddress getEmailAddress() {
-        return emailAddress;
+    public Optional<InternetAddress> getEmailAddress() {
+        return Optional.ofNullable(emailAddress);
     }
 
     public void setEmailAddress(InternetAddress emailAddress) {
@@ -77,8 +78,8 @@ public class User {
         this.registrationTimestamp = registrationTimestamp;
     }
 
-    public OffsetDateTime getActivationTimestamp() {
-        return activationTimestamp;
+    public Optional<OffsetDateTime> getActivationTimestamp() {
+        return Optional.ofNullable(activationTimestamp);
     }
 
     public void setActivationTimestamp(OffsetDateTime activationTimestamp) {

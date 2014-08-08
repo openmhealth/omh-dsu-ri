@@ -14,30 +14,16 @@
  * limitations under the License.
  */
 
-package org.openmhealth.dsu.repository;
-
-import org.openmhealth.dsu.domain.User;
-import org.springframework.data.repository.Repository;
-
-import java.util.Optional;
-
+package org.openmhealth.dsu.domain;
 
 /**
- * A repository of user accounts.
+ * The origin of a data point. The origin represents whether the data point was automatically measured by a device or
+ * application, or whether it was manually reported by the user.
  *
  * @author Emerson Farrugia
  */
-public interface UserRepository extends Repository<User, String> {
+public enum DataPointOrigin {
 
-    /**
-     * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
-     */
-    Optional<User> findOne(String username);
-
-    Optional<User> findByRegistrationKey(String registrationKey);
-
-    /**
-     * @see org.springframework.data.repository.CrudRepository#save(Object)
-     */
-    void save(User user);
+    MEASURED,
+    SELF_REPORTED
 }

@@ -14,30 +14,19 @@
  * limitations under the License.
  */
 
-package org.openmhealth.dsu.repository;
+package org.openmhealth.dsu.service;
 
-import org.openmhealth.dsu.domain.User;
-import org.springframework.data.repository.Repository;
-
-import java.util.Optional;
+import org.openmhealth.dsu.domain.UserRegistrationData;
 
 
 /**
- * A repository of user accounts.
+ * A service that manages user accounts.
  *
  * @author Emerson Farrugia
  */
-public interface UserRepository extends Repository<User, String> {
+public interface UserService {
 
-    /**
-     * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
-     */
-    Optional<User> findOne(String username);
+    boolean doesUserExist(String username);
 
-    Optional<User> findByRegistrationKey(String registrationKey);
-
-    /**
-     * @see org.springframework.data.repository.CrudRepository#save(Object)
-     */
-    void save(User user);
+    void registerUser(UserRegistrationData registrationData);
 }
