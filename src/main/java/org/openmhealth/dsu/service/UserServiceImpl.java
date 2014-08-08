@@ -18,10 +18,17 @@ package org.openmhealth.dsu.service;
 
 import org.openmhealth.dsu.domain.User;
 import org.openmhealth.dsu.domain.UserRegistrationData;
+import org.openmhealth.dsu.domain.UserRegistrationException;
 import org.openmhealth.dsu.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import java.time.OffsetDateTime;
 
 
 /**
@@ -33,6 +40,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
     @Transactional(readOnly = true)
@@ -46,9 +54,17 @@ public class UserServiceImpl implements UserService {
     public void registerUser(UserRegistrationData registrationData) {
 
         User user = new User();
-
-        // TODO implement me
         user.setUsername(registrationData.getUsername());
+
+        try {
+            user.setEmailAddress(new InternetAddress(registrationData.getEmailAddress()));
+        }
+        catch (AddressException e) {
+            throw new UserRegistrationException(registrationData, e);
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(registrationData.getPassword()));
+        user.setRegistrationTimestamp(OffsetDateTime.now());
 
         userRepository.save(user);
     }
