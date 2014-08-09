@@ -18,7 +18,7 @@ package org.openmhealth.dsu.repository;
 
 import org.junit.After;
 import org.junit.Test;
-import org.openmhealth.dsu.domain.ClientDetails;
+import org.openmhealth.dsu.domain.SimpleClientDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -56,9 +56,9 @@ public abstract class ClientDetailsRepositoryIntegrationTests {
         return roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    protected ClientDetails newClientDetails() {
+    protected SimpleClientDetails newClientDetails() {
 
-        ClientDetails clientDetails = new ClientDetails();
+        SimpleClientDetails clientDetails = new SimpleClientDetails();
 
         clientDetails.setClientId(TEST_CLIENT_ID);
         clientDetails.setClientSecret(TEST_CLIENT_SECRET);
@@ -79,9 +79,9 @@ public abstract class ClientDetailsRepositoryIntegrationTests {
     @Test
     public void findOneShouldReturnSavedClientDetails() {
 
-        ClientDetails expected = clientDetailsRepository.save(newClientDetails());
+        SimpleClientDetails expected = clientDetailsRepository.save(newClientDetails());
 
-        Optional<ClientDetails> actual = clientDetailsRepository.findOne(TEST_CLIENT_ID);
+        Optional<SimpleClientDetails> actual = clientDetailsRepository.findOne(TEST_CLIENT_ID);
 
         assertThat(actual.isPresent(), equalTo(true));
         assertThat(actual.get(), equalTo(expected));

@@ -16,7 +16,7 @@
 
 package org.openmhealth.dsu.repository;
 
-import org.openmhealth.dsu.domain.ClientDetails;
+import org.openmhealth.dsu.domain.SimpleClientDetails;
 import org.springframework.data.repository.Repository;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 
@@ -29,22 +29,22 @@ import java.util.Optional;
  *
  * @author Emerson Farrugia
  */
-public interface ClientDetailsRepository extends Repository<ClientDetails, String> {
+public interface ClientDetailsRepository extends Repository<SimpleClientDetails, String> {
 
     /**
      * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
      */
-    Optional<ClientDetails> findOne(String clientId);
+    Optional<SimpleClientDetails> findOne(String clientId);
 
     /**
      * @see org.springframework.data.repository.CrudRepository#findAll()
      */
-    Iterable<ClientDetails> findAll();
+    Iterable<SimpleClientDetails> findAll();
 
     /**
      * @see org.springframework.data.repository.CrudRepository#save(Object)
      */
-    ClientDetails save(ClientDetails clientDetails);
+    SimpleClientDetails save(SimpleClientDetails clientDetails);
 
     /**
      * @see org.springframework.data.repository.CrudRepository#delete(java.io.Serializable)

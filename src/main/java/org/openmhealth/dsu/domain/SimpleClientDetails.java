@@ -17,6 +17,7 @@
 package org.openmhealth.dsu.domain;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 
 
@@ -26,27 +27,27 @@ import org.springframework.security.oauth2.provider.client.BaseClientDetails;
  *
  * @author Emerson Farrugia
  */
-public class ClientDetails extends BaseClientDetails {
+public class SimpleClientDetails extends BaseClientDetails {
 
     @Id
     private String id;
 
-    public ClientDetails() {
+    public SimpleClientDetails() {
     }
 
-    public ClientDetails(org.springframework.security.oauth2.provider.ClientDetails prototype) {
+    public SimpleClientDetails(ClientDetails prototype) {
         super(prototype);
         this.id = getClientId();
     }
 
-    public ClientDetails(String clientId, String resourceIds, String scopes, String grantTypes,
+    public SimpleClientDetails(String clientId, String resourceIds, String scopes, String grantTypes,
             String authorities) {
 
         super(clientId, resourceIds, scopes, grantTypes, authorities);
         this.id = getClientId();
     }
 
-    public ClientDetails(String clientId, String resourceIds, String scopes, String grantTypes,
+    public SimpleClientDetails(String clientId, String resourceIds, String scopes, String grantTypes,
             String authorities, String redirectUris) {
 
         super(clientId, resourceIds, scopes, grantTypes, authorities, redirectUris);

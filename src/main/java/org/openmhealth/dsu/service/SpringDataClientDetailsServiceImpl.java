@@ -16,10 +16,10 @@
 
 package org.openmhealth.dsu.service;
 
+import org.openmhealth.dsu.domain.SimpleClientDetails;
 import org.openmhealth.dsu.repository.ClientDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.provider.*;
-import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +30,8 @@ import static java.lang.String.format;
 
 
 /**
- * An implementation of {@link ClientDetailsService} and {@link ClientRegistrationService} that persists OAuth 2.0
- * client details using Spring Data repositories.
+ * An implementation of Spring Security's {@link ClientDetailsService} and {@link ClientRegistrationService} that
+ * persists OAuth 2.0 client details using Spring Data repositories.
  *
  * @author Emerson Farrugia
  */
@@ -43,7 +43,7 @@ public class SpringDataClientDetailsServiceImpl implements ClientDetailsService,
 
     @Override
     @Transactional(readOnly = true)
-    public ClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
+    public SimpleClientDetails loadClientByClientId(String clientId) throws ClientRegistrationException {
 
         return repository.findOne(clientId).orElseThrow(() ->
                 new NoSuchClientException(format("A client with id '%s' wasn't found.", clientId)));
@@ -58,7 +58,7 @@ public class SpringDataClientDetailsServiceImpl implements ClientDetailsService,
                     format("A client with id '%s' already exists.", clientDetails.getClientId()));
         }
 
-        repository.save(clientDetails);
+        repository.save(new SimpleClientDetails(clientDetails));
     }
 
     @Override
@@ -69,25 +69,28 @@ public class SpringDataClientDetailsServiceImpl implements ClientDetailsService,
             throw new NoSuchClientException(format("A client with id '%s' wasn't found.", clientDetails.getClientId()));
         }
 
-        repository.save(clientDetails);
+        repository.save(new SimpleClientDetails(clientDetails));
     }
 
     @Override
     @Transactional
     public void updateClientSecret(String clientId, String secret) throws NoSuchClientException {
 
-        ClientDetails clientDetails = repository.findOne(clientId).orElseThrow(() ->
+        SimpleClientDetails clientDetails = repository.findOne(clientId).orElseThrow(() ->
                 new NoSuchClientException(format("A client with id '%s' wasn't found.", clientId)));
 
-        BaseClientDetails updatedClientDetails = new BaseClientDetails(clientDetails);
-        updatedClientDetails.setClientSecret(secret);
+        clientDetails.setClientSecret(secret);
 
-        repository.save(updatedClientDetails);
+        repository.save(clientDetails);
     }
 
     @Override
     @Transactional
     public void removeClientDetails(String clientId) throws NoSuchClientException {
+
+        if (!repository.findOne(clientId).isPresent()) {
+            throw new NoSuchClientException(format("A client with id '%s' wasn't found.", clientId));
+        }
 
         repository.delete(clientId);
     }
