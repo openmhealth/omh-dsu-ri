@@ -63,12 +63,44 @@ public class User {
         this.emailAddress = emailAddress;
     }
 
-
     public OffsetDateTime getRegistrationTimestamp() {
         return registrationTimestamp;
     }
 
     public void setRegistrationTimestamp(OffsetDateTime registrationTimestamp) {
         this.registrationTimestamp = registrationTimestamp;
+    }
+
+    @Override
+    @SuppressWarnings("RedundantIfStatement")
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        User user = (User) object;
+
+        if (emailAddress != null ? !emailAddress.equals(user.emailAddress) : user.emailAddress != null) {
+            return false;
+        }
+        if (!passwordHash.equals(user.passwordHash)) {
+            return false;
+        }
+        if (!registrationTimestamp.equals(user.registrationTimestamp)) {
+            return false;
+        }
+        if (!username.equals(user.username)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return username.hashCode();
     }
 }
