@@ -16,8 +16,8 @@
 
 package org.openmhealth.dsu.repository;
 
+import org.openmhealth.dsu.domain.ClientDetails;
 import org.springframework.data.repository.Repository;
-import org.springframework.security.oauth2.provider.ClientDetails;
 import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 
 import java.util.Optional;
