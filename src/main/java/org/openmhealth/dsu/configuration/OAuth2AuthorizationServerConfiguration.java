@@ -18,7 +18,6 @@ package org.openmhealth.dsu.configuration;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 
 /**
@@ -29,5 +28,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @Configuration
 @EnableAuthorizationServer
 public class OAuth2AuthorizationServerConfiguration {
+
+    public static final String CLIENT_ROLE = "ROLE_CLIENT";
 
 }

@@ -71,9 +71,7 @@ public abstract class UserRepositoryIntegrationTests {
     @Test
     public void findOneShouldReturnSavedUser() {
 
-        User expected = newUser();
-
-        userRepository.save(expected);
+        User expected = userRepository.save(newUser());
 
         Optional<User> actual = userRepository.findOne(TEST_USERNAME);
 
