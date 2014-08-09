@@ -38,4 +38,9 @@ public interface UserRepository extends Repository<User, String> {
      * @see org.springframework.data.repository.CrudRepository#save(Object)
      */
     User save(User user);
+
+    /**
+     * @see org.springframework.data.repository.CrudRepository#delete(java.io.Serializable)
+     */
+    void delete(String username);
 }
