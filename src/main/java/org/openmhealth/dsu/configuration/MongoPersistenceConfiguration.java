@@ -27,7 +27,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
  * @author Emerson Farrugia
  */
 @Configuration
-@ConditionalOnExpression("${dataStore} == 'mongo'")
+@ConditionalOnExpression("'${dataStore}' == 'mongo'")
 @EnableMongoRepositories(basePackages = "org.openmhealth.dsu.repository")
 public class MongoPersistenceConfiguration {
 

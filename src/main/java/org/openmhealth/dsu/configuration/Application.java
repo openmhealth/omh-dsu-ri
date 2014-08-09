@@ -17,6 +17,7 @@
 package org.openmhealth.dsu.configuration;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -29,9 +30,10 @@ import org.springframework.context.annotation.PropertySource;
  * @author Emerson Farrugia
  */
 @Configuration
+@ComponentScan("org.openmhealth")
 @PropertySource("classpath:application.properties")
 @PropertySource(value = "file:/etc/omh/dsu-ri.conf", ignoreResourceNotFound = true)
-@ComponentScan("org.openmhealth")
+@EnableConfigurationProperties
 public class Application {
 
     public static void main(String[] args) {
