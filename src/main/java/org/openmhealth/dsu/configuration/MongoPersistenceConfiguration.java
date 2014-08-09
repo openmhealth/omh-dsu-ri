@@ -16,19 +16,74 @@
 
 package org.openmhealth.dsu.configuration;
 
+import com.mongodb.Mongo;
+import com.mongodb.MongoClientOptions;
+import org.openmhealth.dsu.converter.OffsetDateTimeToStringConverter;
+import org.openmhealth.dsu.converter.StringToOffsetDateTimeConverter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
+import org.springframework.data.mongodb.core.convert.CustomConversions;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
+import javax.annotation.PreDestroy;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
- * A configuration class that controls the Spring Data MongoDB repositories to scan for.
+ * A configuration class for Spring Data MongoDB. It controls the repositories to scan for and sets up converters to
+ * support persistence of Java 8 {@link java.time.OffsetDateTime}. The remaining boilerplate is mostly a copy of {@link
+ * MongoAutoConfiguration}.
  *
  * @author Emerson Farrugia
  */
 @Configuration
 @ConditionalOnExpression("'${dataStore}' == 'mongo'")
 @EnableMongoRepositories(basePackages = "org.openmhealth.dsu.repository")
-public class MongoPersistenceConfiguration {
+public class MongoPersistenceConfiguration extends AbstractMongoConfiguration {
 
+    @Autowired
+    private MongoProperties mongoProperties;
+
+    @Autowired(required = false)
+    private MongoClientOptions clientOptions;
+
+    private Mongo mongo;
+
+    @PreDestroy
+    public void close() {
+        if (mongo != null) {
+            mongo.close();
+        }
+    }
+
+    @Bean
+    public Mongo mongo() throws UnknownHostException {
+        mongo = mongoProperties.createMongoClient(clientOptions);
+        return mongo;
+    }
+
+
+    @Override
+    protected String getDatabaseName() {
+        return mongoProperties.getDatabase();
+    }
+
+    @Override
+    public CustomConversions customConversions() {
+
+        List<Converter<?, ?>> converters = new ArrayList<>();
+
+        converters.add(new OffsetDateTimeToStringConverter());
+        converters.add(new StringToOffsetDateTimeConverter());
+
+        return new CustomConversions(converters);
+    }
 }
