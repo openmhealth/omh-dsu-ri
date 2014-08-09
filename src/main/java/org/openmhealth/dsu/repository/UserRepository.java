@@ -34,10 +34,8 @@ public interface UserRepository extends Repository<User, String> {
      */
     Optional<User> findOne(String username);
 
-    Optional<User> findByRegistrationKey(String registrationKey);
-
     /**
      * @see org.springframework.data.repository.CrudRepository#save(Object)
      */
-    void save(User user);
+    User save(User user);
 }
