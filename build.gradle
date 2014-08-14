@@ -66,3 +66,5 @@ dependencies {
     testCompile 'org.mockito:mockito-core'
     testCompile 'org.springframework:spring-test'
 }
+
+// FIXME add integration test support
