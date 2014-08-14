@@ -17,24 +17,15 @@
 package org.openmhealth.dsu.repository;
 
 import org.openmhealth.dsu.domain.DataPoint;
-import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.repository.Repository;
-
-import java.util.Optional;
+import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 
 
 /**
- * A repository of data points.
+ * A set of data point repository methods not automatically implemented by Spring Data.
  *
- * @see org.springframework.data.repository.CrudRepository
  * @author Emerson Farrugia
  */
-@NoRepositoryBean
-public interface DataPointRepository extends Repository<DataPoint, String>, CustomDataPointRepository {
+public interface CustomDataPointRepository {
 
-    Optional<DataPoint> findOne(String id);
-
-    Iterable<DataPoint> findAll();
-
-    Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
+    Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria);
 }
