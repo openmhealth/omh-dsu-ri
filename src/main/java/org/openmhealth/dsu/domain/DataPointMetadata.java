@@ -27,25 +27,32 @@ import java.util.Optional;
 public class DataPointMetadata {
 
     private String id;
-    private String schemaId;
+    private String schemaName;
+    private String schemaVersion;
     private DataPointAcquisitionProvenance acquisitionProvenance;
 
     /**
      * @param id the globally unique identifier of the data point
-     * @param schemaId the identifier of the schema the data point conforms to
+     * @param schemaName the name of the schema the data point conforms to
+     * @param schemaVersion the version of the schema the data point conforms to
      */
-    public DataPointMetadata(String id, String schemaId) {
+    public DataPointMetadata(String id, String schemaName, String schemaVersion) {
 
         this.id = id;
-        this.schemaId = schemaId;
+        this.schemaName = schemaName;
+        this.schemaVersion = schemaVersion;
     }
 
     public String getId() {
         return id;
     }
 
-    public String getSchemaId() {
-        return schemaId;
+    public String getSchemaName() {
+        return schemaName;
+    }
+
+    public String getSchemaVersion() {
+        return schemaVersion;
     }
 
     /**

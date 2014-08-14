@@ -17,6 +17,7 @@
 package org.openmhealth.dsu.domain;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 
 /**
@@ -32,40 +33,36 @@ public class DataPointSearchCriteria {
     private OffsetDateTime startTimestamp;
     private OffsetDateTime endTimestamp;
 
-    public String getUserId() {
-        return userId;
+    public DataPointSearchCriteria(String userId, String schemaName, String schemaVersion) {
+        this.userId = userId;
+        this.schemaName = schemaName;
+        this.schemaVersion = schemaVersion;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public String getUserId() {
+        return userId;
     }
 
     public String getSchemaName() {
         return schemaName;
     }
 
-    public void setSchemaName(String schemaName) {
-        this.schemaName = schemaName;
-    }
-
     public String getSchemaVersion() {
         return schemaVersion;
     }
 
-    public void setSchemaVersion(String schemaVersion) {
-        this.schemaVersion = schemaVersion;
-    }
-
-    public OffsetDateTime getStartTimestamp() {
-        return startTimestamp;
+    // TODO consider Range<OffsetDateTime> instead
+    // FIXME this might go away based on metadata discussions
+    public Optional<OffsetDateTime> getStartTimestamp() {
+        return Optional.of(startTimestamp);
     }
 
     public void setStartTimestamp(OffsetDateTime startTimestamp) {
         this.startTimestamp = startTimestamp;
     }
 
-    public OffsetDateTime getEndTimestamp() {
-        return endTimestamp;
+    public Optional<OffsetDateTime> getEndTimestamp() {
+        return Optional.of(endTimestamp);
     }
 
     public void setEndTimestamp(OffsetDateTime endTimestamp) {

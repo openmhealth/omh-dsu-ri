@@ -19,6 +19,8 @@ package org.openmhealth.dsu.repository;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 
+import javax.annotation.Nullable;
+
 
 /**
  * A set of data point repository methods not automatically implemented by Spring Data.
@@ -27,5 +29,6 @@ import org.openmhealth.dsu.domain.DataPointSearchCriteria;
  */
 public interface CustomDataPointRepository {
 
-    Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria);
+    Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
+            @Nullable Integer limit);
 }
