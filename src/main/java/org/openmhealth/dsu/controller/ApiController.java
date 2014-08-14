@@ -19,11 +19,17 @@ package org.openmhealth.dsu.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.lang.annotation.*;
+
 
 /**
  * A specialisation of the {@link Controller} annotation that controls the version number of the DSU API.
+ *
  * @author Emerson Farrugia
  */
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
 @Controller
 @RequestMapping("/v2")
 public @interface ApiController {
