@@ -68,3 +68,7 @@ dependencies {
 }
 
 // FIXME add integration test support
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.0'
+}
