@@ -31,15 +31,17 @@ dependencies {
     compile 'com.fasterxml.jackson.core:jackson-core:2.4.2' // platform's still on 2.3.4, 2.4 required for Java 8
     compile 'com.fasterxml.jackson.core:jackson-databind:2.4.2'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.2'
+    compile 'javax.mail:javax.mail-api'
     compile 'org.slf4j:jcl-over-slf4j'
     compile 'com.github.fge:json-schema-validator:2.2.5'
     compile 'org.slf4j:log4j-over-slf4j'
     compile 'ch.qos.logback:logback-classic'
-    compile 'javax.mail:javax.mail-api'
+    compile 'org.mongodb:mongo-java-driver'
     compile 'org.slf4j:slf4j-api'
     compile 'org.springframework:spring-beans'
     compile 'org.springframework.boot:spring-boot-autoconfigure'
     compile 'org.springframework:spring-context'
+    compile 'org.springframework.data:spring-data-mongodb'
     compile 'org.springframework:spring-jdbc'
     compile 'org.springframework.security.oauth:spring-security-oauth2'
     compile 'org.springframework:spring-tx'
@@ -53,13 +55,6 @@ dependencies {
     }
     // but choose Jetty instead of Tomcat
     compile("org.springframework.boot:spring-boot-starter-jetty")
-
-    // optional dependencies
-    compile 'org.apache.commons:commons-dbcp2'
-    compile 'org.mongodb:mongo-java-driver'
-    compile 'mysql:mysql-connector-java'
-    compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
-    compile 'org.springframework.data:spring-data-mongodb'
 
     testCompile 'org.hamcrest:hamcrest-library'
     testCompile 'junit:junit'
