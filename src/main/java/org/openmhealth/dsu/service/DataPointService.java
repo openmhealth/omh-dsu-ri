@@ -33,4 +33,6 @@ public interface DataPointService {
             @Nullable Integer limit);
 
     Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
+
+    void delete(String id);
 }

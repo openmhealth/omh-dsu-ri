@@ -37,4 +37,6 @@ public interface DataPointRepository extends Repository<DataPoint, String>, Cust
     Iterable<DataPoint> findAll();
 
     Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
+
+    void delete(String id);
 }

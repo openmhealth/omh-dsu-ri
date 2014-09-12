@@ -49,4 +49,11 @@ public class DataPointServiceImpl implements DataPointService {
 
         return repository.save(dataPoints);
     }
+
+    @Override
+    @Transactional
+    public void delete(String id) {
+
+        repository.delete(id);
+    }
 }
