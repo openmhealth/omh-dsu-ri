@@ -16,7 +16,12 @@
 
 package org.openmhealth.dsu.domain;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.annotation.Id;
+
+import javax.validation.Valid;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 
 /**
@@ -28,19 +33,23 @@ public class DataPoint {
 
     private String userId;
     private DataPointMetadata metadata;
-    private DataPointPayload payload;
+    private JsonNode data;
 
 
     /**
      * @param userId the identifier of the user this data point belongs to
-     * @param metadata the metadata of the data point
-     * @param payload the payload of the data point
+     * @param metadata the metadata of this data point
+     * @param data the data of this data point
      */
-    public DataPoint(String userId, DataPointMetadata metadata, DataPointPayload payload) {
+    public DataPoint(String userId, DataPointMetadata metadata, JsonNode data) {
+
+        checkNotNull(userId);
+        checkNotNull(metadata);
+        checkNotNull(data);
 
         this.userId = userId;
         this.metadata = metadata;
-        this.payload = payload;
+        this.data = data;
     }
 
     @Id
@@ -52,11 +61,12 @@ public class DataPoint {
         return userId;
     }
 
+    @Valid
     public DataPointMetadata getMetadata() {
         return metadata;
     }
 
-    public DataPointPayload getPayload() {
-        return payload;
+    public JsonNode getData() {
+        return data;
     }
 }
