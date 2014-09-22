@@ -20,6 +20,7 @@ import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 
 /**
@@ -28,6 +29,8 @@ import javax.annotation.Nullable;
  * @author Emerson Farrugia
  */
 public interface DataPointService {
+
+    Optional<DataPoint> findOne(String id);
 
     Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
             @Nullable Integer limit);

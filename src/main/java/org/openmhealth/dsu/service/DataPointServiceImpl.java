@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Nullable;
+import java.util.Optional;
 
 
 /**
@@ -34,6 +35,13 @@ public class DataPointServiceImpl implements DataPointService {
 
     @Autowired
     private DataPointRepository repository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<DataPoint> findOne(String id) {
+
+        return repository.findOne(id);
+    }
 
     @Override
     @Transactional(readOnly = true)
