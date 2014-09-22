@@ -41,6 +41,11 @@ public class SchemaId implements Comparable<SchemaId> {
     private String name;
     private SchemaVersion version;
 
+    public SchemaId(String namespace, String name, String version) {
+
+        this(namespace, name, new SchemaVersion(version));
+    }
+
     public SchemaId(String namespace, String name, SchemaVersion version) {
 
         checkNotNull(namespace);
