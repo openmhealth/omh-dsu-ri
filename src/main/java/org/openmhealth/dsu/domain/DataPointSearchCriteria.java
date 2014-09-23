@@ -16,8 +16,14 @@
 
 package org.openmhealth.dsu.domain;
 
+import com.google.common.collect.Range;
+
 import java.time.OffsetDateTime;
 import java.util.Optional;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 
 /**
@@ -28,19 +34,28 @@ import java.util.Optional;
 public class DataPointSearchCriteria {
 
     private String userId;
+    private String schemaNamespace;
     private String schemaName;
     private String schemaVersion;
-    private OffsetDateTime startTimestamp;
-    private OffsetDateTime endTimestamp;
+    private Range<OffsetDateTime> creationTimestampRange;
 
-    public DataPointSearchCriteria(String userId, String schemaName, String schemaVersion) {
+    public DataPointSearchCriteria(String userId, String schemaNamespace, String schemaName, String schemaVersion) {
+
+        checkNotNull(userId);
+        checkArgument(!isNullOrEmpty(userId));
+
         this.userId = userId;
+        this.schemaNamespace = schemaNamespace;
         this.schemaName = schemaName;
         this.schemaVersion = schemaVersion;
     }
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getSchemaNamespace() {
+        return schemaNamespace;
     }
 
     public String getSchemaName() {
@@ -51,21 +66,11 @@ public class DataPointSearchCriteria {
         return schemaVersion;
     }
 
-    // TODO consider Range<OffsetDateTime> instead
-    // FIXME this might go away based on metadata discussions
-    public Optional<OffsetDateTime> getStartTimestamp() {
-        return Optional.of(startTimestamp);
+    public Optional<Range<OffsetDateTime>> getCreationTimestampRange() {
+        return Optional.of(creationTimestampRange);
     }
 
-    public void setStartTimestamp(OffsetDateTime startTimestamp) {
-        this.startTimestamp = startTimestamp;
-    }
-
-    public Optional<OffsetDateTime> getEndTimestamp() {
-        return Optional.of(endTimestamp);
-    }
-
-    public void setEndTimestamp(OffsetDateTime endTimestamp) {
-        this.endTimestamp = endTimestamp;
+    public void setCreationTimestampRange(Range<OffsetDateTime> creationTimestampRange) {
+        this.creationTimestampRange = creationTimestampRange;
     }
 }
