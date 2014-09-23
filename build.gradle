@@ -24,7 +24,7 @@ buildscript {
 
 dependencies {
     // Spring IO (http://platform.spring.io/platform) gives us curated and harmonised dependencies, whose versions
-    // you can find at http://docs.spring.io/platform/docs/1.0.1.RELEASE/reference/htmlsingle/#appendix-dependency-versions
+    // you can find at http://docs.spring.io/platform/docs/1.0.2.RELEASE/reference/htmlsingle/#appendix-dependency-versions
     versionManagement 'io.spring.platform:platform-versions:1.0.2.RELEASE@properties'
 
     compile 'org.apache.httpcomponents:httpclient'
