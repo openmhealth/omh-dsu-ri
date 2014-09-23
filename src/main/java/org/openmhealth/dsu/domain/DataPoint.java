@@ -16,10 +16,10 @@
 
 package org.openmhealth.dsu.domain;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceConstructor;
 
 import javax.validation.Valid;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,7 +33,7 @@ public class DataPoint {
 
     private String userId;
     private DataPointMetadata metadata;
-    private JsonNode data;
+    private Map<?, ?> data;
 
 
     /**
@@ -41,7 +41,7 @@ public class DataPoint {
      * @param metadata the metadata of this data point
      * @param data the data of this data point
      */
-    public DataPoint(String userId, DataPointMetadata metadata, JsonNode data) {
+    public DataPoint(String userId, DataPointMetadata metadata, Map<?, ?> data) {
 
         checkNotNull(userId);
         checkNotNull(metadata);
@@ -52,9 +52,8 @@ public class DataPoint {
         this.data = data;
     }
 
-    @Id
-    public String getId() {
-        return getMetadata().getId();
+    @PersistenceConstructor
+    DataPoint() {
     }
 
     public String getUserId() {
@@ -66,7 +65,7 @@ public class DataPoint {
         return metadata;
     }
 
-    public JsonNode getData() {
+    public Map<?, ?> getData() {
         return data;
     }
 }
