@@ -16,6 +16,7 @@
 
 package org.openmhealth.schema.domain;
 
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -82,8 +83,8 @@ public class SchemaVersion implements Comparable<SchemaVersion> {
         return minor;
     }
 
-    public String getQualifier() {
-        return qualifier;
+    public Optional<String> getQualifier() {
+        return Optional.ofNullable(qualifier);
     }
 
     @Override
@@ -120,16 +121,16 @@ public class SchemaVersion implements Comparable<SchemaVersion> {
             return 1;
         }
 
-        if (getQualifier() != null && that.getQualifier() == null) {
+        if (getQualifier().isPresent() && !that.getQualifier().isPresent()) {
             return -1;
         }
-        if (getQualifier() == null && that.getQualifier() != null) {
+        if (!getQualifier().isPresent() && that.getQualifier().isPresent()) {
             return 1;
         }
-        if (getQualifier() == null) {
+        if (!getQualifier().isPresent()) {
             return 0;
         }
-        return getQualifier().compareTo(that.getQualifier());
+        return getQualifier().get().compareTo(that.getQualifier().get());
     }
 
     @SuppressWarnings("RedundantIfStatement")
