@@ -29,6 +29,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class DataPoint {
 
+    private String id; // duplicated from metadata to make Spring Data MongoDB happy
     private String userId;
     private DataPointMetadata metadata;
     private Map<?, ?> data;
@@ -45,6 +46,7 @@ public class DataPoint {
         checkNotNull(metadata);
         checkNotNull(data);
 
+        this.id = metadata.getId();
         this.userId = userId;
         this.metadata = metadata;
         this.data = data;
@@ -53,6 +55,10 @@ public class DataPoint {
     // may be required for persistence, not using @PersistenceConstructor to avoid Spring Data dependency
     @SuppressWarnings("UnusedDeclaration")
     DataPoint() {
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getUserId() {
