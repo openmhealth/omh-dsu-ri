@@ -17,6 +17,7 @@
 package org.openmhealth.dsu.domain;
 
 import org.openmhealth.schema.domain.SchemaId;
+import org.springframework.data.annotation.PersistenceConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -63,6 +64,10 @@ public class DataPointMetadata {
         this.creationTimestamp = creationTimestamp;
     }
 
+    @PersistenceConstructor
+    DataPointMetadata() {
+    }
+
     public String getId() {
         return id;
     }
@@ -84,5 +89,41 @@ public class DataPointMetadata {
 
     public void setAcquisitionProvenance(DataPointAcquisitionProvenance acquisitionProvenance) {
         this.acquisitionProvenance = acquisitionProvenance;
+    }
+
+    @Override
+    @SuppressWarnings("RedundantIfStatement")
+    public boolean equals(Object object) {
+
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        DataPointMetadata that = (DataPointMetadata) object;
+
+        if (acquisitionProvenance != null
+                ? !acquisitionProvenance.equals(that.acquisitionProvenance)
+                : that.acquisitionProvenance != null) {
+            return false;
+        }
+        if (!creationTimestamp.equals(that.creationTimestamp)) {
+            return false;
+        }
+        if (!id.equals(that.id)) {
+            return false;
+        }
+        if (!schemaId.equals(that.schemaId)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }

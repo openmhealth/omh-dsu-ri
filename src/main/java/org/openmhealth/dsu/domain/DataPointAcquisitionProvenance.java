@@ -47,4 +47,35 @@ public class DataPointAcquisitionProvenance {
     public OffsetDateTime getAcquisitionTimestamp() {
         return acquisitionTimestamp;
     }
+
+    @Override
+    @SuppressWarnings("RedundantIfStatement")
+    public boolean equals(Object object) {
+
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        DataPointAcquisitionProvenance that = (DataPointAcquisitionProvenance) object;
+
+        if (acquisitionTimestamp != null ? !acquisitionTimestamp.equals(that.acquisitionTimestamp)
+                : that.acquisitionTimestamp != null) {
+            return false;
+        }
+        if (origin != that.origin) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = origin != null ? origin.hashCode() : 0;
+        result = 31 * result + (acquisitionTimestamp != null ? acquisitionTimestamp.hashCode() : 0);
+        return result;
+    }
 }
