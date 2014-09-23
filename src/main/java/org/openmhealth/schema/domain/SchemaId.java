@@ -59,6 +59,11 @@ public class SchemaId implements Comparable<SchemaId> {
         this.version = version;
     }
 
+    // may be required for persistence, not using @PersistenceConstructor to avoid Spring Data dependency
+    @SuppressWarnings("UnusedDeclaration")
+    SchemaId() {
+    }
+
     public String getNamespace() {
         return namespace;
     }

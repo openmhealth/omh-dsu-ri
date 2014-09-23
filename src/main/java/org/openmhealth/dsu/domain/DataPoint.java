@@ -16,8 +16,6 @@
 
 package org.openmhealth.dsu.domain;
 
-import org.springframework.data.annotation.PersistenceConstructor;
-
 import javax.validation.Valid;
 import java.util.Map;
 
@@ -52,7 +50,8 @@ public class DataPoint {
         this.data = data;
     }
 
-    @PersistenceConstructor
+    // may be required for persistence, not using @PersistenceConstructor to avoid Spring Data dependency
+    @SuppressWarnings("UnusedDeclaration")
     DataPoint() {
     }
 

@@ -65,6 +65,11 @@ public class SchemaVersion implements Comparable<SchemaVersion> {
         this.qualifier = qualifier;
     }
 
+    // may be required for persistence, not using @PersistenceConstructor to avoid Spring Data dependency
+    @SuppressWarnings("UnusedDeclaration")
+    SchemaVersion() {
+    }
+
     public int getMajor() {
         return major;
     }

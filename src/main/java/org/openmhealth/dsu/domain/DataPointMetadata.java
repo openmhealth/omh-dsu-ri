@@ -17,7 +17,6 @@
 package org.openmhealth.dsu.domain;
 
 import org.openmhealth.schema.domain.SchemaId;
-import org.springframework.data.annotation.PersistenceConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -64,7 +63,8 @@ public class DataPointMetadata {
         this.creationTimestamp = creationTimestamp;
     }
 
-    @PersistenceConstructor
+    // may be required for persistence, not using @PersistenceConstructor to avoid Spring Data dependency
+    @SuppressWarnings("UnusedDeclaration")
     DataPointMetadata() {
     }
 
