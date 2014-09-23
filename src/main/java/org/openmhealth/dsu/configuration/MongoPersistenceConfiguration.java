@@ -29,6 +29,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
+import org.springframework.data.mongodb.core.mapping.FieldNamingStrategy;
+import org.springframework.data.mongodb.core.mapping.SnakeCaseFieldNamingStrategy;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import javax.annotation.PreDestroy;
@@ -85,5 +87,9 @@ public class MongoPersistenceConfiguration extends AbstractMongoConfiguration {
         converters.add(new StringToOffsetDateTimeConverter());
 
         return new CustomConversions(converters);
+    }
+
+    protected FieldNamingStrategy fieldNamingStrategy() {
+        return new SnakeCaseFieldNamingStrategy();
     }
 }
