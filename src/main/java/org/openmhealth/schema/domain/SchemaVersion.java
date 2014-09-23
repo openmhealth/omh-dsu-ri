@@ -127,4 +127,38 @@ public class SchemaVersion implements Comparable<SchemaVersion> {
         }
         return getQualifier().compareTo(that.getQualifier());
     }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public boolean equals(Object object) {
+
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        SchemaVersion that = (SchemaVersion) object;
+
+        if (major != that.major) {
+            return false;
+        }
+        if (minor != that.minor) {
+            return false;
+        }
+        if (qualifier != null ? !qualifier.equals(that.qualifier) : that.qualifier != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = major;
+        result = 31 * result + minor;
+        result = 31 * result + (qualifier != null ? qualifier.hashCode() : 0);
+        return result;
+    }
 }
