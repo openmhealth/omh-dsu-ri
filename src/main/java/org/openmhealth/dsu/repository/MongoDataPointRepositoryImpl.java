@@ -16,14 +16,18 @@
 
 package org.openmhealth.dsu.repository;
 
+import com.google.common.collect.Range;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 
 import javax.annotation.Nullable;
+import java.time.OffsetDateTime;
 
+import static com.google.common.collect.BoundType.CLOSED;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
 
@@ -35,7 +39,8 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
     @Autowired
     private MongoOperations mongoOperations;
 
-
+    // if a data point is filtered by its data and not just its metadata, these queries will need to be written using
+    // the MongoDB Java driver instead of Spring Data MongoDB, since there is no mapping information to work against
     @Override
     public Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
             @Nullable Integer limit) {
@@ -53,20 +58,53 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
         return mongoOperations.find(query, DataPoint.class);
     }
 
-    // FIXME timestamp checks are kludged for now
-    // TODO implement this using QueryDSL once its integration with Gradle stabilises
     private Query newQuery(DataPointSearchCriteria searchCriteria) {
 
         Query query = new Query();
 
-        if (searchCriteria.getStartTimestamp().isPresent()) {
-            query.addCriteria(where("tempTimestamp").gte(searchCriteria.getStartTimestamp().get()));
+        query.addCriteria(where("user_id").is(searchCriteria.getUserId()));
+        query.addCriteria(where("metadata.schema_id.namespace").is(searchCriteria.getSchemaNamespace()));
+        query.addCriteria(where("metadata.schema_id.name").is(searchCriteria.getSchemaName()));
+        query.addCriteria(where("metadata.schema_id.version.major").is(searchCriteria.getSchemaVersion().getMajor()));
+        query.addCriteria(where("metadata.schema_id.version.minor").is(searchCriteria.getSchemaVersion().getMinor()));
+
+        if (searchCriteria.getSchemaVersion().getQualifier().isPresent()) {
+            query.addCriteria(
+                    where("metadata.schema_id.version.qualifier").is(searchCriteria.getSchemaVersion().getQualifier()));
         }
 
-        if (searchCriteria.getEndTimestamp().isPresent()) {
-            query.addCriteria(where("tempTimestamp").lt(searchCriteria.getEndTimestamp().get()));
+        if (searchCriteria.getCreationTimestampRange().isPresent()) {
+            addCreationTimestampCriteria(query, searchCriteria.getCreationTimestampRange().get());
         }
 
         return query;
+    }
+
+    void addCreationTimestampCriteria(Query query, Range<OffsetDateTime> timestampRange) {
+
+        if (timestampRange.hasLowerBound() || timestampRange.hasUpperBound()) {
+
+            Criteria timestampCriteria = where("metadata.creation_timestamp");
+
+            if (timestampRange.hasLowerBound()) {
+                if (timestampRange.lowerBoundType() == CLOSED) {
+                    timestampCriteria = timestampCriteria.gte(timestampRange.lowerEndpoint());
+                }
+                else {
+                    timestampCriteria = timestampCriteria.gt(timestampRange.lowerEndpoint());
+                }
+            }
+
+            if (timestampRange.hasUpperBound()) {
+                if (timestampRange.upperBoundType() == CLOSED) {
+                    timestampCriteria = timestampCriteria.lte(timestampRange.upperEndpoint());
+                }
+                else {
+                    timestampCriteria = timestampCriteria.lt(timestampRange.upperEndpoint());
+                }
+            }
+
+            query.addCriteria(timestampCriteria);
+        }
     }
 }
