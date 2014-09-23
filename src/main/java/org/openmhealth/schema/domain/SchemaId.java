@@ -49,9 +49,9 @@ public class SchemaId implements Comparable<SchemaId> {
     public SchemaId(String namespace, String name, SchemaVersion version) {
 
         checkNotNull(namespace);
-        checkArgument(NAMESPACE_PATTERN.matcher(namespace).matches());
+        checkArgument(isValidNamespace(namespace));
         checkNotNull(name);
-        checkArgument(NAME_PATTERN.matcher(name).matches());
+        checkArgument(isValidName(name));
         checkNotNull(version);
 
         this.namespace = namespace;
@@ -68,8 +68,16 @@ public class SchemaId implements Comparable<SchemaId> {
         return namespace;
     }
 
+    public static boolean isValidNamespace(String namespace) {
+        return namespace == null || NAMESPACE_PATTERN.matcher(namespace).matches();
+    }
+
     public String getName() {
         return name;
+    }
+
+    public static boolean isValidName(String name) {
+        return name == null ||  NAME_PATTERN.matcher(name).matches();
     }
 
     public SchemaVersion getVersion() {

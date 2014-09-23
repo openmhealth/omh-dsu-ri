@@ -70,6 +70,10 @@ public class SchemaVersion implements Comparable<SchemaVersion> {
     SchemaVersion() {
     }
 
+    public static boolean isValidVersion(String version) {
+        return version == null || VERSION_PATTERN.matcher(version).matches();
+    }
+
     public int getMajor() {
         return major;
     }
