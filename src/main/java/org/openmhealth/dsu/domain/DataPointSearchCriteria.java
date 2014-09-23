@@ -17,6 +17,7 @@
 package org.openmhealth.dsu.domain;
 
 import com.google.common.collect.Range;
+import org.openmhealth.schema.domain.SchemaVersion;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -24,6 +25,9 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.isNullOrEmpty;
+import static org.openmhealth.schema.domain.SchemaId.isValidName;
+import static org.openmhealth.schema.domain.SchemaId.isValidNamespace;
+import static org.openmhealth.schema.domain.SchemaVersion.isValidVersion;
 
 
 /**
@@ -36,7 +40,7 @@ public class DataPointSearchCriteria {
     private String userId;
     private String schemaNamespace;
     private String schemaName;
-    private String schemaVersion;
+    private SchemaVersion schemaVersion;
     private Range<OffsetDateTime> creationTimestampRange;
 
     public DataPointSearchCriteria(String userId, String schemaNamespace, String schemaName, String schemaVersion) {
@@ -44,10 +48,19 @@ public class DataPointSearchCriteria {
         checkNotNull(userId);
         checkArgument(!isNullOrEmpty(userId));
 
+        // TODO determine how restrictive the search criteria should be
+        checkNotNull(schemaNamespace);
+        checkNotNull(schemaName);
+        checkNotNull(schemaVersion);
+
+        checkArgument(isValidNamespace(schemaNamespace));
+        checkArgument(isValidName(schemaName));
+        checkArgument(isValidVersion(schemaVersion));
+
         this.userId = userId;
         this.schemaNamespace = schemaNamespace;
         this.schemaName = schemaName;
-        this.schemaVersion = schemaVersion;
+        this.schemaVersion = new SchemaVersion(schemaVersion);
     }
 
     public String getUserId() {
@@ -62,7 +75,7 @@ public class DataPointSearchCriteria {
         return schemaName;
     }
 
-    public String getSchemaVersion() {
+    public SchemaVersion getSchemaVersion() {
         return schemaVersion;
     }
 
