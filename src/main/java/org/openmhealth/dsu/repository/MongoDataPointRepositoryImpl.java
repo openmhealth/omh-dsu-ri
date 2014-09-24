@@ -27,6 +27,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.BoundType.CLOSED;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 
@@ -44,6 +46,10 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
     @Override
     public Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
             @Nullable Integer limit) {
+
+        checkNotNull(searchCriteria);
+        checkArgument(offset == null || offset >= 0);
+        checkArgument(limit == null || limit >= 0);
 
         Query query = newQuery(searchCriteria);
 
@@ -69,8 +75,8 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
         query.addCriteria(where("metadata.schema_id.version.minor").is(searchCriteria.getSchemaVersion().getMinor()));
 
         if (searchCriteria.getSchemaVersion().getQualifier().isPresent()) {
-            query.addCriteria(
-                    where("metadata.schema_id.version.qualifier").is(searchCriteria.getSchemaVersion().getQualifier()));
+            query.addCriteria(where("metadata.schema_id.version.qualifier")
+                    .is(searchCriteria.getSchemaVersion().getQualifier().get()));
         }
 
         if (searchCriteria.getCreationTimestampRange().isPresent()) {

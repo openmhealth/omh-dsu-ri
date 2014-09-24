@@ -80,7 +80,7 @@ public class DataPointSearchCriteria {
     }
 
     public Optional<Range<OffsetDateTime>> getCreationTimestampRange() {
-        return Optional.of(creationTimestampRange);
+        return Optional.ofNullable(creationTimestampRange);
     }
 
     public void setCreationTimestampRange(Range<OffsetDateTime> creationTimestampRange) {
