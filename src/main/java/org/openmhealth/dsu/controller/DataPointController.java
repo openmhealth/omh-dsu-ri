@@ -16,6 +16,7 @@
 
 package org.openmhealth.dsu.controller;
 
+import com.google.common.collect.Range;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.service.DataPointService;
@@ -23,13 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -39,27 +41,27 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  *
  * @author Emerson Farrugia
  */
-// FIXME review this whole thing
 @ApiController
 public class DataPointController {
 
-    public static final String DEFAULT_RESULT_LIMIT = "100";
+    private static final Logger log = LoggerFactory.getLogger(DataPointController.class);
 
     // FIXME this is just for testing until Spring Security is wired up
     private static final String TEST_USER_ID = "test";
 
-    /**
-     * FIXME A parameter that limits the returned data points to those with an effective timestamp on or after the given
-     * timestamp. FIXME Is it just the start timestamp on an interval?
+    /*
+     * These filtering parameters are temporary. They will likely change when a more generic filtering approach is
+     * implemented.
      */
-    public static final String START_TIMESTAMP_PARAMETER = "t_start";
+    public static final String CREATED_ON_OR_AFTER_PARAMETER = "createdOnOrAfter";
+    public static final String CREATED_BEFORE_PARAMETER = "createdBefore";
+    public static final String SCHEMA_NAMESPACE_PARAMETER = "schemaNamespace";
+    public static final String SCHEMA_NAME_PARAMETER = "schemaName";
+    public static final String SCHEMA_VERSION_PARAMETER = "schemaVersion";
 
-
-    public static final String END_TIMESTAMP_PARAMETER = "t_end";
-    public static final String OFFSET_PARAMETER = "num_to_skip";
-    public static final String LIMIT_PARAMETER = "num_to_return";
-
-    private static final Logger log = LoggerFactory.getLogger(DataPointController.class);
+    public static final String RESULT_OFFSET_PARAMETER = "offset";
+    public static final String RESULT_LIMIT_PARAMETER = "limit";
+    public static final String DEFAULT_RESULT_LIMIT = "100";
 
     @Autowired
     private DataPointService dataPointService;
@@ -67,71 +69,111 @@ public class DataPointController {
     /**
      * Reads data points.
      *
+     * @param schemaNamespace the namespace of the schema the data points conform to
      * @param schemaName the name of the schema the data points conform to
      * @param schemaVersion the version of the schema the data points conform to
-     * @param startTimestamp the earliest data points to return // FIXME what timestamp is this referring to?
-     * effective?
-     * @param endTimestamp the latest data points to return // FIXME
+     * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
+     * @param createdOnOrBefore the latest creation timestamp of the data points to return, inclusive
      * @param offset the number of data points to skip
      * @param limit the number of data points to return
      * @return a list of matching data points
      */
-//    @PreAuthorize("#oauth2.clientHasRole('ROLE_CLIENT')") // FIXME
-    @RequestMapping(value = {
-            "/{schemaName}/{schemaVersion}/data",
-            "/{schemaName}:{schemaVersion}/data" // TODO confirm if we need this
-    },
+    // FIXME add authorization
+    // TODO think about supporting namespace and name as simple parameters instead
+    // TODO confirm if HEAD handling needs anything additional
+    @RequestMapping(value = "/data/{schemaNamespace}/{schemaName}",
             method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
     @ResponseBody
-    ResponseEntity<Iterable<DataPoint>> readData(
+    ResponseEntity<Iterable<DataPoint>> readDataPoints(
+            @PathVariable final String schemaNamespace,
             @PathVariable final String schemaName,
-            @PathVariable final String schemaVersion,
+            @RequestParam(value = SCHEMA_VERSION_PARAMETER, required = false) final String schemaVersion,
             // TODO replace with Optional<> in Spring MVC 4.1
-            @RequestParam(value = START_TIMESTAMP_PARAMETER, required = false) final OffsetDateTime startTimestamp,
-            @RequestParam(value = END_TIMESTAMP_PARAMETER, required = false) final OffsetDateTime endTimestamp,
-//            @RequestParam(value = PARAM_COLUMN_LIST, required = false) final List<String> columnList,
-            @RequestParam(value = OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
-            @RequestParam(value = LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit) {
+            @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
+            final OffsetDateTime createdOnOrAfter,
+            @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdOnOrBefore,
+            @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
+            @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit) {
 
+        // TODO add validation or explicitly comment that this is handled using exception translators
 
-        DataPointSearchCriteria searchCriteria = new DataPointSearchCriteria(TEST_USER_ID, schemaName, schemaVersion);
+        DataPointSearchCriteria searchCriteria =
+                new DataPointSearchCriteria(TEST_USER_ID, schemaNamespace, schemaName, schemaVersion);
 
-        // FIXME what timestamp is this supposed to refer to?
-        if (startTimestamp != null) {
-            searchCriteria.setStartTimestamp(startTimestamp);
+        if (createdOnOrAfter != null && createdOnOrBefore != null) {
+            searchCriteria.setCreationTimestampRange(Range.closed(createdOnOrAfter, createdOnOrBefore));
         }
-        if (endTimestamp != null) {
-            searchCriteria.setEndTimestamp(endTimestamp);
+        else if (createdOnOrAfter != null) {
+            searchCriteria.setCreationTimestampRange(Range.atLeast(createdOnOrAfter));
+        }
+        else if (createdOnOrBefore != null) {
+            searchCriteria.setCreationTimestampRange(Range.atMost(createdOnOrBefore));
         }
 
         Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);
 
         HttpHeaders headers = new HttpHeaders();
 
-        // FIXME
+        // FIXME add pagination headers
         // headers.set("Next");
         // headers.set("Previous");
 
-        return new ResponseEntity<>(dataPoints, headers, HttpStatus.OK);
+        return new ResponseEntity<>(dataPoints, headers, OK);
+    }
+
+    /**
+     * Reads a data point.
+     *
+     * @param id the identifier of the data point to read
+     * @return a matching data point, if found
+     */
+    // FIXME add @PostAuthorize
+    // TODO force data point identifiers to be globally unique, or rethink this URI
+    // TODO confirm if HEAD handling needs anything additional
+    @RequestMapping(value = "/data/{id}", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
+    public
+    @ResponseBody
+    ResponseEntity<DataPoint> readDataPoint(@PathVariable String id) {
+
+        Optional<DataPoint> dataPoint = dataPointService.findOne(id);
+
+        if (!dataPoint.isPresent()) {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(dataPoint.get(), OK);
     }
 
     /**
      * Writes data points.
+     *
+     * @param dataPoints the list of data points to write
      */
-    // FIXME authorize
-    @RequestMapping(value = {
-            "/{schemaName}/{schemaVersion}/data",
-            "/{schemaName}:{schemaVersion}/data"
-    },
-            method = POST, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> writeData(
-            @RequestBody List<DataPoint> dataPoints) {
+    // FIXME add @PreAuthorize
+    @RequestMapping(value = "/data", method = POST, consumes = APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> writeDataPoints(@RequestBody List<DataPoint> dataPoints) {
 
-        // FIXME add validation here or in service
+        // FIXME add validation
+        // FIXME handle userId
 
         dataPointService.save(dataPoints);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(CREATED);
+    }
+
+    /**
+     * Deletes a data point.
+     *
+     * @param id the identifier of the data point to delete
+     */
+    // FIXME authorize
+    // TODO can this just be id or are identifiers relative?
+    @RequestMapping(value = "/data/{id}", method = RequestMethod.DELETE)
+    public ResponseEntity<?> deleteDataPoint(@PathVariable String id) {
+
+        dataPointService.delete(id);
+
+        return new ResponseEntity<>(OK);
     }
 }
