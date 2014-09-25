@@ -40,7 +40,7 @@ import java.util.List;
 
 
 /**
- * A configuration class for Spring Data MongoDB. It controls the repositories to scan for and sets up converters to
+ * A configuration for Spring Data MongoDB. It controls the repositories to scan for and sets up converters to
  * support persistence of Java 8 {@link java.time.OffsetDateTime}. The remaining boilerplate is mostly a copy of {@link
  * MongoAutoConfiguration}.
  *
