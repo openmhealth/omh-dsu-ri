@@ -21,15 +21,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.openmhealth.dsu.domain.DataPoint;
-import org.openmhealth.dsu.domain.DataPointBuilder;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
-import org.openmhealth.dsu.domain.DataPointSearchCriteriaBuilder;
-import org.openmhealth.schema.domain.SchemaVersion;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -37,6 +33,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.openmhealth.dsu.factory.DataPointFactory.newDataPointBuilder;
+import static org.openmhealth.dsu.factory.DataPointFactory.newSearchCriteriaBuilder;
 
 
 /**
@@ -46,53 +44,12 @@ import static org.junit.Assert.assertThat;
  */
 public abstract class DataPointRepositoryIntegrationTests {
 
-    public static final String TEST_USERNAME = "test";
-    public static final String TEST_SCHEMA_NAMESPACE = "test";
-    public static final String TEST_SCHEMA_NAME = "test";
-    public static final SchemaVersion TEST_SCHEMA_VERSION = new SchemaVersion(1, 1);
-
     @Autowired
     protected DataPointRepository repository;
 
     private DataPoint testDataPoint;
     private List<DataPoint> testDataPoints;
 
-
-    protected Map<?, ?> newKcalBurnedData() {
-
-        return (Map<?, ?>) JSON.parse("{" +
-                "    'kcal_burned': {" +
-                "        'value': 160," +
-                "        'unit': 'kcal'" +
-                "    }," +
-                "    'effective_time_frame': {" +
-                "        'time_interval': {" +
-                "            'start_time': '2013-02-05T06:25:00Z'," +
-                "            'end_time': '2013-02-05T07:25:00Z'" +
-                "        }" +
-                "    }," +
-                "    'activity_name': 'walking'" +
-                "}");
-    }
-
-    protected DataPointBuilder newDataPointBuilder() {
-
-        return new DataPointBuilder()
-                .setUserId(TEST_USERNAME)
-                .setSchemaNamespace(TEST_SCHEMA_NAMESPACE)
-                .setSchemaName(TEST_SCHEMA_NAME)
-                .setSchemaVersion(TEST_SCHEMA_VERSION)
-                .setData(newKcalBurnedData());
-    }
-
-    protected DataPointSearchCriteriaBuilder newSearchCriteriaBuilder() {
-
-        return new DataPointSearchCriteriaBuilder()
-                .setUserId(TEST_USERNAME)
-                .setSchemaNamespace(TEST_SCHEMA_NAMESPACE)
-                .setSchemaName(TEST_SCHEMA_NAME)
-                .setSchemaVersion(TEST_SCHEMA_VERSION);
-    }
 
     @Before
     public void initialiseFixture() {
