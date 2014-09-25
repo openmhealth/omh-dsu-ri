@@ -113,6 +113,9 @@ public class DataPointBuilder {
         SchemaId schemaId = new SchemaId(schemaNamespace, schemaName, schemaVersion);
         DataPointMetadata metadata = new DataPointMetadata(id, schemaId, creationTimestamp);
 
-        return new DataPoint(userId, metadata, data);
+        DataPoint dataPoint = new DataPoint(metadata, data);
+        dataPoint.setUserId(userId);
+
+        return dataPoint;
     }
 }

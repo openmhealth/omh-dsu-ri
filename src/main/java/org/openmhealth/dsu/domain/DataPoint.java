@@ -16,7 +16,9 @@
 
 package org.openmhealth.dsu.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.Valid;
 import java.util.Map;
@@ -38,18 +40,16 @@ public class DataPoint {
 
 
     /**
-     * @param userId the identifier of the user this data point belongs to
      * @param metadata the metadata of this data point
      * @param data the data of this data point
      */
-    public DataPoint(String userId, DataPointMetadata metadata, Map<?, ?> data) {
+    @JsonCreator
+    public DataPoint(@JsonProperty("metadata") DataPointMetadata metadata, @JsonProperty("data") Map<?, ?> data) {
 
-        checkNotNull(userId);
         checkNotNull(metadata);
         checkNotNull(data);
 
         this.id = metadata.getId();
-        this.userId = userId;
         this.metadata = metadata;
         this.data = data;
     }
@@ -59,7 +59,9 @@ public class DataPoint {
     DataPoint() {
     }
 
-    // the identifier will be serialised from the metadata object
+    /**
+     * @return the identifier of the data point
+     */
     @JsonIgnore
     public String getId() {
         return id;
@@ -69,6 +71,10 @@ public class DataPoint {
     @JsonIgnore
     public String getUserId() {
         return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     @Valid
