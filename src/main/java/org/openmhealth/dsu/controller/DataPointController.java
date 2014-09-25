@@ -73,26 +73,24 @@ public class DataPointController {
      * @param schemaName the name of the schema the data points conform to
      * @param schemaVersion the version of the schema the data points conform to
      * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
-     * @param createdOnOrBefore the latest creation timestamp of the data points to return, inclusive
+     * @param createdBefore the latest creation timestamp of the data points to return, exclusive
      * @param offset the number of data points to skip
      * @param limit the number of data points to return
      * @return a list of matching data points
      */
     // FIXME add authorization
-    // TODO think about supporting namespace and name as simple parameters instead
     // TODO confirm if HEAD handling needs anything additional
-    @RequestMapping(value = "/data/{schemaNamespace}/{schemaName}",
-            method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/data", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
     @ResponseBody
     ResponseEntity<Iterable<DataPoint>> readDataPoints(
-            @PathVariable final String schemaNamespace,
-            @PathVariable final String schemaName,
+            @RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
+            @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
             @RequestParam(value = SCHEMA_VERSION_PARAMETER, required = false) final String schemaVersion,
             // TODO replace with Optional<> in Spring MVC 4.1
             @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
             final OffsetDateTime createdOnOrAfter,
-            @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdOnOrBefore,
+            @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,
             @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
             @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit) {
 
@@ -101,14 +99,14 @@ public class DataPointController {
         DataPointSearchCriteria searchCriteria =
                 new DataPointSearchCriteria(TEST_USER_ID, schemaNamespace, schemaName, schemaVersion);
 
-        if (createdOnOrAfter != null && createdOnOrBefore != null) {
-            searchCriteria.setCreationTimestampRange(Range.closed(createdOnOrAfter, createdOnOrBefore));
+        if (createdOnOrAfter != null && createdBefore != null) {
+            searchCriteria.setCreationTimestampRange(Range.closedOpen(createdOnOrAfter, createdBefore));
         }
         else if (createdOnOrAfter != null) {
             searchCriteria.setCreationTimestampRange(Range.atLeast(createdOnOrAfter));
         }
-        else if (createdOnOrBefore != null) {
-            searchCriteria.setCreationTimestampRange(Range.atMost(createdOnOrBefore));
+        else if (createdBefore != null) {
+            searchCriteria.setCreationTimestampRange(Range.lessThan(createdBefore));
         }
 
         Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);
@@ -155,7 +153,11 @@ public class DataPointController {
     public ResponseEntity<?> writeDataPoints(@RequestBody List<DataPoint> dataPoints) {
 
         // FIXME add validation
-        // FIXME handle userId
+
+        // FIXME set userId
+        for (DataPoint dataPoint : dataPoints) {
+            dataPoint.setUserId(TEST_USER_ID);
+        }
 
         dataPointService.save(dataPoints);
 
