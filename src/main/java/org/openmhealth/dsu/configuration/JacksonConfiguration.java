@@ -16,10 +16,18 @@
 
 package org.openmhealth.dsu.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.IOException;
+import java.util.Optional;
 
 
 /**
@@ -37,5 +45,81 @@ public class JacksonConfiguration {
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         return objectMapper;
+    }
+
+    @Bean
+    public SimpleModule jdk18Module() {
+
+        SimpleModule module = new SimpleModule();
+
+        module.addSerializer(new OptionalSerializer());
+        module.addDeserializer(Optional.class, new OptionalDeserializer());
+
+        return module;
+    }
+
+    /**
+     * @author Gili Tzabari
+     * @see <a href="https://github.com/FasterXML/jackson-databind/issues/494">related issue</a>
+     */
+    static class OptionalSerializer extends StdSerializer<Optional<?>> {
+
+        OptionalSerializer() {
+            super(Optional.class, true);
+        }
+
+        @Override
+        public void serialize(Optional<?> value, JsonGenerator generator, SerializerProvider provider)
+                throws IOException {
+
+            if (value.isPresent()) {
+                generator.writeObject(value.get());
+            }
+            else {
+                generator.writeNull();
+            }
+        }
+    }
+
+
+    /**
+     * @author Gili Tzabari
+     * @see <a href="https://github.com/FasterXML/jackson-databind/issues/494">related issue</a>
+     */
+    static class OptionalDeserializer extends StdDeserializer<Optional<?>>
+            implements ContextualDeserializer {
+
+        private static final long serialVersionUID = 1L;
+        private Class<?> targetClass;
+
+        OptionalDeserializer() {
+            super(Optional.class);
+        }
+
+        @Override
+        public JsonDeserializer<?> createContextual(DeserializationContext context, BeanProperty property)
+                throws JsonMappingException {
+
+            if (property != null) {
+                // See http://jackson-users.ning.com/forum/topics/deserialize-with-generic-type
+                JavaType type = property.getType();
+                JavaType ofType = type.containedType(0);
+                this.targetClass = ofType.getRawClass();
+            }
+
+            return this;
+        }
+
+        @Override
+        public Optional<?> deserialize(JsonParser parser, DeserializationContext context)
+                throws IOException {
+
+            return Optional.of(parser.readValueAs(targetClass));
+        }
+
+        @Override
+        public Optional<?> getNullValue() {
+            return Optional.empty();
+        }
     }
 }
