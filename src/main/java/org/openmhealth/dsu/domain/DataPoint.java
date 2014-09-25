@@ -16,6 +16,8 @@
 
 package org.openmhealth.dsu.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.validation.Valid;
 import java.util.Map;
 
@@ -57,10 +59,14 @@ public class DataPoint {
     DataPoint() {
     }
 
+    // the identifier will be serialised from the metadata object
+    @JsonIgnore
     public String getId() {
         return id;
     }
 
+    // TODO since it's not clear if this needs to be serialised, it's suppressed for now
+    @JsonIgnore
     public String getUserId() {
         return userId;
     }
