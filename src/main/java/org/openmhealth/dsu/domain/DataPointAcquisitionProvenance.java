@@ -28,20 +28,20 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class DataPointAcquisitionProvenance {
 
-    private DataPointOrigin origin;
+    private DataPointModality modality;
     private OffsetDateTime acquisitionTimestamp;
 
-    public DataPointAcquisitionProvenance(DataPointOrigin origin, OffsetDateTime acquisitionTimestamp) {
+    public DataPointAcquisitionProvenance(DataPointModality modality, OffsetDateTime acquisitionTimestamp) {
 
-        checkNotNull(origin, "An origin hasn't been specified.");
-        checkNotNull(acquisitionTimestamp, "An acquisition timestamp hasn't been specified.");
+        checkNotNull(modality);
+        checkNotNull(acquisitionTimestamp);
 
-        this.origin = origin;
+        this.modality = modality;
         this.acquisitionTimestamp = acquisitionTimestamp;
     }
 
-    public DataPointOrigin getOrigin() {
-        return origin;
+    public DataPointModality getModality() {
+        return modality;
     }
 
     public OffsetDateTime getAcquisitionTimestamp() {
@@ -65,7 +65,7 @@ public class DataPointAcquisitionProvenance {
                 : that.acquisitionTimestamp != null) {
             return false;
         }
-        if (origin != that.origin) {
+        if (modality != that.modality) {
             return false;
         }
 
@@ -74,7 +74,7 @@ public class DataPointAcquisitionProvenance {
 
     @Override
     public int hashCode() {
-        int result = origin != null ? origin.hashCode() : 0;
+        int result = modality != null ? modality.hashCode() : 0;
         result = 31 * result + (acquisitionTimestamp != null ? acquisitionTimestamp.hashCode() : 0);
         return result;
     }

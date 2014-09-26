@@ -17,13 +17,13 @@
 package org.openmhealth.dsu.domain;
 
 /**
- * The origin of a data point. The origin represents whether the data point was automatically measured by a device or
- * application, or whether it was manually reported by the user.
+ * The modality of a data point. The modality represents whether the data point was sensed by a device or
+ * application, or whether it was reported by the user.
  *
  * @author Emerson Farrugia
  */
-public enum DataPointOrigin {
+public enum DataPointModality {
 
-    MEASURED,
+    SENSED,
     SELF_REPORTED
 }
