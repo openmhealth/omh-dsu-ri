@@ -57,6 +57,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-jetty")
 
     testCompile 'org.hamcrest:hamcrest-library'
+    testCompile 'com.jayway.jsonpath:json-path'
     testCompile 'junit:junit'
     testCompile 'org.mockito:mockito-core'
     testCompile 'org.springframework:spring-test'
