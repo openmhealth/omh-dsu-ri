@@ -18,7 +18,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.springframework.boot:spring-boot-gradle-plugin:1.1.6.RELEASE'
+        // TODO determine if there's any way to avoid repeating this version number
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.1.7.RELEASE"
     }
 }
 
@@ -39,7 +40,7 @@ dependencies {
     compile 'org.mongodb:mongo-java-driver'
     compile 'org.slf4j:slf4j-api'
     compile 'org.springframework:spring-beans'
-    compile 'org.springframework.boot:spring-boot-autoconfigure'
+    compile "org.springframework.boot:spring-boot-autoconfigure:1.1.7.RELEASE"
     compile 'org.springframework:spring-context'
     compile 'org.springframework.data:spring-data-mongodb'
     compile 'org.springframework:spring-jdbc'
