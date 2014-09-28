@@ -63,8 +63,10 @@ public class DataPointMetadata {
         this.creationTimestamp = creationTimestamp;
     }
 
-    // may be required for persistence, not using @PersistenceConstructor to avoid Spring Data dependency
-    @SuppressWarnings("UnusedDeclaration")
+    /**
+     * @deprecated should only be used by frameworks for persistence or serialisation
+     */
+    @Deprecated
     DataPointMetadata() {
     }
 

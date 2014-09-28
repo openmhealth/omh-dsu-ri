@@ -66,8 +66,10 @@ public class SchemaVersion implements Comparable<SchemaVersion> {
         this.qualifier = qualifier;
     }
 
-    // may be required for persistence, not using @PersistenceConstructor to avoid Spring Data dependency
-    @SuppressWarnings("UnusedDeclaration")
+    /**
+     * @deprecated should only be used by frameworks for persistence or serialisation
+     */
+    @Deprecated
     SchemaVersion() {
     }
 

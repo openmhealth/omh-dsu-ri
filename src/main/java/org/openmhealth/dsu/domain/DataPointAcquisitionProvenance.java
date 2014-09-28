@@ -40,6 +40,13 @@ public class DataPointAcquisitionProvenance {
         this.acquisitionTimestamp = acquisitionTimestamp;
     }
 
+    /**
+     * @deprecated should only be used by frameworks for persistence or serialisation
+     */
+    @Deprecated
+    DataPointAcquisitionProvenance() {
+    }
+
     public DataPointModality getModality() {
         return modality;
     }
