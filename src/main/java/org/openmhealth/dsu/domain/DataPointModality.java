@@ -16,6 +16,14 @@
 
 package org.openmhealth.dsu.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
+import javax.annotation.Nullable;
+import java.util.HashMap;
+import java.util.Map;
+
+
 /**
  * The modality of a data point. The modality represents whether the data point was sensed by a device or
  * application, or whether it was reported by the user.
@@ -25,5 +33,24 @@ package org.openmhealth.dsu.domain;
 public enum DataPointModality {
 
     SENSED,
-    SELF_REPORTED
+    SELF_REPORTED;
+
+    private static Map<String, DataPointModality> constantsByJsonValue = new HashMap<>();
+
+    static {
+        for (DataPointModality constant : values()) {
+            constantsByJsonValue.put(constant.getJsonValue(), constant);
+        }
+    }
+
+    @JsonValue
+    public String getJsonValue() {
+        return name().toLowerCase().replaceAll("_", " ");
+    }
+
+    @JsonCreator
+    @Nullable
+    public static DataPointModality findByJsonValue(String jsonValue) {
+        return constantsByJsonValue.get(jsonValue);
+    }
 }
