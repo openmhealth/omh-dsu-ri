@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.openmhealth.dsu.domain.DataPointModality.SELF_REPORTED;
+
 
 /**
  * A builder that simplifies the construction of data points.
@@ -111,7 +113,10 @@ public class DataPointBuilder {
 
         SchemaVersion schemaVersion = new SchemaVersion(schemaVersionMajor, schemaVersionMinor, schemaVersionQualifier);
         SchemaId schemaId = new SchemaId(schemaNamespace, schemaName, schemaVersion);
+
         DataPointMetadata metadata = new DataPointMetadata(id, schemaId, creationTimestamp);
+        metadata.setAcquisitionProvenance(
+                new DataPointAcquisitionProvenance(SELF_REPORTED, creationTimestamp.minusMinutes(1)));
 
         DataPoint dataPoint = new DataPoint(metadata, data);
         dataPoint.setUserId(userId);
