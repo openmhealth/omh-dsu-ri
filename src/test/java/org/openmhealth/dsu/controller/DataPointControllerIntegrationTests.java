@@ -16,12 +16,15 @@
 
 package org.openmhealth.dsu.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openmhealth.dsu.configuration.Application;
 import org.openmhealth.dsu.domain.DataPoint;
+import org.openmhealth.dsu.domain.DataPointMetadata;
 import org.openmhealth.dsu.service.DataPointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -34,15 +37,18 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
 import java.util.Optional;
 
+import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openmhealth.dsu.factory.DataPointFactory.newDataPointBuilder;
 import static org.openmhealth.dsu.factory.DataPointFactory.newKcalBurnedData;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 /**
@@ -57,6 +63,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         DataPointControllerIntegrationTests.TestConfiguration.class}
 )
 public class DataPointControllerIntegrationTests {
+
+    private static final String CONTROLLER_URI = "/v2/data";
+
 
     @Configuration
     static class TestConfiguration {
@@ -80,6 +89,9 @@ public class DataPointControllerIntegrationTests {
     @Autowired
     private DataPointService mockDataPointService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private MockMvc mockMvc;
 
     @Before
@@ -90,24 +102,52 @@ public class DataPointControllerIntegrationTests {
     @Test
     public void readDataShouldReturn404OnMissingDataPoint() throws Exception {
 
-        mockMvc.perform(get("/v2/data/foo")
-                .accept(APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(content().contentType(APPLICATION_JSON));
+        mockMvc.perform(
+                get(CONTROLLER_URI + "/foo")
+                        .accept(APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     public void readDataShouldReturnDataPoint() throws Exception {
 
         DataPoint dataPoint = newDataPointBuilder().setData(newKcalBurnedData()).build();
+        DataPointMetadata metadata = dataPoint.getMetadata();
 
         when(mockDataPointService.findOne(dataPoint.getId())).thenReturn(Optional.of(dataPoint));
 
-        mockMvc.perform(get("/v2/data/" + dataPoint.getId())
-                .accept(APPLICATION_JSON))
+        mockMvc.perform(
+                get(CONTROLLER_URI + "/" + dataPoint.getId())
+                        .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
-        // TODO add assertions
+                .andExpect(content().contentType(APPLICATION_JSON))
+                .andExpect(jsonPath("$.metadata.id").value(metadata.getId()))
+                .andExpect(jsonPath("$.metadata.creation_timestamp").value(metadata.getCreationTimestamp().toString()))
+                .andExpect(jsonPath("$.metadata.schema_id.namespace").value(metadata.getSchemaId().getNamespace()))
+                .andExpect(jsonPath("$.metadata.schema_id.name").value(metadata.getSchemaId().getName()))
+                .andExpect(jsonPath("$.metadata.schema_id.version.major")
+                        .value(metadata.getSchemaId().getVersion().getMajor()))
+                .andExpect(jsonPath("$.metadata.schema_id.version.minor")
+                        .value(metadata.getSchemaId().getVersion().getMinor()));
+        // TODO add data assertions
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void writeDataShouldWriteDataPoint() throws Exception {
+
+        DataPoint dataPoint = newDataPointBuilder().setData(newKcalBurnedData()).build();
+        List<DataPoint> dataPoints = Lists.newArrayList(dataPoint);
+
+        mockMvc.perform(
+                post(CONTROLLER_URI)
+                        .content(objectMapper.writeValueAsString(dataPoints))
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isCreated());
+
+        verify(mockDataPointService).save(anyCollection());
+        // TODO compare internals
+        // verify(mockDataPointService).save((Collection<DataPoint>) Matchers.argThat(contains(dataPoint)));
     }
 
     // TODO implement more tests
