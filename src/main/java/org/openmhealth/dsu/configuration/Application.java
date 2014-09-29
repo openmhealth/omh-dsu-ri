@@ -33,7 +33,11 @@ import org.springframework.context.annotation.PropertySource;
  * @author Emerson Farrugia
  */
 @Configuration
-@ComponentScan("org.openmhealth")
+@ComponentScan(
+        basePackages = "org.openmhealth",
+        excludeFilters = {
+                @ComponentScan.Filter(value = EnableAutoConfiguration.class)
+        })
 @PropertySource("classpath:application.properties")
 @PropertySource(value = "file:/etc/omh/dsu-ri.conf", ignoreResourceNotFound = true)
 @EnableAutoConfiguration(exclude = {
