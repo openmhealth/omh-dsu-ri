@@ -1,7 +1,9 @@
 # Open mHealth DSU RI
 
 This repository contains a Java reference implementation of the Open mHealth DSU 1.1 specification. It consists of a
- resource and authorization server.              
+ resource and authorization server.   
+            
+**This code is still being built and is only at its first milestone. Please do not use it for anything but experimentation.**             
  
 ### Installation
 
@@ -26,6 +28,7 @@ Then in a terminal,
   * `docker run --name some-mongo -d mongo:latest`
 1. Download the server image by running
   * `docker pull openmhealth/omh-dsu-ri:latest` 
+  * Note that this will download around 1 GB of Docker images, most of it the Oracle Java 8 image.
 1. Start the server by running
   * `docker run --link some-mongo:mongo -d -p 8083:8083 'openmhealth/omh-dsu-ri:latest'`
 
