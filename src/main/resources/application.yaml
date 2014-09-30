@@ -14,11 +14,24 @@
 # limitations under the License.
 #
 
-# TODO consider moving to YAML
-dataStore=mongo
+dataStore: mongo
 
-spring.data.mongodb.host=mongo
-# spring.data.mongodb.port=27017
-spring.data.mongodb.database=omh
+server:
+  port: 8083
 
-http.mappersjsonPrettyPrint=true
+security:
+  basic:
+    enabled: false
+
+spring:
+  application:
+    name: Open mHealth DSU server
+  data:
+    mongodb:
+      host: mongo
+      database: omh
+      #port: 27017
+
+http:
+  mappers:
+    jsonPrettyPrint: true

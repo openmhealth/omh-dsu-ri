@@ -25,9 +25,9 @@ Then in a terminal,
 1. If your MongoDB container isn't running, start it by running
   * `docker run --name some-mongo -d mongo:latest`
 1. Download the server image by running
-  * `docker pull openmhealth/dsu-ri:latest` 
+  * `docker pull openmhealth/omh-dsu-ri:latest` 
 1. Start the server by running
-  * `docker run --link some-mongo:mongo -d -p 8083:8083 'openmhealth/dsu-ri:latest'`
+  * `docker run --link some-mongo:mongo -d -p 8083:8083 'openmhealth/omh-dsu-ri:latest'`
 
 #### Option 2. Building from source and running on your host system
 
@@ -40,9 +40,9 @@ If you prefer not to use Docker,
 Then,
 
 1. Clone this Git repository.
-1. Navigate to the `src/main/resources` directory and edit the `application.properties` file.
-1. Check that the `spring.data.mongodb` properties point to your running MongoDB instance.
+1. Navigate to the `src/main/resources` directory and edit the `application.yaml` file.
+1. Check that the `spring:data:mongodb:...` properties point to your running MongoDB instance.
   * You might need to change the `host` property to `localhost`, for example.
 1. To build and run the server, run `gradle bootRun`
-1. The server should now be running on `localhost` on port 8083. You can change the port number in the `application.properties` file.
+1. The server should now be running on `localhost` on port 8083. You can change the port number in the `application.yaml` file.
                            
