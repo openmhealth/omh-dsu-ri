@@ -1,1 +1,4 @@
 rootProject.name = 'omh-dsu-ri'
+include 'authorization-server'
+include 'resource-server'
+
