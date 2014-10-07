@@ -1,0 +1,7 @@
+description = 'An OAuth2 resource server that manages data point resources.'
+
+dependencies {
+    compile 'com.github.fge:json-schema-validator:2.2.5'
+
+    testCompile 'com.jayway.jsonpath:json-path'
+}
