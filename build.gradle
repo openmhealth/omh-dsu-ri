@@ -4,20 +4,20 @@ buildscript {
     repositories {
         mavenCentral()
     }
+
+    ext {
+        springPlatformVersion = '1.0.2.RELEASE'
+        springBootVersion = '1.1.8.RELEASE' // platform's still on 1.1.6.RELEASE
+    }
+
     dependencies {
-        // TODO determine if there's any way to avoid repeating this version number
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:1.1.7.RELEASE"
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     }
 }
 
 allprojects {
-    apply plugin: 'java'
-
     group = 'org.openmhealth'
     version = '1.1.0-SNAPSHOT'
-
-    sourceCompatibility = 1.8
-    targetCompatibility = 1.8
 
     repositories {
         mavenCentral()
@@ -25,45 +25,33 @@ allprojects {
 }
 
 subprojects {
+    apply plugin: 'java'
     apply plugin: 'spring-boot' // used for blessed dependencies and auto-configuration
 
     ext {
+        gradleVersion = '2.1'
+        javaVersion = 1.8
         jacksonVersion = '2.4.2'  // platform's still on 2.3.4, 2.4 required for Java 8
-        springBootVersion = '1.1.7.RELEASE' // platform's still on 1.1.6.RELEASE
     }
+
+    sourceCompatibility = javaVersion
+    targetCompatibility = javaVersion
 
     dependencies {
         // Spring IO (http://platform.spring.io/platform) gives us curated and harmonised dependencies, whose versions
-        // you can find at http://docs.spring.io/platform/docs/1.0.2.RELEASE/reference/htmlsingle/#appendix-dependency-versions
-        versionManagement 'io.spring.platform:platform-versions:1.0.2.RELEASE@properties'
+        // you can find at http://docs.spring.io/platform/docs/${springPlatformVersion}/reference/htmlsingle/#appendix-dependency-versions
+        versionManagement "io.spring.platform:platform-versions:${springPlatformVersion}@properties"
 
-        compile 'org.apache.httpcomponents:httpclient'
         compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
         compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
         compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
-        compile 'javax.mail:javax.mail-api'
         compile 'org.slf4j:jcl-over-slf4j'
         compile 'org.slf4j:log4j-over-slf4j'
         compile 'ch.qos.logback:logback-classic'
-        compile 'org.mongodb:mongo-java-driver'
         compile 'org.slf4j:slf4j-api'
         compile 'org.springframework:spring-beans'
-        compile "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
         compile 'org.springframework:spring-context'
-        compile 'org.springframework.data:spring-data-mongodb'
-        compile 'org.springframework:spring-jdbc'
-        compile 'org.springframework.security.oauth:spring-security-oauth2'
-        compile 'org.springframework:spring-tx'
-        compile 'org.springframework:spring-web'
-        compile 'org.springframework:spring-webmvc'
         compile 'javax.validation:validation-api'
-
-        // embed a servlet container
-        compile("org.springframework.boot:spring-boot-starter-web") {
-            exclude module: "spring-boot-starter-tomcat"
-        }
-        // but choose Jetty instead of Tomcat
-        compile("org.springframework.boot:spring-boot-starter-jetty")
 
         testCompile 'org.hamcrest:hamcrest-library'
         testCompile 'junit:junit'
@@ -72,8 +60,33 @@ subprojects {
     }
 }
 
+configure([
+        project(":authorization-server"),
+        project(":resource-server")]) {
+
+    dependencies {
+        compile project(':shared')
+        compile 'org.apache.httpcomponents:httpclient'
+        compile 'javax.mail:javax.mail-api'
+        compile 'org.mongodb:mongo-java-driver'
+        compile "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
+        compile 'org.springframework.data:spring-data-mongodb'
+        compile 'org.springframework:spring-jdbc'
+        compile 'org.springframework.security.oauth:spring-security-oauth2'
+        compile 'org.springframework:spring-tx'
+        compile 'org.springframework:spring-web'
+        compile 'org.springframework:spring-webmvc'
+
+        // embed Jetty
+        compile("org.springframework.boot:spring-boot-starter-web") {
+            exclude module: "spring-boot-starter-tomcat"
+        }
+        compile("org.springframework.boot:spring-boot-starter-jetty")
+    }
+}
+
 // FIXME add integration test support
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+    gradleVersion = gradleVersion
 }

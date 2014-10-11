@@ -1,0 +1,4 @@
+// disable trying to make this project's JAR file executable
+bootRepackage {
+    enabled = false
+}

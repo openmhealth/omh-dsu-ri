@@ -18,6 +18,7 @@ package org.openmhealth.dsu.configuration;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -41,7 +42,11 @@ public class JacksonConfiguration {
     public ObjectMapper objectMapper() {
 
         ObjectMapper objectMapper = new ObjectMapper();
+
+        // serialise timestamps in an ISO8601 textual representation
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        // serialise keys in snake_case
         objectMapper.setPropertyNamingStrategy(new PropertyNamingStrategy.LowerCaseWithUnderscoresStrategy());
 
         return objectMapper;
