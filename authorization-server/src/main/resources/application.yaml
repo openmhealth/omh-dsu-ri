@@ -19,6 +19,11 @@ dataStore: mongo
 server:
   port: 8082
 
+# FIXME confirm how this interacts with OAuth 2
+security:
+  basic:
+    enabled: false
+
 spring:
   application:
     name: Open mHealth DSU authorisation server
@@ -27,7 +32,16 @@ spring:
       host: mongo
       database: omh
       #port: 27017
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/omh
+    username: postgres
+    password: postgres
 
 http:
   mappers:
     jsonPrettyPrint: true
+
+logging:
+  level:
+    org.springframework: INFO
