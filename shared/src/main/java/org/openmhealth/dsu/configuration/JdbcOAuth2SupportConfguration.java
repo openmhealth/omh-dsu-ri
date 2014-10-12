@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.provider.ClientDetailsService;
-import org.springframework.security.oauth2.provider.client.InMemoryClientDetailsService;
+import org.springframework.security.oauth2.provider.client.JdbcClientDetailsService;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JdbcTokenStore;
 
@@ -54,8 +54,6 @@ public class JdbcOAuth2SupportConfguration {
     @Bean
     public ClientDetailsService clientDetailsService() {
 
-        // FIXME revert this to the JDBC implementation once the schema is added
-        // return new JdbcClientDetailsService(dataSource);
-        return new InMemoryClientDetailsService();
+        return new JdbcClientDetailsService(dataSource);
     }
 }
