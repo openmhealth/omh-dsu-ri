@@ -71,9 +71,7 @@ configure([
         compile 'org.mongodb:mongo-java-driver'
         compile "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
         compile 'org.springframework.data:spring-data-mongodb'
-        compile 'org.springframework:spring-jdbc'
         compile 'org.springframework.security.oauth:spring-security-oauth2'
-        compile 'org.springframework:spring-tx'
         compile 'org.springframework:spring-web'
         compile 'org.springframework:spring-webmvc'
 

@@ -2,3 +2,13 @@
 bootRepackage {
     enabled = false
 }
+
+dependencies {
+    compile 'org.springframework:spring-jdbc'
+    compile 'org.springframework.security.oauth:spring-security-oauth2'
+    compile 'org.springframework:spring-tx'
+
+    // you can comment out any dependencies you know you don't need after this point
+    compile 'mysql:mysql-connector-java'
+    compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
+}
