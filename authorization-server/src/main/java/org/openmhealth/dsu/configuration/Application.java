@@ -37,7 +37,6 @@ import org.springframework.context.annotation.PropertySource;
                 // this exclusion avoids duplicate auto-configurations, especially in integration tests
                 @ComponentScan.Filter(value = EnableAutoConfiguration.class)
         })
-@PropertySource("classpath:application.yaml")
 @PropertySource(value = "file:/etc/omh/dsu-ri.conf", ignoreResourceNotFound = true)
 @EnableAutoConfiguration
 @EnableConfigurationProperties

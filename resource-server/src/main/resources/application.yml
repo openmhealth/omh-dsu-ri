@@ -14,19 +14,19 @@
 # limitations under the License.
 #
 
+# FIXME revise this if mixing data stores
 dataStore: mongo
 
 server:
-  port: 8082
+  port: 8083
 
-# FIXME confirm how this interacts with OAuth 2
 security:
   basic:
     enabled: false
 
 spring:
   application:
-    name: Open mHealth DSU authorisation server
+    name: Open mHealth DSU server
   data:
     mongodb:
       host: mongo
@@ -41,7 +41,3 @@ spring:
 http:
   mappers:
     jsonPrettyPrint: true
-
-logging:
-  level:
-    org.springframework: INFO

@@ -38,7 +38,6 @@ import org.springframework.context.annotation.PropertySource;
         excludeFilters = {
                 @ComponentScan.Filter(value = EnableAutoConfiguration.class)
         })
-@PropertySource("classpath:application.yaml")
 @PropertySource(value = "file:/etc/omh/dsu-ri.conf", ignoreResourceNotFound = true)
 @EnableAutoConfiguration(exclude = {
         DataSourceTransactionManagerAutoConfiguration.class,
