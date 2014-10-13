@@ -21,6 +21,7 @@ import org.hibernate.validator.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+
 /**
  * A bean containing user registration data.
  *
@@ -59,5 +60,41 @@ public class EndUserRegistrationData {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+
+    @SuppressWarnings("RedundantIfStatement")
+    @Override
+    public boolean equals(Object object) {
+
+        if (this == object) {
+            return true;
+        }
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        EndUserRegistrationData that = (EndUserRegistrationData) object;
+
+        if (emailAddress != null ? !emailAddress.equals(that.emailAddress) : that.emailAddress != null) {
+            return false;
+        }
+        if (password != null ? !password.equals(that.password) : that.password != null) {
+            return false;
+        }
+        if (username != null ? !username.equals(that.username) : that.username != null) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+
+        int result = username != null ? username.hashCode() : 0;
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (emailAddress != null ? emailAddress.hashCode() : 0);
+
+        return result;
     }
 }
