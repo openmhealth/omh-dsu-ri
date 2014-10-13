@@ -60,16 +60,17 @@ public class EndUserServiceImpl implements EndUserService {
 
         EndUser endUser = new EndUser();
         endUser.setUsername(registrationData.getUsername());
-
-        try {
-            endUser.setEmailAddress(new InternetAddress(registrationData.getEmailAddress()));
-        }
-        catch (AddressException e) {
-            throw new EndUserRegistrationException(registrationData, e);
-        }
-
         endUser.setPasswordHash(passwordEncoder.encode(registrationData.getPassword()));
         endUser.setRegistrationTimestamp(OffsetDateTime.now());
+
+        if (registrationData.getEmailAddress() != null) {
+            try {
+                endUser.setEmailAddress(new InternetAddress(registrationData.getEmailAddress()));
+            }
+            catch (AddressException e) {
+                throw new EndUserRegistrationException(registrationData, e);
+            }
+        }
 
         endUserRepository.save(endUser);
     }
