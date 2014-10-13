@@ -18,7 +18,6 @@ package org.openmhealth.dsu.configuration;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.SecurityAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -38,10 +37,7 @@ import org.springframework.context.annotation.PropertySource;
                 @ComponentScan.Filter(value = EnableAutoConfiguration.class)
         })
 @PropertySource(value = "file:/etc/omh/dsu-ri.conf", ignoreResourceNotFound = true)
-@EnableAutoConfiguration(exclude = {
-        // FIXME confirm that this isn't necessary for /oauth/authorize
-        SecurityAutoConfiguration.class
-})
+@EnableAutoConfiguration
 @EnableConfigurationProperties
 public class Application {
 

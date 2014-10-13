@@ -20,10 +20,6 @@ dataStore: mongo
 server:
   port: 8083
 
-security:
-  basic:
-    enabled: false
-
 spring:
   application:
     name: Open mHealth DSU server
