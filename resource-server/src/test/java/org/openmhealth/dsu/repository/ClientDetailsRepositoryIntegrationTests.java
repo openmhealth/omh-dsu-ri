@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.openmhealth.dsu.configuration.OAuth2AuthorizationServerConfiguration.CLIENT_ROLE;
+import static org.openmhealth.dsu.configuration.OAuth2Properties.CLIENT_ROLE;
 
 
 /**
