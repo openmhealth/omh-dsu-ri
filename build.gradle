@@ -31,7 +31,8 @@ subprojects {
     ext {
         gradleVersion = '2.1'
         javaVersion = 1.8
-        jacksonVersion = '2.4.2'  // platform's still on 2.3.4, 2.4 required for Java 8
+        jacksonVersion = '2.4.2' // platform's still on 2.3.4, 2.4 required for Java 8
+        mailApiVersion = '1.5.2'
     }
 
     sourceCompatibility = javaVersion
@@ -46,7 +47,8 @@ subprojects {
         compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
         compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
         compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
-        compile 'javax.mail:javax.mail-api' // required to support InternetAddress fields
+        compile "com.sun.mail:mailapi:${mailApiVersion}"
+        compile "javax.mail:javax.mail-api:${mailApiVersion}" // required to support InternetAddress fields
         compile 'org.slf4j:jcl-over-slf4j'
         compile 'org.slf4j:log4j-over-slf4j'
         compile 'ch.qos.logback:logback-classic'
