@@ -77,7 +77,7 @@ public class EndUserController {
 
         endUserService.registerUser(registrationData);
 
-        return new ResponseEntity<>(OK);
+        return new ResponseEntity<>(CREATED);
     }
 
     protected List<String> asErrorMessageList(Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations) {
