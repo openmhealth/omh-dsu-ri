@@ -16,11 +16,9 @@
 
 package org.openmhealth.dsu.configuration;
 
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.authentication.configurers.GlobalAuthenticationConfigurerAdapter;
 
 
 /**
@@ -29,11 +27,10 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
  * @author Emerson Farrugia
  */
 @Configuration
-@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class AuthenticationManagerConfiguration extends GlobalAuthenticationConfigurerAdapter {
 
     @Override
-    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+    public void init(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication();
     }
 }
