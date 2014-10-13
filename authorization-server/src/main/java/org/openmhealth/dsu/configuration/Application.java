@@ -35,7 +35,9 @@ import org.springframework.context.annotation.PropertySource;
         basePackages = "org.openmhealth",
         excludeFilters = {
                 // this exclusion avoids duplicate auto-configurations, especially in integration tests
-                @ComponentScan.Filter(value = EnableAutoConfiguration.class)
+                @ComponentScan.Filter(value = EnableAutoConfiguration.class),
+                // this exclusion avoids pulling in test-specific @Configuration in other integration tests
+                @ComponentScan.Filter(value = TestConfiguration.class),
         })
 @PropertySource(value = "file:/etc/omh/dsu-ri.conf", ignoreResourceNotFound = true)
 @EnableAutoConfiguration

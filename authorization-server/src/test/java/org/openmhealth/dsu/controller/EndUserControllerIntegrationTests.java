@@ -23,12 +23,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openmhealth.dsu.configuration.Application;
+import org.openmhealth.dsu.configuration.TestConfiguration;
 import org.openmhealth.dsu.domain.EndUserRegistrationData;
 import org.openmhealth.dsu.service.EndUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -50,23 +50,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {
-        Application.class ,
-        EndUserControllerIntegrationTests.TestConfiguration.class
+        Application.class,
+        EndUserControllerIntegrationTests.Configuration.class
 })
 @WebAppConfiguration
 public class EndUserControllerIntegrationTests {
 
     private static final String REGISTER_USER_URI = "/users";
 
-    @Configuration
-    protected static class TestConfiguration {
+
+    // TODO find out if there's a simpler way to define mocks that work with @SpringApplicationConfiguration
+    @TestConfiguration
+    static class Configuration {
 
         @Bean
         @Primary
         public EndUserService endUserService() {
-           return Mockito.mock(EndUserService.class);
+            return Mockito.mock(EndUserService.class);
         }
     }
+
 
     @Autowired
     private WebApplicationContext applicationContext;
