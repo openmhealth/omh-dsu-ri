@@ -18,7 +18,7 @@ package org.openmhealth.dsu.repository;
 
 import org.junit.After;
 import org.junit.Test;
-import org.openmhealth.dsu.domain.User;
+import org.openmhealth.dsu.domain.EndUser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.mail.internet.AddressException;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertThat;
  *
  * @author Emerson Farrugia
  */
-public abstract class UserRepositoryIntegrationTests {
+public abstract class EndUserRepositoryIntegrationTests {
 
     protected static final String TEST_USERNAME = "test";
     protected static final String TEST_PASSWORD_HASH = "passwordHash";
@@ -43,37 +43,37 @@ public abstract class UserRepositoryIntegrationTests {
     protected static final OffsetDateTime TEST_REGISTRATION_TIMESTAMP = OffsetDateTime.now().minusDays(1);
 
     @Autowired
-    protected UserRepository userRepository;
+    protected EndUserRepository endUserRepository;
 
-    protected User newUser() {
+    protected EndUser newUser() {
 
-        User user = new User();
+        EndUser endUser = new EndUser();
 
-        user.setUsername(TEST_USERNAME);
-        user.setPasswordHash(TEST_PASSWORD_HASH);
-        user.setRegistrationTimestamp(TEST_REGISTRATION_TIMESTAMP);
+        endUser.setUsername(TEST_USERNAME);
+        endUser.setPasswordHash(TEST_PASSWORD_HASH);
+        endUser.setRegistrationTimestamp(TEST_REGISTRATION_TIMESTAMP);
         try {
-            user.setEmailAddress(new InternetAddress(TEST_EMAIL_ADDRESS_AS_STRING));
+            endUser.setEmailAddress(new InternetAddress(TEST_EMAIL_ADDRESS_AS_STRING));
         }
         catch (AddressException e) {
             throw new RuntimeException(e);
         }
 
-        return user;
+        return endUser;
     }
 
     @After
     public void deleteFixture() {
 
-        userRepository.delete(TEST_USERNAME);
+        endUserRepository.delete(TEST_USERNAME);
     }
 
     @Test
     public void findOneShouldReturnSavedUser() {
 
-        User expected = userRepository.save(newUser());
+        EndUser expected = endUserRepository.save(newUser());
 
-        Optional<User> actual = userRepository.findOne(TEST_USERNAME);
+        Optional<EndUser> actual = endUserRepository.findOne(TEST_USERNAME);
 
         assertThat(actual.isPresent(), equalTo(true));
         assertThat(actual.get(), equalTo(expected));

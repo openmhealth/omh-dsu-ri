@@ -31,6 +31,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
         IntegrationTestConfiguration.class,
         MongoPersistenceConfiguration.class
 })
-public class MongoUserRepositoryIntegrationTests extends UserRepositoryIntegrationTests {
+public class MongoEndUserRepositoryIntegrationTests extends EndUserRepositoryIntegrationTests {
 
 }
