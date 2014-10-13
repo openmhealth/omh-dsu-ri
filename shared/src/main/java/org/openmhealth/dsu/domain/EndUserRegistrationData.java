@@ -26,7 +26,7 @@ import javax.validation.constraints.Size;
  *
  * @author Emerson Farrugia
  */
-public class UserRegistrationData {
+public class EndUserRegistrationData {
 
     private String username;
     private String password;

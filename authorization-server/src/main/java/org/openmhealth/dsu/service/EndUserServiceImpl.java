@@ -16,10 +16,10 @@
 
 package org.openmhealth.dsu.service;
 
-import org.openmhealth.dsu.domain.User;
-import org.openmhealth.dsu.domain.UserRegistrationData;
-import org.openmhealth.dsu.domain.UserRegistrationException;
-import org.openmhealth.dsu.repository.UserRepository;
+import org.openmhealth.dsu.domain.EndUser;
+import org.openmhealth.dsu.domain.EndUserRegistrationData;
+import org.openmhealth.dsu.domain.EndUserRegistrationException;
+import org.openmhealth.dsu.repository.EndUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,16 +29,17 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
 
 /**
  * @author Emerson Farrugia
  */
 @Service
-public class UserServiceImpl implements UserService {
+public class EndUserServiceImpl implements EndUserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private EndUserRepository endUserRepository;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -46,30 +47,37 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public boolean doesUserExist(String username) {
 
-        return userRepository.findOne(username).isPresent();
+        return endUserRepository.findOne(username).isPresent();
     }
 
     @Override
     @Transactional
-    public void registerUser(UserRegistrationData registrationData) {
+    public void registerUser(EndUserRegistrationData registrationData) {
 
         if (doesUserExist(registrationData.getUsername())) {
-            throw new UserRegistrationException(registrationData);
+            throw new EndUserRegistrationException(registrationData);
         }
 
-        User user = new User();
-        user.setUsername(registrationData.getUsername());
+        EndUser endUser = new EndUser();
+        endUser.setUsername(registrationData.getUsername());
 
         try {
-            user.setEmailAddress(new InternetAddress(registrationData.getEmailAddress()));
+            endUser.setEmailAddress(new InternetAddress(registrationData.getEmailAddress()));
         }
         catch (AddressException e) {
-            throw new UserRegistrationException(registrationData, e);
+            throw new EndUserRegistrationException(registrationData, e);
         }
 
-        user.setPasswordHash(passwordEncoder.encode(registrationData.getPassword()));
-        user.setRegistrationTimestamp(OffsetDateTime.now());
+        endUser.setPasswordHash(passwordEncoder.encode(registrationData.getPassword()));
+        endUser.setRegistrationTimestamp(OffsetDateTime.now());
 
-        userRepository.save(user);
+        endUserRepository.save(endUser);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<EndUser> findUser(String username) {
+
+        return endUserRepository.findOne(username);
     }
 }

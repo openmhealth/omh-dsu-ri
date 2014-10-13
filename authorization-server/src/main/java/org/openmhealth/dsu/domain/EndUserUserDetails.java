@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
-package org.openmhealth.dsu.service;
+package org.openmhealth.dsu.domain;
 
-import org.openmhealth.dsu.domain.UserRegistrationData;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+
+import java.util.Collections;
+
+import static org.openmhealth.dsu.configuration.OAuth2Properties.END_USER_ROLE;
 
 
 /**
- * A service that manages user accounts.
+ * A user's authentication details.
  *
  * @author Emerson Farrugia
  */
-public interface UserService {
+public class EndUserUserDetails extends User {
 
-    boolean doesUserExist(String username);
-
-    void registerUser(UserRegistrationData registrationData);
+    public EndUserUserDetails(String username, String password) {
+        super(username, password, Collections.singleton(new SimpleGrantedAuthority(END_USER_ROLE)));
+    }
 }

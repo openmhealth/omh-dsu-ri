@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.openmhealth.dsu.domain;
+package org.openmhealth.dsu.service;
+
+import org.openmhealth.dsu.domain.EndUser;
+import org.openmhealth.dsu.domain.EndUserRegistrationData;
+
+import java.util.Optional;
+
 
 /**
+ * A service that manages user accounts.
+ *
  * @author Emerson Farrugia
  */
-public class UserRegistrationException extends RuntimeException {
+public interface EndUserService {
 
-    private UserRegistrationData registrationData;
+    boolean doesUserExist(String username);
 
-    public UserRegistrationException(UserRegistrationData registrationData) {
-        this.registrationData = registrationData;
-    }
+    void registerUser(EndUserRegistrationData registrationData);
 
-    public UserRegistrationException(UserRegistrationData registrationData, Throwable cause) {
-        super(cause);
-        this.registrationData = registrationData;
-    }
-
-    public UserRegistrationData getRegistrationData() {
-        return registrationData;
-    }
+    Optional<EndUser> findUser(String username);
 }

@@ -24,5 +24,6 @@ package org.openmhealth.dsu.configuration;
 public interface OAuth2Properties {
 
     public static final String CLIENT_ROLE = "ROLE_CLIENT";
+    public static final String END_USER_ROLE = "ROLE_END_USER";
     public static final String DATA_POINT_RESOURCE_ID = "dataPoint";
 }

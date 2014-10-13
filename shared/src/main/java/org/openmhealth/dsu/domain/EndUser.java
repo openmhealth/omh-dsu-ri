@@ -28,7 +28,7 @@ import java.util.Optional;
  *
  * @author Emerson Farrugia
  */
-public class User {
+public class EndUser {
 
     private String username;
     private String passwordHash;
@@ -81,18 +81,18 @@ public class User {
             return false;
         }
 
-        User user = (User) object;
+        EndUser that = (EndUser) object;
 
-        if (emailAddress != null ? !emailAddress.equals(user.emailAddress) : user.emailAddress != null) {
+        if (emailAddress != null ? !emailAddress.equals(that.emailAddress) : that.emailAddress != null) {
             return false;
         }
-        if (!passwordHash.equals(user.passwordHash)) {
+        if (!passwordHash.equals(that.passwordHash)) {
             return false;
         }
-        if (!registrationTimestamp.equals(user.registrationTimestamp)) {
+        if (!registrationTimestamp.equals(that.registrationTimestamp)) {
             return false;
         }
-        if (!username.equals(user.username)) {
+        if (!username.equals(that.username)) {
             return false;
         }
 

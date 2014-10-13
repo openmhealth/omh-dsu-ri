@@ -17,11 +17,12 @@
 package org.openmhealth.dsu.controller;
 
 
-import org.openmhealth.dsu.domain.UserRegistrationData;
-import org.openmhealth.dsu.service.UserService;
+import org.openmhealth.dsu.domain.EndUserRegistrationData;
+import org.openmhealth.dsu.service.EndUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -40,14 +41,14 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  *
  * @author Emerson Farrugia
  */
-@ApiController
-public class UserController {
+@Controller
+public class EndUserController {
 
     @Autowired
     private Validator validator;
 
     @Autowired
-    private UserService userService;
+    private EndUserService endUserService;
 
 
     /**
@@ -58,28 +59,28 @@ public class UserController {
      * or CONFLICT if the user exists
      */
     @RequestMapping(value = "/users", method = POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> registerUser(@RequestBody UserRegistrationData registrationData) {
+    public ResponseEntity<?> registerUser(@RequestBody EndUserRegistrationData registrationData) {
 
         if (registrationData == null) {
             return new ResponseEntity<>(BAD_REQUEST);
         }
 
-        Set<ConstraintViolation<UserRegistrationData>> constraintViolations = validator.validate(registrationData);
+        Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations = validator.validate(registrationData);
 
         if (!constraintViolations.isEmpty()) {
             return new ResponseEntity<>(asErrorMessageList(constraintViolations), BAD_REQUEST);
         }
 
-        if (userService.doesUserExist(registrationData.getUsername())) {
+        if (endUserService.doesUserExist(registrationData.getUsername())) {
             return new ResponseEntity<>(CONFLICT);
         }
 
-        userService.registerUser(registrationData);
+        endUserService.registerUser(registrationData);
 
         return new ResponseEntity<>(OK);
     }
 
-    protected List<String> asErrorMessageList(Set<ConstraintViolation<UserRegistrationData>> constraintViolations) {
+    protected List<String> asErrorMessageList(Set<ConstraintViolation<EndUserRegistrationData>> constraintViolations) {
 
         return constraintViolations.stream().map(ConstraintViolation::getMessage).collect(Collectors.toList());
     }
