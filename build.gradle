@@ -42,14 +42,17 @@ subprojects {
         // you can find at http://docs.spring.io/platform/docs/${springPlatformVersion}/reference/htmlsingle/#appendix-dependency-versions
         versionManagement "io.spring.platform:platform-versions:${springPlatformVersion}@properties"
 
+        compile 'org.hibernate:hibernate-validator'
         compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
         compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
         compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+        compile 'javax.mail:javax.mail-api' // required to support InternetAddress fields
         compile 'org.slf4j:jcl-over-slf4j'
         compile 'org.slf4j:log4j-over-slf4j'
         compile 'ch.qos.logback:logback-classic'
         compile 'org.slf4j:slf4j-api'
         compile 'org.springframework:spring-beans'
+        compile "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
         compile 'org.springframework:spring-context'
         compile 'javax.validation:validation-api'
 
@@ -67,19 +70,18 @@ configure([
     dependencies {
         compile project(':shared')
         compile 'org.apache.httpcomponents:httpclient'
-        compile 'javax.mail:javax.mail-api'
-        compile 'org.mongodb:mongo-java-driver'
-        compile "org.springframework.boot:spring-boot-autoconfigure:${springBootVersion}"
-        compile 'org.springframework.data:spring-data-mongodb'
+        compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
+        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
+            exclude module: "spring-boot-starter-tomcat"
+        }
         compile 'org.springframework.security.oauth:spring-security-oauth2'
         compile 'org.springframework:spring-web'
         compile 'org.springframework:spring-webmvc'
 
-        // embed Jetty
-        compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}") {
-            exclude module: "spring-boot-starter-tomcat"
-        }
-        compile "org.springframework.boot:spring-boot-starter-jetty:${springBootVersion}"
+        // you can comment out any dependencies you know you don't need after this point
+        compile 'org.mongodb:mongo-java-driver'
+        // compile 'mysql:mysql-connector-java'
+        compile 'org.postgresql:postgresql:9.3-1102-jdbc41'
     }
 }
 
