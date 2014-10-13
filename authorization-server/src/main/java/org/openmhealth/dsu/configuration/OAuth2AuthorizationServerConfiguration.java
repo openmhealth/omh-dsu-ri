@@ -17,17 +17,13 @@
 package org.openmhealth.dsu.configuration;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.approval.UserApprovalHandler;
 import org.springframework.security.oauth2.provider.token.TokenStore;
-import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 
 /**
@@ -39,13 +35,8 @@ import org.springframework.security.oauth2.provider.token.store.InMemoryTokenSto
 @EnableAuthorizationServer
 public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
-    public static final String CLIENT_ROLE = "ROLE_CLIENT";
-
     @Autowired
     private TokenStore tokenStore;
-
-    @Autowired
-    private UserApprovalHandler userApprovalHandler;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -54,38 +45,15 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
     @Override
     public void configure(AuthorizationServerSecurityConfigurer oauthServer) throws Exception {
 
-        // FIXME figure out what this is for
-        oauthServer.realm("dsu/client");
-    }
-
-
-    @Override
-    public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-
-        // FIXME test and enable the different grant types
-        // FIXME this is temporary, these ClientDetails should be persisted
-        clients.inMemory().withClient("foo")
-                .resourceIds("dataPoint")
-                .authorizedGrantTypes("password")
-                        // .authorizedGrantTypes("password", "authorization_code", "refresh_token",
-                        // "implicit")
-                .authorities(CLIENT_ROLE)
-                .scopes("read", "write");
-        //                .secret("secret")
-        //                .redirectUris(tonrRedirectUri)
-    }
-
-    // FIXME replace the volatile store with a persistent store
-    @Bean
-    public TokenStore tokenStore() {
-        return new InMemoryTokenStore();
+        // TODO determine if the Spring Boot spring.basic.realm property should be used instead
+        // sets the HTTP Basic realm
+        oauthServer.realm("dsu");
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints
                 .tokenStore(tokenStore)
-                .userApprovalHandler(userApprovalHandler)
                 .authenticationManager(authenticationManager);
     }
 }
