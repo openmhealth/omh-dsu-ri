@@ -114,11 +114,11 @@ public class DataPointBuilder {
         SchemaVersion schemaVersion = new SchemaVersion(schemaVersionMajor, schemaVersionMinor, schemaVersionQualifier);
         SchemaId schemaId = new SchemaId(schemaNamespace, schemaName, schemaVersion);
 
-        DataPointMetadata metadata = new DataPointMetadata(id, schemaId, creationTimestamp);
-        metadata.setAcquisitionProvenance(
+        DataPointHeader header = new DataPointHeader(id, schemaId, creationTimestamp);
+        header.setAcquisitionProvenance(
                 new DataPointAcquisitionProvenance(SELF_REPORTED, creationTimestamp.minusMinutes(1)));
 
-        DataPoint dataPoint = new DataPoint(metadata, data);
+        DataPoint dataPoint = new DataPoint(header, data);
         dataPoint.setUserId(userId);
 
         return dataPoint;

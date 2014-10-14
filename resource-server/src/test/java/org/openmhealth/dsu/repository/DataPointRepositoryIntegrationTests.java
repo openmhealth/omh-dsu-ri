@@ -80,7 +80,7 @@ public abstract class DataPointRepositoryIntegrationTests {
     public void assertThatDataPointsAreEqual(DataPoint actual, DataPoint expected) {
 
         assertThat(actual.getUserId(), equalTo(expected.getUserId()));
-        assertThat(actual.getMetadata(), equalTo(expected.getMetadata()));
+        assertThat(actual.getHeader(), equalTo(expected.getHeader()));
 
         // although this uses Mongo libraries to check deep equality, it should work with other data stores
         assertThat(JSON.serialize(actual.getData()), equalTo(JSON.serialize(expected.getData())));

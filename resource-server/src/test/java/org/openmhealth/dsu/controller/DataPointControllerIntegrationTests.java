@@ -24,7 +24,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openmhealth.dsu.configuration.Application;
 import org.openmhealth.dsu.domain.DataPoint;
-import org.openmhealth.dsu.domain.DataPointMetadata;
+import org.openmhealth.dsu.domain.DataPointHeader;
 import org.openmhealth.dsu.service.DataPointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
@@ -112,7 +112,7 @@ public class DataPointControllerIntegrationTests {
     public void readDataShouldReturnDataPoint() throws Exception {
 
         DataPoint dataPoint = newDataPointBuilder().setData(newKcalBurnedData()).build();
-        DataPointMetadata metadata = dataPoint.getMetadata();
+        DataPointHeader header = dataPoint.getHeader();
 
         when(mockDataPointService.findOne(dataPoint.getId())).thenReturn(Optional.of(dataPoint));
 
@@ -121,14 +121,14 @@ public class DataPointControllerIntegrationTests {
                         .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
-                .andExpect(jsonPath("$.metadata.id").value(metadata.getId()))
-                .andExpect(jsonPath("$.metadata.creation_timestamp").value(metadata.getCreationTimestamp().toString()))
-                .andExpect(jsonPath("$.metadata.schema_id.namespace").value(metadata.getSchemaId().getNamespace()))
-                .andExpect(jsonPath("$.metadata.schema_id.name").value(metadata.getSchemaId().getName()))
-                .andExpect(jsonPath("$.metadata.schema_id.version.major")
-                        .value(metadata.getSchemaId().getVersion().getMajor()))
-                .andExpect(jsonPath("$.metadata.schema_id.version.minor")
-                        .value(metadata.getSchemaId().getVersion().getMinor()));
+                .andExpect(jsonPath("$.header.id").value(header.getId()))
+                .andExpect(jsonPath("$.header.creation_timestamp").value(header.getCreationTimestamp().toString()))
+                .andExpect(jsonPath("$.header.schema_id.namespace").value(header.getSchemaId().getNamespace()))
+                .andExpect(jsonPath("$.header.schema_id.name").value(header.getSchemaId().getName()))
+                .andExpect(jsonPath("$.header.schema_id.version.major")
+                        .value(header.getSchemaId().getVersion().getMajor()))
+                .andExpect(jsonPath("$.header.schema_id.version.minor")
+                        .value(header.getSchemaId().getVersion().getMinor()));
         // TODO add data assertions
     }
 
@@ -151,4 +151,14 @@ public class DataPointControllerIntegrationTests {
     }
 
     // TODO implement more tests
+    // client name is incorrect
+    // client password is incorrect
+    // client has incorrect role
+    // client has incorrect scope
+    // token doesn't exist
+    // data point belongs to a a different user
+    // namespace?
+    // username is incorrect
+    // user password is incorrect
+    // data point doesn't exist
 }

@@ -41,7 +41,7 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
     @Autowired
     private MongoOperations mongoOperations;
 
-    // if a data point is filtered by its data and not just its metadata, these queries will need to be written using
+    // if a data point is filtered by its data and not just its header, these queries will need to be written using
     // the MongoDB Java driver instead of Spring Data MongoDB, since there is no mapping information to work against
     @Override
     public Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
@@ -69,13 +69,13 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
         Query query = new Query();
 
         query.addCriteria(where("user_id").is(searchCriteria.getUserId()));
-        query.addCriteria(where("metadata.schema_id.namespace").is(searchCriteria.getSchemaNamespace()));
-        query.addCriteria(where("metadata.schema_id.name").is(searchCriteria.getSchemaName()));
-        query.addCriteria(where("metadata.schema_id.version.major").is(searchCriteria.getSchemaVersion().getMajor()));
-        query.addCriteria(where("metadata.schema_id.version.minor").is(searchCriteria.getSchemaVersion().getMinor()));
+        query.addCriteria(where("header.schema_id.namespace").is(searchCriteria.getSchemaNamespace()));
+        query.addCriteria(where("header.schema_id.name").is(searchCriteria.getSchemaName()));
+        query.addCriteria(where("header.schema_id.version.major").is(searchCriteria.getSchemaVersion().getMajor()));
+        query.addCriteria(where("header.schema_id.version.minor").is(searchCriteria.getSchemaVersion().getMinor()));
 
         if (searchCriteria.getSchemaVersion().getQualifier().isPresent()) {
-            query.addCriteria(where("metadata.schema_id.version.qualifier")
+            query.addCriteria(where("header.schema_id.version.qualifier")
                     .is(searchCriteria.getSchemaVersion().getQualifier().get()));
         }
 
@@ -90,7 +90,7 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
 
         if (timestampRange.hasLowerBound() || timestampRange.hasUpperBound()) {
 
-            Criteria timestampCriteria = where("metadata.creation_timestamp");
+            Criteria timestampCriteria = where("header.creation_timestamp");
 
             if (timestampRange.hasLowerBound()) {
                 if (timestampRange.lowerBoundType() == CLOSED) {

@@ -26,11 +26,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 
 /**
- * The metadata of a data point.
+ * The header of a data point.
  *
  * @author Emerson Farrugia
  */
-public class DataPointMetadata {
+public class DataPointHeader {
 
     private String id;
     private SchemaId schemaId;
@@ -41,7 +41,7 @@ public class DataPointMetadata {
      * @param id the identifier of the data point
      * @param schemaId the identifier of the schema the data point conforms to
      */
-    public DataPointMetadata(String id, SchemaId schemaId) {
+    public DataPointHeader(String id, SchemaId schemaId) {
 
         this(id, schemaId, OffsetDateTime.now());
     }
@@ -51,7 +51,7 @@ public class DataPointMetadata {
      * @param schemaId the identifier of the schema the data point conforms to
      * @param creationTimestamp the creation time of this data point
      */
-    public DataPointMetadata(String id, SchemaId schemaId, OffsetDateTime creationTimestamp) {
+    public DataPointHeader(String id, SchemaId schemaId, OffsetDateTime creationTimestamp) {
 
         checkNotNull(id);
         checkArgument(!id.isEmpty());
@@ -67,7 +67,7 @@ public class DataPointMetadata {
      * @deprecated should only be used by frameworks for persistence or serialisation
      */
     @Deprecated
-    DataPointMetadata() {
+    DataPointHeader() {
     }
 
     public String getId() {
@@ -104,7 +104,7 @@ public class DataPointMetadata {
             return false;
         }
 
-        DataPointMetadata that = (DataPointMetadata) object;
+        DataPointHeader that = (DataPointHeader) object;
 
         if (acquisitionProvenance != null
                 ? !acquisitionProvenance.equals(that.acquisitionProvenance)
