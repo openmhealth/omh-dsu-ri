@@ -83,7 +83,7 @@ public abstract class DataPointRepositoryIntegrationTests {
         assertThat(actual.getHeader(), equalTo(expected.getHeader()));
 
         // although this uses Mongo libraries to check deep equality, it should work with other data stores
-        assertThat(JSON.serialize(actual.getData()), equalTo(JSON.serialize(expected.getData())));
+        assertThat(JSON.serialize(actual.getBody()), equalTo(JSON.serialize(expected.getBody())));
     }
 
     @Test(expected = NullPointerException.class)

@@ -44,7 +44,7 @@ import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.openmhealth.dsu.factory.DataPointFactory.newDataPointBuilder;
-import static org.openmhealth.dsu.factory.DataPointFactory.newKcalBurnedData;
+import static org.openmhealth.dsu.factory.DataPointFactory.newKcalBurnedBody;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -111,7 +111,7 @@ public class DataPointControllerIntegrationTests {
     @Test
     public void readDataShouldReturnDataPoint() throws Exception {
 
-        DataPoint dataPoint = newDataPointBuilder().setData(newKcalBurnedData()).build();
+        DataPoint dataPoint = newDataPointBuilder().setBody(newKcalBurnedBody()).build();
         DataPointHeader header = dataPoint.getHeader();
 
         when(mockDataPointService.findOne(dataPoint.getId())).thenReturn(Optional.of(dataPoint));
@@ -136,7 +136,7 @@ public class DataPointControllerIntegrationTests {
     @Test
     public void writeDataShouldWriteDataPoint() throws Exception {
 
-        DataPoint dataPoint = newDataPointBuilder().setData(newKcalBurnedData()).build();
+        DataPoint dataPoint = newDataPointBuilder().setBody(newKcalBurnedBody()).build();
         List<DataPoint> dataPoints = Lists.newArrayList(dataPoint);
 
         mockMvc.perform(

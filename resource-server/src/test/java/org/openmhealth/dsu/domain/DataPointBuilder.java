@@ -42,7 +42,7 @@ public class DataPointBuilder {
     private Integer schemaVersionMinor;
     private String schemaVersionQualifier;
     private OffsetDateTime creationTimestamp = OffsetDateTime.now();
-    private Map<?, ?> data = new HashMap<>();
+    private Map<?, ?> body = new HashMap<>();
 
     public DataPointBuilder() {
 
@@ -104,8 +104,8 @@ public class DataPointBuilder {
         return this;
     }
 
-    public DataPointBuilder setData(Map<?, ?> data) {
-        this.data = data;
+    public DataPointBuilder setBody(Map<?, ?> body) {
+        this.body = body;
         return this;
     }
 
@@ -118,7 +118,7 @@ public class DataPointBuilder {
         header.setAcquisitionProvenance(
                 new DataPointAcquisitionProvenance(SELF_REPORTED, creationTimestamp.minusMinutes(1)));
 
-        DataPoint dataPoint = new DataPoint(header, data);
+        DataPoint dataPoint = new DataPoint(header, body);
         dataPoint.setUserId(userId);
 
         return dataPoint;

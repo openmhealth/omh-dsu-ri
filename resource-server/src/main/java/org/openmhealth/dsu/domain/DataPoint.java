@@ -33,25 +33,25 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class DataPoint {
 
-    private String id; // duplicated from header to make Spring Data MongoDB happy
+    private String id; // duplicated from header to make MongoDB happy
     private String userId;
     private DataPointHeader header;
-    private Map<?, ?> data;
+    private Map<?, ?> body;
 
 
     /**
      * @param header the header of this data point
-     * @param data the data of this data point
+     * @param body the body of this data point
      */
     @JsonCreator
-    public DataPoint(@JsonProperty("header") DataPointHeader header, @JsonProperty("data") Map<?, ?> data) {
+    public DataPoint(@JsonProperty("header") DataPointHeader header, @JsonProperty("body") Map<?, ?> body) {
 
         checkNotNull(header);
-        checkNotNull(data);
+        checkNotNull(body);
 
         this.id = header.getId();
         this.header = header;
-        this.data = data;
+        this.body = body;
     }
 
     /**
@@ -84,7 +84,7 @@ public class DataPoint {
         return header;
     }
 
-    public Map<?, ?> getData() {
-        return data;
+    public Map<?, ?> getBody() {
+        return body;
     }
 }

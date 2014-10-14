@@ -45,7 +45,7 @@ public class DataPointFactory {
                 .setSchemaNamespace(TEST_SCHEMA_NAMESPACE)
                 .setSchemaName(TEST_SCHEMA_NAME)
                 .setSchemaVersion(TEST_SCHEMA_VERSION)
-                .setData(newKcalBurnedData());
+                .setBody(newKcalBurnedBody());
     }
 
     public static DataPointSearchCriteriaBuilder newSearchCriteriaBuilder() {
@@ -57,7 +57,7 @@ public class DataPointFactory {
                 .setSchemaVersion(TEST_SCHEMA_VERSION);
     }
 
-    public static Map<?, ?> newKcalBurnedData() {
+    public static Map<?, ?> newKcalBurnedBody() {
 
         return (Map<?, ?>) JSON.parse("{" +
                 "    'kcal_burned': {" +
