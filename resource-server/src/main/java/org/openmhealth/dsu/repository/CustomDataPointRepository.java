@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 
 
 /**
- * A set of data point repository methods not automatically implemented by Spring Data.
+ * A set of data point repository methods not automatically implemented by Spring Data repositories.
  *
  * @author Emerson Farrugia
  */
@@ -31,4 +31,12 @@ public interface CustomDataPointRepository {
 
     Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
             @Nullable Integer limit);
+
+    /**
+     * Inserts data points, failing if a data point with the same identifier already exists and compensating in case
+     * previous inserts were successful.
+     *
+     * @param dataPoints the data points to insert
+     */
+    void insert(Iterable<DataPoint> dataPoints);
 }
