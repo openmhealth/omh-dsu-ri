@@ -32,13 +32,13 @@ import java.util.Optional;
 @NoRepositoryBean
 public interface DataPointRepository extends Repository<DataPoint, String>, CustomDataPointRepository {
 
-    Optional<DataPoint> findOne(String id);
+    boolean exists(String id);
 
-    Iterable<DataPoint> findAll();
+    Optional<DataPoint> findOne(String id);
 
     DataPoint save(DataPoint dataPoint);
 
     Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
 
-    Long delete(String id);
+    void delete(String id);
 }
