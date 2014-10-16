@@ -30,6 +30,8 @@ import java.util.Optional;
  */
 public interface DataPointService {
 
+    boolean exists(String id);
+
     Optional<DataPoint> findOne(String id);
 
     Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
@@ -37,5 +39,12 @@ public interface DataPointService {
 
     Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
 
-    void delete(String id);
+    /**
+     * @throws org.springframework.dao.DuplicateKeyException if any data points already exist
+     */
+    void insert(Iterable<DataPoint> dataPoints);
+
+    Long delete(String id);
+
+    Long deleteByIdAndUserId(String id, String userId);
 }

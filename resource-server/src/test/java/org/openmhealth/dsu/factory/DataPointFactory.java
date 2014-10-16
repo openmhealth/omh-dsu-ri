@@ -33,7 +33,7 @@ import java.util.Map;
 @Service
 public class DataPointFactory {
 
-    public static final String TEST_USERNAME = "test";
+    public static final String TEST_USER_ID = "test";
     public static final String TEST_SCHEMA_NAMESPACE = "test";
     public static final String TEST_SCHEMA_NAME = "test";
     public static final SchemaVersion TEST_SCHEMA_VERSION = new SchemaVersion(1, 1);
@@ -41,7 +41,7 @@ public class DataPointFactory {
     public static DataPointBuilder newDataPointBuilder() {
 
         return new DataPointBuilder()
-                .setUserId(TEST_USERNAME)
+                .setUserId(TEST_USER_ID)
                 .setSchemaNamespace(TEST_SCHEMA_NAMESPACE)
                 .setSchemaName(TEST_SCHEMA_NAME)
                 .setSchemaVersion(TEST_SCHEMA_VERSION)
@@ -51,7 +51,7 @@ public class DataPointFactory {
     public static DataPointSearchCriteriaBuilder newSearchCriteriaBuilder() {
 
         return new DataPointSearchCriteriaBuilder()
-                .setUserId(TEST_USERNAME)
+                .setUserId(TEST_USER_ID)
                 .setSchemaNamespace(TEST_SCHEMA_NAMESPACE)
                 .setSchemaName(TEST_SCHEMA_NAME)
                 .setSchemaVersion(TEST_SCHEMA_VERSION);

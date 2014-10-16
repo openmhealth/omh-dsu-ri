@@ -26,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 
 /**
  * @author Emerson Farrugia
@@ -38,7 +41,20 @@ public class DataPointServiceImpl implements DataPointService {
 
     @Override
     @Transactional(readOnly = true)
+    public boolean exists(String id) {
+
+        checkNotNull(id);
+        checkArgument(!id.isEmpty());
+
+        return repository.exists(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<DataPoint> findOne(String id) {
+
+        checkNotNull(id);
+        checkArgument(!id.isEmpty());
 
         return repository.findOne(id);
     }
@@ -48,6 +64,10 @@ public class DataPointServiceImpl implements DataPointService {
     public Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
             @Nullable Integer limit) {
 
+        checkNotNull(searchCriteria);
+        checkArgument(offset == null || offset >= 0);
+        checkArgument(limit == null || limit >= 0);
+
         return repository.findBySearchCriteria(searchCriteria, offset, limit);
     }
 
@@ -55,13 +75,39 @@ public class DataPointServiceImpl implements DataPointService {
     @Transactional
     public Iterable<DataPoint> save(Iterable<DataPoint> dataPoints) {
 
+        checkNotNull(dataPoints);
+
         return repository.save(dataPoints);
     }
 
     @Override
     @Transactional
-    public void delete(String id) {
+    public void insert(Iterable<DataPoint> dataPoints) {
 
-        repository.delete(id);
+        checkNotNull(dataPoints);
+
+        repository.insert(dataPoints);
+    }
+
+    @Override
+    @Transactional
+    public Long delete(String id) {
+
+        checkNotNull(id);
+        checkArgument(!id.isEmpty());
+
+        return repository.delete(id);
+    }
+
+    @Override
+    @Transactional
+    public Long deleteByIdAndUserId(String id, String userId) {
+
+        checkNotNull(id);
+        checkArgument(!id.isEmpty());
+        checkNotNull(userId);
+        checkArgument(!userId.isEmpty());
+
+        return repository.deleteByIdAndUserId(id, userId);
     }
 }
