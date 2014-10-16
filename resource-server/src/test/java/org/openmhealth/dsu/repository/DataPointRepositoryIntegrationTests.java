@@ -16,6 +16,7 @@
 
 package org.openmhealth.dsu.repository;
 
+import com.google.common.collect.Lists;
 import com.mongodb.util.JSON;
 import org.junit.After;
 import org.junit.Before;
@@ -23,8 +24,10 @@ import org.junit.Test;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,8 +36,8 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.openmhealth.dsu.factory.DataPointFactory.newDataPointBuilder;
-import static org.openmhealth.dsu.factory.DataPointFactory.newSearchCriteriaBuilder;
+import static org.junit.Assert.fail;
+import static org.openmhealth.dsu.factory.DataPointFactory.*;
 
 
 /**
@@ -43,6 +46,8 @@ import static org.openmhealth.dsu.factory.DataPointFactory.newSearchCriteriaBuil
  * @author Emerson Farrugia
  */
 public abstract class DataPointRepositoryIntegrationTests {
+
+    public static final String UNRECOGNIZED_ID = "foo";
 
     @Autowired
     protected DataPointRepository repository;
@@ -69,12 +74,32 @@ public abstract class DataPointRepositoryIntegrationTests {
     }
 
     @Test
-    public void findOneShouldReturnSavedDataPoint() {
+    public void existsShouldReturnFalseOnUnrecognizedId() {
 
-        Optional<DataPoint> actual = repository.findOne(testDataPoint.getId());
+        assertThat(repository.exists(UNRECOGNIZED_ID), equalTo(false));
+    }
 
-        assertThat(actual.isPresent(), equalTo(true));
-        assertThatDataPointsAreEqual(actual.get(), testDataPoint);
+    @Test
+    public void existsShouldReturnTrueOnMatchingId() {
+
+        assertThat(repository.exists(testDataPoint.getId()), equalTo(true));
+    }
+
+    @Test
+    public void findOneShouldReturnNotPresentOnUnrecognizedId() {
+
+        Optional<DataPoint> result = repository.findOne(UNRECOGNIZED_ID);
+
+        assertThat(result.isPresent(), equalTo(false));
+    }
+
+    @Test
+    public void findOneShouldReturnDataPointMatchingId() {
+
+        Optional<DataPoint> result = repository.findOne(testDataPoint.getId());
+
+        assertThat(result.isPresent(), equalTo(true));
+        assertThatDataPointsAreEqual(result.get(), testDataPoint);
     }
 
     public void assertThatDataPointsAreEqual(DataPoint actual, DataPoint expected) {
@@ -122,7 +147,7 @@ public abstract class DataPointRepositoryIntegrationTests {
     @Test
     public void findBySearchCriteriaShouldOnlyReturnDataPointsMatchingUserId() {
 
-        DataPointSearchCriteria searchCriteria = newSearchCriteriaBuilder().setUserId("foo").build();
+        DataPointSearchCriteria searchCriteria = newSearchCriteriaBuilder().setUserId(UNRECOGNIZED_ID).build();
 
         List<DataPoint> dataPoints = newArrayList(repository.findBySearchCriteria(searchCriteria, null, null));
 
@@ -132,7 +157,7 @@ public abstract class DataPointRepositoryIntegrationTests {
     @Test
     public void findBySearchCriteriaShouldOnlyReturnDataPointsMatchingSchemaNamespace() {
 
-        DataPointSearchCriteria searchCriteria = newSearchCriteriaBuilder().setSchemaNamespace("foo").build();
+        DataPointSearchCriteria searchCriteria = newSearchCriteriaBuilder().setSchemaNamespace(UNRECOGNIZED_ID).build();
 
         List<DataPoint> dataPoints = newArrayList(repository.findBySearchCriteria(searchCriteria, null, null));
 
@@ -142,7 +167,7 @@ public abstract class DataPointRepositoryIntegrationTests {
     @Test
     public void findBySearchCriteriaShouldOnlyReturnDataPointsMatchingSchemaName() {
 
-        DataPointSearchCriteria searchCriteria = newSearchCriteriaBuilder().setSchemaName("foo").build();
+        DataPointSearchCriteria searchCriteria = newSearchCriteriaBuilder().setSchemaName(UNRECOGNIZED_ID).build();
 
         List<DataPoint> dataPoints = newArrayList(repository.findBySearchCriteria(searchCriteria, null, null));
 
@@ -209,5 +234,77 @@ public abstract class DataPointRepositoryIntegrationTests {
 
         assertThat(dataPoints, hasSize(1));
         assertThatDataPointsAreEqual(dataPoints.get(0), testDataPoint);
+    }
+
+    @Test
+    public void deleteShouldNotThrowExceptionOnUnrecognizedId() {
+
+        repository.delete(UNRECOGNIZED_ID);
+    }
+
+    @Test
+    public void deleteShouldDeleteDataPointMatchingId() {
+
+        repository.delete(testDataPoint.getId());
+        assertThat(repository.exists(testDataPoint.getId()), equalTo(false));
+    }
+
+    @Test
+    public void deleteByIdAndUserIdShouldReturn0OnUnrecognizedId() {
+
+        assertThat(repository.deleteByIdAndUserId(UNRECOGNIZED_ID, TEST_USER_ID), equalTo(0l));
+    }
+
+    @Test
+    public void deleteByIdAndUserIdShouldReturn0OnUnrecognizedUserId() {
+
+        assertThat(repository.deleteByIdAndUserId(testDataPoint.getId(), UNRECOGNIZED_ID), equalTo(0l));
+    }
+
+    @Test
+    public void deleteByIdAndUserIdShouldReturn1OnMatchingIdAndUserId() {
+
+        assertThat(repository.deleteByIdAndUserId(testDataPoint.getId(), TEST_USER_ID), equalTo(1l));
+        assertThat(repository.exists(testDataPoint.getId()), equalTo(false));
+    }
+
+    @Test(expected = DuplicateKeyException.class)
+    public void insertShouldThrowExceptionOnDuplicateDataPoint() {
+
+        DataPoint newTestDataPoint = newDataPointBuilder().setId(testDataPoint.getId()).build();
+        testDataPoints.add(newTestDataPoint);
+
+        repository.insert(Collections.singleton(newTestDataPoint));
+    }
+
+    @Test
+    public void insertShouldNotCompensateAfterFailingToSaveDuplicateDataPoint() {
+
+        DataPoint newTestDataPoint1 = newDataPointBuilder().build();
+        DataPoint newTestDataPoint2 = newDataPointBuilder().setId(testDataPoint.getId()).build();
+
+        List<DataPoint> newTestDataPoints = Lists.newArrayList(newTestDataPoint1, newTestDataPoint2);
+        testDataPoints.addAll(newTestDataPoints);
+
+        try {
+            repository.insert(newTestDataPoints);
+        }
+        catch (DuplicateKeyException e) {
+            assertThat(repository.exists(newTestDataPoint1.getId()), equalTo(true));
+            return;
+        }
+
+        fail();
+    }
+
+    @Test
+    public void insertShouldSaveUniqueDataPoint() {
+
+        DataPoint newTestDataPoint = newDataPointBuilder().build();
+        testDataPoints.add(newTestDataPoint);
+
+        repository.insert(Collections.singleton(newTestDataPoint));
+
+        assertThat(repository.exists(newTestDataPoint.getId()), equalTo(true));
     }
 }
