@@ -73,20 +73,20 @@ public class DataPointServiceImpl implements DataPointService {
 
     @Override
     @Transactional
+    public DataPoint save(DataPoint dataPoint) {
+
+        checkNotNull(dataPoint);
+
+        return repository.save(dataPoint);
+    }
+
+    @Override
+    @Transactional
     public Iterable<DataPoint> save(Iterable<DataPoint> dataPoints) {
 
         checkNotNull(dataPoints);
 
         return repository.save(dataPoints);
-    }
-
-    @Override
-    @Transactional
-    public void insert(Iterable<DataPoint> dataPoints) {
-
-        checkNotNull(dataPoints);
-
-        repository.insert(dataPoints);
     }
 
     @Override

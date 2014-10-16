@@ -16,7 +16,6 @@
 
 package org.openmhealth.dsu.repository;
 
-import com.google.common.collect.Lists;
 import com.mongodb.util.JSON;
 import org.junit.After;
 import org.junit.Before;
@@ -24,10 +23,8 @@ import org.junit.Test;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DuplicateKeyException;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +33,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.openmhealth.dsu.factory.DataPointFactory.*;
 
 
@@ -266,45 +262,5 @@ public abstract class DataPointRepositoryIntegrationTests {
 
         assertThat(repository.deleteByIdAndUserId(testDataPoint.getId(), TEST_USER_ID), equalTo(1l));
         assertThat(repository.exists(testDataPoint.getId()), equalTo(false));
-    }
-
-    @Test(expected = DuplicateKeyException.class)
-    public void insertShouldThrowExceptionOnDuplicateDataPoint() {
-
-        DataPoint newTestDataPoint = newDataPointBuilder().setId(testDataPoint.getId()).build();
-        testDataPoints.add(newTestDataPoint);
-
-        repository.insert(Collections.singleton(newTestDataPoint));
-    }
-
-    @Test
-    public void insertShouldNotCompensateAfterFailingToSaveDuplicateDataPoint() {
-
-        DataPoint newTestDataPoint1 = newDataPointBuilder().build();
-        DataPoint newTestDataPoint2 = newDataPointBuilder().setId(testDataPoint.getId()).build();
-
-        List<DataPoint> newTestDataPoints = Lists.newArrayList(newTestDataPoint1, newTestDataPoint2);
-        testDataPoints.addAll(newTestDataPoints);
-
-        try {
-            repository.insert(newTestDataPoints);
-        }
-        catch (DuplicateKeyException e) {
-            assertThat(repository.exists(newTestDataPoint1.getId()), equalTo(true));
-            return;
-        }
-
-        fail();
-    }
-
-    @Test
-    public void insertShouldSaveUniqueDataPoint() {
-
-        DataPoint newTestDataPoint = newDataPointBuilder().build();
-        testDataPoints.add(newTestDataPoint);
-
-        repository.insert(Collections.singleton(newTestDataPoint));
-
-        assertThat(repository.exists(newTestDataPoint.getId()), equalTo(true));
     }
 }

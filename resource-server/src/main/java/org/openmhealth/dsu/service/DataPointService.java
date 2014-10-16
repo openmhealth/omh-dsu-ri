@@ -37,12 +37,9 @@ public interface DataPointService {
     Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
             @Nullable Integer limit);
 
-    Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
+    DataPoint save(DataPoint dataPoint);
 
-    /**
-     * @throws org.springframework.dao.DuplicateKeyException if any data points already exist
-     */
-    void insert(Iterable<DataPoint> dataPoints);
+    Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
 
     void delete(String id);
 
