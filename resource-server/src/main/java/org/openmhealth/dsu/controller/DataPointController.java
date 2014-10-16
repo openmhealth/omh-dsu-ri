@@ -19,17 +19,23 @@ package org.openmhealth.dsu.controller;
 import com.google.common.collect.Range;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
+import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.Optional;
 
+import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -44,9 +50,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 public class DataPointController {
 
     private static final Logger log = LoggerFactory.getLogger(DataPointController.class);
-
-    // FIXME this is just for testing until Spring Security is wired up
-    private static final String TEST_USER_ID = "test";
 
     /*
      * These filtering parameters are temporary. They will likely change when a more generic filtering approach is
@@ -77,8 +80,9 @@ public class DataPointController {
      * @param limit the number of data points to return
      * @return a list of matching data points
      */
-    // FIXME add authorization
     // TODO confirm if HEAD handling needs anything additional
+    // only allow clients with read scope to read data points
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
     @RequestMapping(value = "/data", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
     @ResponseBody
@@ -91,12 +95,16 @@ public class DataPointController {
             final OffsetDateTime createdOnOrAfter,
             @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,
             @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
-            @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit) {
+            @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit,
+            Authentication authentication) {
 
         // TODO add validation or explicitly comment that this is handled using exception translators
 
+        // determine the user associated with the access token to restrict the search accordingly
+        String endUserId = getEndUserId(authentication);
+
         DataPointSearchCriteria searchCriteria =
-                new DataPointSearchCriteria(TEST_USER_ID, schemaNamespace, schemaName, schemaVersion);
+                new DataPointSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion);
 
         if (createdOnOrAfter != null && createdBefore != null) {
             searchCriteria.setCreationTimestampRange(Range.closedOpen(createdOnOrAfter, createdBefore));
@@ -119,15 +127,23 @@ public class DataPointController {
         return new ResponseEntity<>(dataPoints, headers, OK);
     }
 
+    public String getEndUserId(Authentication authentication) {
+
+        return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
+    }
+
     /**
      * Reads a data point.
      *
      * @param id the identifier of the data point to read
      * @return a matching data point, if found
      */
-    // FIXME add @PostAuthorize
-    // TODO force data point identifiers to be globally unique, or rethink this URI
+    // TODO can identifiers be relative, e.g. to a namespace?
     // TODO confirm if HEAD handling needs anything additional
+    // only allow clients with read scope to read a data point
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
+    // ensure that the returned data point belongs to the user associated with the access token
+    @PostAuthorize("returnObject.body == null || returnObject.body.userId == principal.username")
     @RequestMapping(value = "/data/{id}", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
     @ResponseBody
@@ -139,26 +155,31 @@ public class DataPointController {
             return new ResponseEntity<>(NOT_FOUND);
         }
 
+        // FIXME test @PostAuthorize
         return new ResponseEntity<>(dataPoint.get(), OK);
     }
 
     /**
-     * Writes data points.
+     * Writes a data point.
      *
-     * @param dataPoints the list of data points to write
+     * @param dataPoint the data point to write
      */
-    // FIXME add @PreAuthorize
+    // only allow clients with write scope to write data points
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
     @RequestMapping(value = "/data", method = POST, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> writeDataPoints(@RequestBody List<DataPoint> dataPoints) {
+    public ResponseEntity<?> writeDataPoint(@RequestBody @Valid DataPoint dataPoint, Authentication authentication) {
 
-        // FIXME add validation
-
-        // FIXME set userId
-        for (DataPoint dataPoint : dataPoints) {
-            dataPoint.setUserId(TEST_USER_ID);
+        // FIXME test validation
+        if (dataPointService.exists(dataPoint.getId())) {
+            return new ResponseEntity<>(CONFLICT);
         }
 
-        dataPointService.save(dataPoints);
+        String endUserId = getEndUserId(authentication);
+
+        // set the owner of the data point to be the user associated with the access token
+        dataPoint.setUserId(endUserId);
+
+        dataPointService.save(dataPoint);
 
         return new ResponseEntity<>(CREATED);
     }
@@ -168,13 +189,17 @@ public class DataPointController {
      *
      * @param id the identifier of the data point to delete
      */
-    // FIXME authorize
-    // TODO can this just be id or are identifiers relative?
+    // only allow clients with delete scope to delete data points
+    @PreAuthorize(
+            "#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_DELETE_SCOPE + "')")
     @RequestMapping(value = "/data/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<?> deleteDataPoint(@PathVariable String id) {
+    public ResponseEntity<?> deleteDataPoint(@PathVariable String id, Authentication authentication) {
 
-        dataPointService.delete(id);
+        String endUserId = getEndUserId(authentication);
 
-        return new ResponseEntity<>(OK);
+        // only delete the data point if it belongs to the user associated with the access token
+        Long dataPointsDeleted = dataPointService.deleteByIdAndUserId(id, endUserId);
+
+        return new ResponseEntity<>(dataPointsDeleted == 0 ? NOT_FOUND : OK);
     }
 }
