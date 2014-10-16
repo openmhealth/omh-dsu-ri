@@ -26,4 +26,7 @@ public interface OAuth2Properties {
     public static final String CLIENT_ROLE = "ROLE_CLIENT";
     public static final String END_USER_ROLE = "ROLE_END_USER";
     public static final String DATA_POINT_RESOURCE_ID = "dataPoint";
+    public static final String DATA_POINT_READ_SCOPE = "read";
+    public static final String DATA_POINT_WRITE_SCOPE = "write";
+    public static final String DATA_POINT_DELETE_SCOPE = "delete";
 }
