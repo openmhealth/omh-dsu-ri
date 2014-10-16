@@ -16,6 +16,7 @@
 
 package org.openmhealth.dsu.repository;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
@@ -26,6 +27,7 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import javax.annotation.Nullable;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -78,6 +80,9 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
             query.addCriteria(where("header.schema_id.version.qualifier")
                     .is(searchCriteria.getSchemaVersion().getQualifier().get()));
         }
+        else {
+            query.addCriteria(where("header.schema_id.version.qualifier").exists(false));
+        }
 
         if (searchCriteria.getCreationTimestampRange().isPresent()) {
             addCreationTimestampCriteria(query, searchCriteria.getCreationTimestampRange().get());
@@ -112,5 +117,13 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
 
             query.addCriteria(timestampCriteria);
         }
+    }
+
+    @Override
+    public void insert(Iterable<DataPoint> dataPoints) {
+
+        List<DataPoint> dataPointList = Lists.newArrayList(dataPoints);
+
+        mongoOperations.insert(dataPointList, DataPoint.class);
     }
 }

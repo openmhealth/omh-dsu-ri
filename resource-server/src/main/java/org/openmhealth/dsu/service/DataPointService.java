@@ -44,7 +44,7 @@ public interface DataPointService {
      */
     void insert(Iterable<DataPoint> dataPoints);
 
-    Long delete(String id);
+    void delete(String id);
 
     Long deleteByIdAndUserId(String id, String userId);
 }

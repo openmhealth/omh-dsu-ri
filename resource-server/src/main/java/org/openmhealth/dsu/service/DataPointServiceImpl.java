@@ -91,12 +91,12 @@ public class DataPointServiceImpl implements DataPointService {
 
     @Override
     @Transactional
-    public Long delete(String id) {
+    public void delete(String id) {
 
         checkNotNull(id);
         checkArgument(!id.isEmpty());
 
-        return repository.delete(id);
+        repository.delete(id);
     }
 
     @Override

@@ -40,7 +40,7 @@ public interface DataPointRepository extends Repository<DataPoint, String>, Cust
 
     Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
 
-    Long delete(String id);
+    void delete(String id);
 
     Long deleteByIdAndUserId(String id, String userId);
 }
