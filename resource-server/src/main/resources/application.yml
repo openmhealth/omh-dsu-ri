@@ -37,3 +37,7 @@ spring:
 http:
   mappers:
     jsonPrettyPrint: true
+
+logging:
+  level:
+    org.springframework: INFO
