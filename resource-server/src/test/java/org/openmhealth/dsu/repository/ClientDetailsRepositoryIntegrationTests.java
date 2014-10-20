@@ -32,6 +32,7 @@ import static com.google.common.collect.Lists.newArrayList;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.openmhealth.dsu.configuration.OAuth2Properties.CLIENT_ROLE;
+import static org.openmhealth.dsu.configuration.OAuth2Properties.DATA_POINT_RESOURCE_ID;
 
 
 /**
@@ -43,7 +44,7 @@ public abstract class ClientDetailsRepositoryIntegrationTests {
 
     private static final String TEST_CLIENT_ID = "test";
     private static final String TEST_CLIENT_SECRET = "secret";
-    private static final List<String> TEST_RESOURCE_IDS = newArrayList("data");
+    private static final List<String> TEST_RESOURCE_IDS = newArrayList(DATA_POINT_RESOURCE_ID);
     private static final List<String> TEST_GRANT_TYPES = newArrayList("authorization_code", "implicit");
     private static final List<String> TEST_ROLES = newArrayList(CLIENT_ROLE);
     private static final List<String> TEST_SCOPES = newArrayList("read", "write");
