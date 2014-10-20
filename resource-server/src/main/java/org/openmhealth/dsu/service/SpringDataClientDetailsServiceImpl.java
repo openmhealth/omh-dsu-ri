@@ -19,6 +19,7 @@ package org.openmhealth.dsu.service;
 import org.openmhealth.dsu.domain.SimpleClientDetails;
 import org.openmhealth.dsu.repository.ClientDetailsRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.provider.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
