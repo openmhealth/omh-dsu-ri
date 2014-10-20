@@ -25,6 +25,7 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Emerson Farrugia
  */
+// TODO set up Gradle in a way that this class can be shared
 @Configuration
 @EnableAutoConfiguration
 public class IntegrationTestConfiguration {
