@@ -55,13 +55,13 @@ public class DataPointController {
      * These filtering parameters are temporary. They will likely change when a more generic filtering approach is
      * implemented.
      */
-    public static final String CREATED_ON_OR_AFTER_PARAMETER = "createdOnOrAfter";
-    public static final String CREATED_BEFORE_PARAMETER = "createdBefore";
-    public static final String SCHEMA_NAMESPACE_PARAMETER = "schemaNamespace";
-    public static final String SCHEMA_NAME_PARAMETER = "schemaName";
-    public static final String SCHEMA_VERSION_PARAMETER = "schemaVersion";
+    public static final String CREATED_ON_OR_AFTER_PARAMETER = "created_on_or_after";
+    public static final String CREATED_BEFORE_PARAMETER = "created_before";
+    public static final String SCHEMA_NAMESPACE_PARAMETER = "schema_namespace";
+    public static final String SCHEMA_NAME_PARAMETER = "schema_name";
+    public static final String SCHEMA_VERSION_PARAMETER = "schema_version";
 
-    public static final String RESULT_OFFSET_PARAMETER = "offset";
+    public static final String RESULT_OFFSET_PARAMETER = "skip";
     public static final String RESULT_LIMIT_PARAMETER = "limit";
     public static final String DEFAULT_RESULT_LIMIT = "100";
 
