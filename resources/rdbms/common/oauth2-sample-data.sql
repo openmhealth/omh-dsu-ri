@@ -11,6 +11,6 @@ VALUES (
   'testClientSecret',
   'read,write',
   'dataPoint',
-  'authorization_code,password,refresh_token',
+  'authorization_code,implicit,password,refresh_token',
   'ROLE_CLIENT'
 );
