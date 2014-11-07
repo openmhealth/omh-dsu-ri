@@ -25,12 +25,12 @@ spring:
     name: Open mHealth DSU server
   data:
     mongodb:
-      host: mongo
+      host: omh-mongo
       database: omh
       #port: 27017
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/omh
+    url: jdbc:postgresql://omh-postgres:5432/omh
     username: postgres
     password: postgres
 
