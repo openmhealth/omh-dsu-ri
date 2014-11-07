@@ -1,7 +1,7 @@
 #%RAML 0.8
 # TODO confirm the name
 title: Open mHealth Data Point API
-version: v2.0.M1
+version: v1.0.M1
 
 baseUri: https://{endpointUrl}/{version}
 baseUriParameters:
@@ -40,7 +40,6 @@ securitySchemes:
       accessTokenUri: http://domain/oauth/token
       authorizationGrants: [code, token, owner]
       scopes: [read_data_points, write_data_points, delete_data_points]
-
 
 /dataPoints:
   get:
