@@ -31,7 +31,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Controller
-@RequestMapping("/v2.0.M1")
+@RequestMapping("/v1.0.M1")
 public @interface ApiController {
 
 }
