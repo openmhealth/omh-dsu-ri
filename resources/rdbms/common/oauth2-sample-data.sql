@@ -9,7 +9,7 @@ INSERT INTO oauth_client_details (
 VALUES (
   'testClient',
   'testClientSecret',
-  'read,write',
+  'read_data_points,write_data_points,delete_data_points',
   'dataPoint',
   'authorization_code,implicit,password,refresh_token',
   'ROLE_CLIENT'

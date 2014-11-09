@@ -1,4 +1,5 @@
 CREATE DATABASE omh;
+\c omh
 
 CREATE TABLE oauth_access_token (
   token_id          VARCHAR(256),

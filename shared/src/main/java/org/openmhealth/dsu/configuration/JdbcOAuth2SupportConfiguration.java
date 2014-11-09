@@ -34,7 +34,7 @@ import javax.sql.DataSource;
  * @author Emerson Farrugia
  */
 @Configuration
-public class JdbcOAuth2SupportConfguration {
+public class JdbcOAuth2SupportConfiguration {
 
     @Autowired
     private DataSource dataSource;
