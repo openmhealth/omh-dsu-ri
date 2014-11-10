@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 
 /**
@@ -39,7 +38,6 @@ import org.springframework.context.annotation.PropertySource;
                 // this exclusion avoids pulling in test-specific @Configuration in other integration tests
                 @ComponentScan.Filter(value = TestConfiguration.class),
         })
-@PropertySource(value = "file:/etc/omh/dsu-ri.conf", ignoreResourceNotFound = true)
 @EnableAutoConfiguration
 @EnableConfigurationProperties
 public class Application {
