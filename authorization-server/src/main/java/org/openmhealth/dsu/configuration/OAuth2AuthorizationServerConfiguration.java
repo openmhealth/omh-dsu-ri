@@ -22,6 +22,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
+import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 
 
@@ -38,6 +39,9 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
     private TokenStore tokenStore;
 
     @Autowired
+    private ClientDetailsService clientDetailsService;
+
+    @Autowired
     private AuthenticationManager authenticationManager;
 
     @Override
@@ -45,6 +49,7 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
 
         endpoints
                 .tokenStore(tokenStore)
+                .clientDetailsService(clientDetailsService)
                 .authenticationManager(authenticationManager);
     }
 }
