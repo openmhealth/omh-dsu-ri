@@ -22,7 +22,7 @@ server:
 
 spring:
   application:
-    name: Open mHealth DSU server
+    name: Open mHealth DSU resource server
   data:
     mongodb:
       host: omh-mongo

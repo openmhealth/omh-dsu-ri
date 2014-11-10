@@ -20,11 +20,6 @@ dataStore: mongo
 server:
   port: 8082
 
-# FIXME confirm how this interacts with OAuth 2
-security:
-  basic:
-    enabled: false
-
 spring:
   application:
     name: Open mHealth DSU authorisation server
