@@ -2,6 +2,7 @@ apply plugin: 'maven' // used for deploying artifacts to Maven repositories
 
 buildscript {
     repositories {
+        mavenLocal()
         mavenCentral()
     }
 
@@ -20,6 +21,7 @@ allprojects {
     version = '1.1.0-SNAPSHOT'
 
     repositories {
+        mavenLocal()
         mavenCentral()
     }
 }
