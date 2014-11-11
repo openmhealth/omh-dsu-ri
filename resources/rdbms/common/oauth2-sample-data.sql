@@ -10,7 +10,7 @@ VALUES (
   'testClient',
   'testClientSecret',
   'read_data_points,write_data_points,delete_data_points',
-  'dataPoint',
+  'dataPoints',
   'authorization_code,implicit,password,refresh_token',
   'ROLE_CLIENT'
 );
