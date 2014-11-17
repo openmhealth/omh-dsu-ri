@@ -34,7 +34,7 @@ public class DataPointHeader {
 
     private String id;
     private SchemaId schemaId;
-    private OffsetDateTime creationTimestamp;
+    private OffsetDateTime creationDateTime;
     private DataPointAcquisitionProvenance acquisitionProvenance;
 
     /**
@@ -49,18 +49,18 @@ public class DataPointHeader {
     /**
      * @param id the identifier of the data point
      * @param schemaId the identifier of the schema the data point conforms to
-     * @param creationTimestamp the creation time of this data point
+     * @param creationDateTime the creation time of this data point
      */
-    public DataPointHeader(String id, SchemaId schemaId, OffsetDateTime creationTimestamp) {
+    public DataPointHeader(String id, SchemaId schemaId, OffsetDateTime creationDateTime) {
 
         checkNotNull(id);
         checkArgument(!id.isEmpty());
         checkNotNull(schemaId);
-        checkNotNull(creationTimestamp);
+        checkNotNull(creationDateTime);
 
         this.id = id;
         this.schemaId = schemaId;
-        this.creationTimestamp = creationTimestamp;
+        this.creationDateTime = creationDateTime;
     }
 
     /**
@@ -78,8 +78,8 @@ public class DataPointHeader {
         return schemaId;
     }
 
-    public OffsetDateTime getCreationTimestamp() {
-        return creationTimestamp;
+    public OffsetDateTime getCreationDateTime() {
+        return creationDateTime;
     }
 
     /**
@@ -111,7 +111,7 @@ public class DataPointHeader {
                 : that.acquisitionProvenance != null) {
             return false;
         }
-        if (!creationTimestamp.equals(that.creationTimestamp)) {
+        if (!creationDateTime.equals(that.creationDateTime)) {
             return false;
         }
         if (!id.equals(that.id)) {
