@@ -83,7 +83,7 @@ public class DataPointController {
     // TODO confirm if HEAD handling needs anything additional
     // only allow clients with read scope to read data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
-    @RequestMapping(value = "/data", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/dataPoints", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
     @ResponseBody
     ResponseEntity<Iterable<DataPoint>> readDataPoints(
@@ -144,7 +144,7 @@ public class DataPointController {
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
     // ensure that the returned data point belongs to the user associated with the access token
     @PostAuthorize("returnObject.body == null || returnObject.body.userId == principal.username")
-    @RequestMapping(value = "/data/{id}", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/dataPoints/{id}", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
     @ResponseBody
     ResponseEntity<DataPoint> readDataPoint(@PathVariable String id) {
@@ -166,7 +166,7 @@ public class DataPointController {
      */
     // only allow clients with write scope to write data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
-    @RequestMapping(value = "/data", method = POST, consumes = APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/dataPoints", method = POST, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> writeDataPoint(@RequestBody @Valid DataPoint dataPoint, Authentication authentication) {
 
         // FIXME test validation
@@ -192,7 +192,7 @@ public class DataPointController {
     // only allow clients with delete scope to delete data points
     @PreAuthorize(
             "#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_DELETE_SCOPE + "')")
-    @RequestMapping(value = "/data/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/dataPoints/{id}", method = RequestMethod.DELETE)
     public ResponseEntity<?> deleteDataPoint(@PathVariable String id, Authentication authentication) {
 
         String endUserId = getEndUserId(authentication);
