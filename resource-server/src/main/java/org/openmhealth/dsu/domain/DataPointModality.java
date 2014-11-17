@@ -33,7 +33,8 @@ import java.util.Map;
 public enum DataPointModality {
 
     SENSED,
-    SELF_REPORTED;
+    SELF_REPORTED,
+    PROXY_REPORTED;
 
     private static Map<String, DataPointModality> constantsByJsonValue = new HashMap<>();
 
@@ -45,7 +46,7 @@ public enum DataPointModality {
 
     @JsonValue
     public String getJsonValue() {
-        return name().toLowerCase().replaceAll("_", " ");
+        return name().toLowerCase().replaceAll("_", "-");
     }
 
     @JsonCreator

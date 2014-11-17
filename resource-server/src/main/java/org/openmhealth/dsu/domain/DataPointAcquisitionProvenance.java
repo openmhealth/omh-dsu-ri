@@ -17,7 +17,9 @@
 package org.openmhealth.dsu.domain;
 
 import java.time.OffsetDateTime;
+import java.util.Optional;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
@@ -28,17 +30,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class DataPointAcquisitionProvenance {
 
+    private String sourceName;
+    private OffsetDateTime sourceCreationDateTime;
     private DataPointModality modality;
-    private OffsetDateTime acquisitionTimestamp;
-
-    public DataPointAcquisitionProvenance(DataPointModality modality, OffsetDateTime acquisitionTimestamp) {
-
-        checkNotNull(modality);
-        checkNotNull(acquisitionTimestamp);
-
-        this.modality = modality;
-        this.acquisitionTimestamp = acquisitionTimestamp;
-    }
 
     /**
      * @deprecated should only be used by frameworks for persistence or serialisation
@@ -47,16 +41,45 @@ public class DataPointAcquisitionProvenance {
     DataPointAcquisitionProvenance() {
     }
 
-    public DataPointModality getModality() {
-        return modality;
+    /**
+     * @param sourceName the name of the source of the data point
+     */
+    public DataPointAcquisitionProvenance(String sourceName) {
+
+        checkNotNull(sourceName);
+        checkArgument(!sourceName.isEmpty());
+
+        this.sourceName = sourceName;
     }
 
-    public OffsetDateTime getAcquisitionTimestamp() {
-        return acquisitionTimestamp;
+    public String getSourceName() {
+        return sourceName;
     }
 
-    @Override
+    /**
+     * @return the timestamp of data point creation at the source
+     */
+    public Optional<OffsetDateTime> getSourceCreationDateTime() {
+        return Optional.ofNullable(sourceCreationDateTime);
+    }
+
+    public void setSourceCreationDateTime(OffsetDateTime sourceCreationDateTime) {
+        this.sourceCreationDateTime = sourceCreationDateTime;
+    }
+
+    /**
+     * @return the modality whereby the measure is obtained
+     */
+    public Optional<DataPointModality> getModality() {
+        return Optional.ofNullable(modality);
+    }
+
+    public void setModality(DataPointModality modality) {
+        this.modality = modality;
+    }
+
     @SuppressWarnings("RedundantIfStatement")
+    @Override
     public boolean equals(Object object) {
 
         if (this == object) {
@@ -68,11 +91,14 @@ public class DataPointAcquisitionProvenance {
 
         DataPointAcquisitionProvenance that = (DataPointAcquisitionProvenance) object;
 
-        if (acquisitionTimestamp != null ? !acquisitionTimestamp.equals(that.acquisitionTimestamp)
-                : that.acquisitionTimestamp != null) {
+        if (modality != that.modality) {
             return false;
         }
-        if (modality != that.modality) {
+        if (sourceCreationDateTime != null ? !sourceCreationDateTime.equals(that.sourceCreationDateTime)
+                : that.sourceCreationDateTime != null) {
+            return false;
+        }
+        if (!sourceName.equals(that.sourceName)) {
             return false;
         }
 
@@ -81,8 +107,9 @@ public class DataPointAcquisitionProvenance {
 
     @Override
     public int hashCode() {
-        int result = modality != null ? modality.hashCode() : 0;
-        result = 31 * result + (acquisitionTimestamp != null ? acquisitionTimestamp.hashCode() : 0);
+        int result = sourceName.hashCode();
+        result = 31 * result + (sourceCreationDateTime != null ? sourceCreationDateTime.hashCode() : 0);
+        result = 31 * result + (modality != null ? modality.hashCode() : 0);
         return result;
     }
 }
