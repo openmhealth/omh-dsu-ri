@@ -93,7 +93,7 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
 
         if (timestampRange.hasLowerBound() || timestampRange.hasUpperBound()) {
 
-            Criteria timestampCriteria = where("header.creation_timestamp");
+            Criteria timestampCriteria = where("header.creation_date_time");
 
             if (timestampRange.hasLowerBound()) {
                 if (timestampRange.lowerBoundType() == CLOSED) {
