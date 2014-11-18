@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -44,10 +45,19 @@ public class GenericExceptionHandlingControllerAdvice {
         log.debug("A {} request for '{}' failed authentication.", request.getMethod(), request.getPathInfo(), e);
     }
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleMissingServletRequestParameterException(MissingServletRequestParameterException e,
+            HttpServletRequest request) {
+
+        log.debug("A {} request for '{}' failed because parameter '{}' is missing.",
+                request.getMethod(), request.getPathInfo(), e.getParameterName(), e);
+    }
+
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handleException(Exception e, HttpServletRequest request) {
 
-        log.debug("A {} request for '{}' failed.", request.getMethod(), request.getPathInfo(), e);
+        log.warn("A {} request for '{}' failed.", request.getMethod(), request.getPathInfo(), e);
     }
 }
