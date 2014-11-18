@@ -51,7 +51,6 @@ public class DataPointSearchCriteria {
         // TODO determine how restrictive the search criteria should be
         checkNotNull(schemaNamespace);
         checkNotNull(schemaName);
-        checkNotNull(schemaVersion);
 
         checkArgument(isValidNamespace(schemaNamespace));
         checkArgument(isValidName(schemaName));
