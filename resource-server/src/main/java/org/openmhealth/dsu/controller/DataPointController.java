@@ -89,7 +89,8 @@ public class DataPointController {
     ResponseEntity<Iterable<DataPoint>> readDataPoints(
             @RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
             @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
-            @RequestParam(value = SCHEMA_VERSION_PARAMETER, required = false) final String schemaVersion,
+            // TODO make this optional and update all associated code
+            @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
             // TODO replace with Optional<> in Spring MVC 4.1
             @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
             final OffsetDateTime createdOnOrAfter,

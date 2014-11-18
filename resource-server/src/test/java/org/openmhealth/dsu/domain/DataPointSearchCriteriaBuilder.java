@@ -100,6 +100,7 @@ public class DataPointSearchCriteriaBuilder {
 
     public DataPointSearchCriteria build() {
 
+        // FIXME this will cause NPEs on unspecified major and minor numbers
         SchemaVersion schemaVersion = new SchemaVersion(schemaVersionMajor, schemaVersionMinor, schemaVersionQualifier);
 
         DataPointSearchCriteria searchCriteria =
