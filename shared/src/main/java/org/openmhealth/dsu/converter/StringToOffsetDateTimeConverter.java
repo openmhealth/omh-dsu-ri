@@ -17,6 +17,7 @@
 package org.openmhealth.dsu.converter;
 
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
 
@@ -24,6 +25,7 @@ import java.time.OffsetDateTime;
 /**
  * @author Emerson Farrugia
  */
+@Component
 public class StringToOffsetDateTimeConverter implements Converter<String, OffsetDateTime> {
 
     @Override
