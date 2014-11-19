@@ -17,19 +17,18 @@
 package org.openmhealth.dsu.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openmhealth.dsu.configuration.Application;
+import org.openmhealth.dsu.configuration.TestConfiguration;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointHeader;
 import org.openmhealth.dsu.service.DataPointService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -37,7 +36,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Matchers.anyCollection;
@@ -60,15 +58,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @SpringApplicationConfiguration(classes = {
         Application.class,
-        DataPointControllerIntegrationTests.TestConfiguration.class}
+        DataPointControllerIntegrationTests.Configuration.class}
 )
 public class DataPointControllerIntegrationTests {
 
-    private static final String CONTROLLER_URI = "/v2/data";
+    private static final String CONTROLLER_URI = "/v1.0.M1/dataPoints";
+    public static final String UNRECOGNIZED_DATA_POINT_ID = "foo";
 
 
-    @Configuration
-    static class TestConfiguration {
+    @TestConfiguration
+    static class Configuration {
 
         @Bean
         @Primary
@@ -76,7 +75,7 @@ public class DataPointControllerIntegrationTests {
 
             DataPointService mockService = Mockito.mock(DataPointService.class);
 
-            when(mockService.findOne("foo")).thenReturn(Optional.empty());
+            when(mockService.findOne(UNRECOGNIZED_DATA_POINT_ID)).thenReturn(Optional.empty());
 
             return mockService;
         }
@@ -100,10 +99,20 @@ public class DataPointControllerIntegrationTests {
     }
 
     @Test
-    public void readDataShouldReturn404OnMissingDataPoint() throws Exception {
+    public void readDataShouldReturnUnauthorizedWithoutAccessToken() throws Exception {
 
         mockMvc.perform(
-                get(CONTROLLER_URI + "/foo")
+                get(CONTROLLER_URI + "/" + UNRECOGNIZED_DATA_POINT_ID)
+                        .accept(APPLICATION_JSON))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void readDataShouldReturnNotFoundOnMissingDataPoint() throws Exception {
+
+        // FIXME add Authorization header
+        mockMvc.perform(
+                get(CONTROLLER_URI + "/" + UNRECOGNIZED_DATA_POINT_ID)
                         .accept(APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -122,7 +131,7 @@ public class DataPointControllerIntegrationTests {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
                 .andExpect(jsonPath("$.header.id").value(header.getId()))
-                .andExpect(jsonPath("$.header.creation_timestamp").value(header.getCreationTimestamp().toString()))
+                .andExpect(jsonPath("$.header.creation_date_time").value(header.getCreationDateTime().toString()))
                 .andExpect(jsonPath("$.header.schema_id.namespace").value(header.getSchemaId().getNamespace()))
                 .andExpect(jsonPath("$.header.schema_id.name").value(header.getSchemaId().getName()))
                 .andExpect(jsonPath("$.header.schema_id.version.major")
@@ -137,11 +146,10 @@ public class DataPointControllerIntegrationTests {
     public void writeDataShouldWriteDataPoint() throws Exception {
 
         DataPoint dataPoint = newDataPointBuilder().setBody(newKcalBurnedBody()).build();
-        List<DataPoint> dataPoints = Lists.newArrayList(dataPoint);
 
         mockMvc.perform(
                 post(CONTROLLER_URI)
-                        .content(objectMapper.writeValueAsString(dataPoints))
+                        .content(objectMapper.writeValueAsString(dataPoint))
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isCreated());
 
@@ -156,9 +164,14 @@ public class DataPointControllerIntegrationTests {
     // client has incorrect role
     // client has incorrect scope
     // token doesn't exist
-    // data point belongs to a a different user
-    // namespace?
     // username is incorrect
     // user password is incorrect
-    // data point doesn't exist
+    // try to read data point that belongs to a a different user
+    // try to overwrite data point that belongs to a a different user
+    // namespace?
+    // read data point that doesn't exist
+    // try to overwrite your own data point
+    // try to overwrite somebody else's data point
+    // try to specify a user id in th data point
+    // try to write invalid data
 }
