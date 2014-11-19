@@ -36,7 +36,7 @@ public class DataPointModalityUnitTests {
 
     @Test
     public void getJsonValueShouldReturnCorrectValue() throws Exception {
-        assertThat(SELF_REPORTED.getJsonValue(), equalTo("self reported"));
+        assertThat(SELF_REPORTED.getJsonValue(), equalTo("self-reported"));
     }
 
     @Test
@@ -51,6 +51,6 @@ public class DataPointModalityUnitTests {
 
     @Test
     public void findByJsonValueShouldReturnMatchingValue() throws Exception {
-        assertThat(DataPointModality.findByJsonValue("self reported"), equalTo(SELF_REPORTED));
+        assertThat(DataPointModality.findByJsonValue("self-reported"), equalTo(SELF_REPORTED));
     }
 }
