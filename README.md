@@ -16,6 +16,7 @@ This repository contains a Java reference implementation of an [Open mHealth](ht
 * the authorization server needs [PostgreSQL](http://www.postgresql.org/) to store client credentials and access tokens, and [MongoDB](http://www.mongodb.org/) to store user accounts
 * the resource server needs PostgreSQL to read access tokens and MongoDB to store data points
 * you can pull Docker containers for both servers from our [Docker Hub page](https://registry.hub.docker.com/repos/openmhealth/)
+* you can use a Postman [collection](https://www.getpostman.com/collections/18e6065476d59772c748) to easily issue API requests
   
 ### Overview
 
@@ -83,16 +84,15 @@ The rest of the dependencies are handled via Docker. In a terminal,
 
 #### Option 2. Building from source and running on your host system
 
-TODO
+We will add documentation on running the servers on your host system shortly.
 
-### Configuring the servers
+### Configuring the authorization server
 
 The authorization and resource servers are configured in YAML using [Spring Boot conventions](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-external-config).
 You can see the authorization server's configuration [here](authorization-server/src/main/resources/application.yml) and the
 resource server's configuration [here](resource-server/src/main/resources/application.yml).
 
 If you want to override the default configuration and you're running the servers on your host system, you can either
-
 
 * Add an environment variable with `-e`to the Docker `run` command corresponding to the property you want to set.
     * e.g. `docker run --name omh-dsu-authorization-server -e logging.level.org.springframework=DEBUG ...`
@@ -104,7 +104,7 @@ If you want to override the default configuration and you're running the servers
 
 #### Adding clients
 
-The authorization server manages the granting of access tokens according to the OAuth 2.0 specification. Since it is
+The authorization server manages the granting of access tokens to clients according to the OAuth 2.0 specification. Since it is
 good practice to not roll your own security infrastructure, we leverage [Spring Security OAuth 2.0](http://projects.spring.io/spring-security-oauth/)
 in this implementation. You can find the Spring Security OAuth 2.0 developer guide [here](http://projects.spring.io/spring-security-oauth/docs/oauth2.html).
 
@@ -132,7 +132,7 @@ can take once they have an access token. Specifically, the client details table 
     * `implicit`, documented in the [Implicit](http://tools.ietf.org/html/rfc6749#section-1.3.2) section
     * `password`, documented in the [Resource Owner Password Credentials](http://tools.ietf.org/html/rfc6749#section-1.3.3) section of the OAuth 2.0 spec
     * `refresh_token`, documented in the [Refresh Token](http://tools.ietf.org/html/rfc6749#section-1.5) section
-    * N.B. the `client_credentials` grant type in the [Client Credentials](http://tools.ietf.org/html/rfc6749#section-1.3.4) not yet supported but slated to be
+    * N.B. the `client_credentials` grant type in the [Client Credentials](http://tools.ietf.org/html/rfc6749#section-1.3.4) section is not yet supported, but slated to be
 * the Spring Security authorities (column `authorities`) the token bearer has, in our case `ROLE_CLIENT`
 
 To create a client,
@@ -145,15 +145,29 @@ To create a client,
 #### Adding end users
 
 The data points accessible over the data point API belong to a user. In OAuth 2.0, this user is called the `resource owner` or `end-user`.
+A client requests authorization from the authorization server to access the data points of one or more users.
 
-To create a user,
+The authorization server includes a simple RESTful endpoint to create users. To create a user, execute the following command
 
-> curl -H "Content-Type:application/json" --data '{"username": "testUser", "password": "testUserPassword"}' http://${DOCKER_IP}:8082/users
+```bash
+curl -H "Content-Type:application/json" --data '{"username": "testUser", "password": "testUserPassword"}' http://${DOCKER_IP}:8082/users
+```
 
-It is possible to use multiple resource servers with the same authorization server.
+or use the Postman collection discussed below.
 
+The user creation endpoint is primitive by design; it is only meant as a way to bootstrap a couple users
+when first starting out. In general, the creation of users is typically the concern of a user management component,
+not the authorization server. And it's quite common
+ for integrators to already have a user management system complete with its own user account database before introducing the
+ authorization server.
 
-#### Data point API
+To integrate a user management system with the authorization server, you would
+
+1. Disable the `org.openmhealth.dsu.controller.EndUserController`, usually by commenting out the `@Controller` annotation.
+1. Provide your own implementation of either the `org.openmhealth.dsu.service.EndUserService` or the
+ `org.openmhealth.dsu.repository.EndUserRepository`, populating `org.openmhealth.dsu.domain.EndUser` instances with data read from your own data stores or APIs.
+
+### Using the resource server
 
 The data point API is documented in a [RAML file](docs/raml/API.yml) to avoid ambiguity.
 
@@ -190,3 +204,6 @@ A data point looks something like this
     }
 }
 ```
+
+> The remainder of this documentation is actively being worked on.
+
