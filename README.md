@@ -181,24 +181,23 @@ To set up the collection,
 
 1. [Download](https://chrome.google.com/webstore/detail/postman-rest-client-packa/fhbjgbiflinjbdggehcddcbncdddomop) Postman.
 1. [Start it](http://www.getpostman.com/docs/launch).
-1. Click the *Import* button, choose the *Download from link* tab and paste this URL.
-   ```
-   https://www.getpostman.com/collections/18e6065476d59772c748
-   ```
+1. Click the *Import* button, choose the *Download from link* tab and paste `https://www.getpostman.com/collections/18e6065476d59772c748`
 1. The collection should now be available. The folder names describe the requests, and the request names describe the expected outcome.
 1. Create an [environment](https://www.getpostman.com/docs/environments). Environments provide values for the `{{...}}` placeholders in the collection.
    Add the following environment keys and values, possibly changing the values if you've customised the installation.
-    * `authorizationServer.host`: IP address of your Docker host (on Mac OS X, `boot2docker ip` will print this IP to the console)
-    * `authorizationServer.port`: `8082`
-    * `resourceServer.host`: IP address of your Docker host
-    * `resourceServer.port`: `8083`
-    * `accessToken`: issue the *get access token using RO password grant/success* request and copy the `access_token` value from the response here, without quotes
-    * `apiVersion`: `1.0.M1`
+    * `authorizationServer.host` - IP address of your Docker host (on Mac OS X, `boot2docker ip` will print this IP to the console)
+    * `authorizationServer.port` -  `8082`
+    * `resourceServer.host` -  IP address of your Docker host
+    * `resourceServer.port` -  `8083`
+    * `accessToken` - issue the *get access token using RO password grant/success* request and copy the `access_token` value from the response here, without quotes
+    * `apiVersion` -  `1.0.M1`
 
 To send a request, pick the request and click its *Send* button. The different requests should be self-explanatory,
-and correspond to the verbs and resources in the [data point API](docs/raml/API.yml). The folders also have descriptions,
-which you can currently only see by clicking the corresponding *Edit folder* button, but Postman are
-[working on that](https://github.com/a85/POSTMan-Chrome-Extension/issues/816). You can see the request descriptions by
+and correspond to the verbs and resources in the [data point API](docs/raml/API.yml).
+
+The folders also have descriptions,
+which you can currently only see by clicking the corresponding *Edit folder* button (but Postman are
+[working on that](https://github.com/a85/POSTMan-Chrome-Extension/issues/816)). You can see the request descriptions by
 selecting the request.
 
 ### Using the authorization server
