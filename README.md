@@ -33,7 +33,6 @@ This implementation uses two components that reflect the [OAuth 2.0 specificatio
 A *resource server* manages data point resources and implements the data point API. The resource server authorizes
 requests using OAuth 2.0 access tokens. An *authorization server* manages the granting of access tokens.
 
-
 ### Installation
 
 There are two ways to build and run the authorization and resource servers. 
@@ -101,6 +100,7 @@ If you want to override the default configuration and you're running the servers
     * This is particularly useful because you can change the configuration without running new containers.
     * You may need to install an editor, e.g. using `apt-get install vim`.
 
+It is possible to use multiple resource servers with the same authorization server.
 
 #### Adding clients
 
@@ -144,7 +144,7 @@ To create a client,
 
 #### Adding end users
 
-The data points accessible over the data point API belong to a user. In OAuth 2.0, this user is called the `resource owner` or `end-user`.
+The data points accessible over the data point API belong to a user. In OAuth 2.0, this user is called the *resource owner* or *end-user*.
 A client requests authorization from the authorization server to access the data points of one or more users.
 
 The authorization server includes a simple RESTful endpoint to create users. To create a user, execute the following command
@@ -153,7 +153,7 @@ The authorization server includes a simple RESTful endpoint to create users. To 
 curl -H "Content-Type:application/json" --data '{"username": "testUser", "password": "testUserPassword"}' http://${DOCKER_IP}:8082/users
 ```
 
-or use the Postman collection discussed below.
+or use the Postman collection discussed [below](#issuing-requests-with-postman).
 
 The user creation endpoint is primitive by design; it is only meant as a way to bootstrap a couple users
 when first starting out. In general, the creation of users is typically the concern of a user management component,
@@ -166,6 +166,44 @@ To integrate a user management system with the authorization server, you would
 1. Disable the `org.openmhealth.dsu.controller.EndUserController`, usually by commenting out the `@Controller` annotation.
 1. Provide your own implementation of either the `org.openmhealth.dsu.service.EndUserService` or the
  `org.openmhealth.dsu.repository.EndUserRepository`, populating `org.openmhealth.dsu.domain.EndUser` instances with data read from your own data stores or APIs.
+
+### Issuing requests with Postman
+
+Your code interacts with the authorization and resource servers by sending them HTTP
+requests. To make learning about those requests easier, we've created a [Postman](http://www.getpostman.com/) collection
+that contains a predefined set of requests for different actions and outcomes. Postman is a Chrome
+packaged application whose UI lets you craft and send HTTP requests.
+
+> These instructions are written for Postman 1.0.1. If you're using a newer version and they don't work,
+> [let us know](https://github.com/openmhealth/omh-dsu-ri/issues) and we'll fix them.
+
+To set up the collection,
+
+1. [Download](https://chrome.google.com/webstore/detail/postman-rest-client-packa/fhbjgbiflinjbdggehcddcbncdddomop) Postman.
+1. [Start it](http://www.getpostman.com/docs/launch).
+1. Click the *Import* button, choose the *Download from link* tab and paste this URL.
+   ```
+   https://www.getpostman.com/collections/18e6065476d59772c748
+   ```
+1. The collection should now be available. The folder names describe the requests, and the request names describe the expected outcome.
+1. Create an [environment](https://www.getpostman.com/docs/environments). Environments provide values for the `{{...}}` placeholders in the collection.
+   Add the following environment keys and values, possibly changing the values if you've customised the installation.
+    * `authorizationServer.host`: IP address of your Docker host (on Mac OS X, `boot2docker ip` will print this IP to the console)
+    * `authorizationServer.port`: `8082`
+    * `resourceServer.host`: IP address of your Docker host
+    * `resourceServer.port`: `8083`
+    * `accessToken`: issue the *get access token using RO password grant/success* request and copy the `access_token` value from the response here, without quotes
+    * `apiVersion`: `1.0.M1`
+
+To send a request, pick the request and click its *Send* button. The different requests should be self-explanatory,
+and correspond to the verbs and resources in the [data point API](docs/raml/API.yml). The folders also have descriptions,
+which you can currently only see by clicking the corresponding *Edit folder* button, but Postman are
+[working on that](https://github.com/a85/POSTMan-Chrome-Extension/issues/816). You can see the request descriptions by
+selecting the request.
+
+### Using the authorization server
+
+We may add documentation here if we find that the Postman collection isn't sufficient.
 
 ### Using the resource server
 
@@ -205,5 +243,19 @@ A data point looks something like this
 }
 ```
 
-> The remainder of this documentation is actively being worked on.
+We may add documentation here if we find that the Postman collection isn't sufficient.
 
+
+### Roadmap
+
+The following features are scheduled for future milestones
+
+* improve test coverage
+* support refresh tokens
+* support the client credentials grant type
+* make it easier to customise the authorization code and implicit grant forms
+* support SSL out of the box
+* filter data points based on their bodies
+
+If you have other feature requests, [create an issue for each](https://github.com/openmhealth/omh-dsu-ri/issues) and we'll figure out how to prioritise them. Or better yet, send us
+a pull request. And if you want to work on any of the above features, just let us know by submitting an issue.
