@@ -81,6 +81,8 @@ The rest of the dependencies are handled via Docker. In a terminal,
 1. Start the resource server by running
     * `docker run --name omh-dsu-resource-server --link omh-postgres:omh-postgres --link omh-mongo:omh-mongo -d -p 8083:8083 'openmhealth/omh-dsu-resource-server:latest'`
 
+The servers should now be running on your Docker host. Run `docker ps` to verify. 
+
 #### Option 2. Building from source and running on your host system
 
 We will add documentation on running the servers on your host system shortly.
@@ -185,7 +187,7 @@ To set up the collection,
 1. The collection should now be available. The folder names describe the requests, and the request names describe the expected outcome.
 1. Create an [environment](https://www.getpostman.com/docs/environments). Environments provide values for the `{{...}}` placeholders in the collection.
    Add the following environment keys and values, possibly changing the values if you've customised the installation.
-    * `authorizationServer.host` - IP address of your Docker host (on Mac OS X, `boot2docker ip` will print this IP to the console)
+    * `authorizationServer.host` - IP address of your Docker host (on Mac OS X and Windows, `boot2docker ip` will print this IP to the console)
     * `authorizationServer.port` -  `8082`
     * `resourceServer.host` -  IP address of your Docker host
     * `resourceServer.port` -  `8083`
