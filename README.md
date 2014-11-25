@@ -144,18 +144,18 @@ To create a client,
 
 > The remainder of this documentation is actively being worked on.
 
-#### Adding end users
+#### Adding end-users
 
 The data points accessible over the data point API belong to a user. In OAuth 2.0, this user is called the *resource owner* or *end-user*.
 A client requests authorization from the authorization server to access the data points of one or more users.
 
-The authorization server includes a simple RESTful endpoint to create users. To create a user, execute the following command
+The authorization server includes a simple RESTful endpoint to create users. To create a user, either execute the following command
 
 ```bash
 curl -H "Content-Type:application/json" --data '{"username": "testUser", "password": "testUserPassword"}' http://${DOCKER_IP}:8082/users
 ```
 
-or use the Postman collection discussed [below](#issuing-requests-with-postman).
+or use the *create an end-user/success or conflict* request in the Postman collection discussed [below](#issuing-requests-with-postman).
 
 The user creation endpoint is primitive by design; it is only meant as a way to bootstrap a couple users
 when first starting out. In general, the creation of users is typically the concern of a user management component,
