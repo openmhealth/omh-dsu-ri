@@ -29,4 +29,5 @@ public interface OAuth2Properties {
     public static final String DATA_POINT_READ_SCOPE = "read_data_points";
     public static final String DATA_POINT_WRITE_SCOPE = "write_data_points";
     public static final String DATA_POINT_DELETE_SCOPE = "delete_data_points";
+    public static final String SUBSCRIPTION_SCOPE = "subscription";
 }
