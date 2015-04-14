@@ -252,6 +252,8 @@ The subscription API allows subscribing to data point events (creation and delet
 The API is RESTFul API that supports creation, deletion and retreival of subscriptions.
 The authrization mechanism is the same as for the data point API (OAuth 2.0).
 
+The subscription API is documented in a [RAML file](docs/raml/subscription.yml)
+
 Once a subscription is created for a user, every data point creation or deletion will publish a notification using POST to the callback URL specified in the subscription. A sample notification look like this:
 
 ``` json
