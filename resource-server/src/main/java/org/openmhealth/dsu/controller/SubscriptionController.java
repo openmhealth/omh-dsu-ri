@@ -34,6 +34,7 @@ import static org.openmhealth.dsu.configuration.OAuth2Properties.CLIENT_ROLE;
 import static org.openmhealth.dsu.configuration.OAuth2Properties.SUBSCRIPTION_SCOPE;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
@@ -52,7 +53,6 @@ public class SubscriptionController {
      *
      * @param subscription the subscription to create
      */
-    // only allow clients with write scope to write data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + SUBSCRIPTION_SCOPE + "')")
     @RequestMapping(value = "/subscriptions", method = POST, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<Subscription> createSubscription(@RequestBody Subscription subscription, Authentication auth) {
@@ -62,7 +62,7 @@ public class SubscriptionController {
         //does subscription already exists
         Iterable<Subscription> subscriptions = subscriptionService.findByUserIdAndCallbackUrl(endUserId, subscription.getCallbackUrl());
         if (subscriptions.iterator().hasNext()) {
-            return new ResponseEntity<>(subscriptions.iterator().next(), OK);
+            return new ResponseEntity<>(CONFLICT);
         }
 
         // set the owner of the subscription to be the user associated with the access token
@@ -70,7 +70,21 @@ public class SubscriptionController {
 
         subscriptionService.save(subscription);
 
-        return new ResponseEntity<Subscription>(subscription, CREATED);
+        return new ResponseEntity<>(subscription, CREATED);
+    }
+
+    /**
+     * Returns list of subscriptions for user.
+     *
+     */
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + SUBSCRIPTION_SCOPE + "')")
+    @RequestMapping(value = "/subscriptions", method = GET, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<Iterable<Subscription>> getSubscriptions(Authentication auth) {
+        String endUserId = getEndUserId(auth);
+
+        Iterable<Subscription> subscriptions = subscriptionService.findByUserId(endUserId);
+        return new ResponseEntity<>(subscriptions, OK);
+
     }
 
     /**
@@ -78,7 +92,6 @@ public class SubscriptionController {
      *
      * @param id of the subscription to delete
      */
-    // only allow clients with write scope to write data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + SUBSCRIPTION_SCOPE + "')")
     @RequestMapping(value = "/subscriptions/{id}", method = RequestMethod.DELETE, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> deleteSubscription(@PathVariable String id, Authentication auth) {

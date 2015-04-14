@@ -246,6 +246,20 @@ A data point looks something like this
 
 We may add documentation here if we find that the Postman collection isn't sufficient.
 
+### Using Subscription API
+
+The subscription API allows subscribing to data point events (creation and deletion of data points).
+The API is RESTFul API that supports creation, deletion and retreival of subscriptions.
+The authrization mechanism is the same as for the data point API (OAuth 2.0).
+
+Once a subscription is created for a user, every data point creation or deletion will publish a notification to the callback URL specified in the subscription. A sample notification look like this:
+
+``` json
+{
+	"dataPointId": "foo1",
+	"eventType":"CREATE",
+	"eventDateTime":"2015-04-14T01:30:58.474Z"
+}
 
 ### Roadmap
 

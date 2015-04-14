@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.OffsetDateTime;
@@ -61,9 +62,13 @@ public class DataPointEventListener implements ApplicationListener<DataPointEven
 
         notification.setEventDateTime(OffsetDateTime.now().toString());
         subscriptions.forEach(sub -> {
-                    ResponseEntity<?> responseEntity = restTemplate.postForEntity(sub.getCallbackUrl(), notification, Notification.class);
-                    if (responseEntity.getStatusCode() != OK) {
-                        log.error("Notification error, {} status not expected", responseEntity.getStatusCode());
+                    try {
+                        ResponseEntity<?> responseEntity = restTemplate.postForEntity(sub.getCallbackUrl(), notification, Notification.class);
+                        if (responseEntity.getStatusCode() != OK) {
+                            log.error("Notification error, {} status not expected", responseEntity.getStatusCode());
+                        }
+                    } catch (RestClientException e) {
+                        log.error("Exception:", e);
                     }
                 }
         );
