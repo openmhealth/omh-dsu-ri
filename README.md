@@ -252,7 +252,7 @@ The subscription API allows subscribing to data point events (creation and delet
 The API is RESTFul API that supports creation, deletion and retreival of subscriptions.
 The authrization mechanism is the same as for the data point API (OAuth 2.0).
 
-Once a subscription is created for a user, every data point creation or deletion will publish a notification to the callback URL specified in the subscription. A sample notification look like this:
+Once a subscription is created for a user, every data point creation or deletion will publish a notification using POST to the callback URL specified in the subscription. A sample notification look like this:
 
 ``` json
 {
@@ -261,6 +261,9 @@ Once a subscription is created for a user, every data point creation or deletion
 	"eventDateTime":"2015-04-14T01:30:58.474Z"
 }
 ```
+
+The callback URL should respond with status 200 (OK) if the notification is received correctly. A notification retry mechanism has not been implemented yet.
+
 
 ### Roadmap
 
