@@ -7,6 +7,8 @@ import org.springframework.data.repository.Repository;
 import java.util.Optional;
 
 /**
+ * A repository of subscriptions.
+ *
  * Created by kkujovic on 4/12/15.
  */
 public interface SubscriptionRepository extends Repository<Subscription, String> {

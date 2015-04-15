@@ -17,6 +17,8 @@
 package org.openmhealth.dsu.domain;
 
 /**
+ * Helper for creating subscription objects.
+ * 
  * Created by kkujovic on 4/13/15.
  */
 public class SubscriptionBuilder {

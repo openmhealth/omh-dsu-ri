@@ -38,6 +38,8 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
+ * REST controller that handles the saving, deleting and listing subscriptions.
+ *
  * Created by kkujovic on 4/12/15.
  */
 @ApiController
@@ -59,7 +61,7 @@ public class SubscriptionController {
 
         String endUserId = getEndUserId(auth);
 
-        //does subscription already exists
+        //does subscription already exist?
         Iterable<Subscription> subscriptions = subscriptionService.findByUserIdAndCallbackUrl(endUserId, subscription.getCallbackUrl());
         if (subscriptions.iterator().hasNext()) {
             return new ResponseEntity<>(CONFLICT);
@@ -97,13 +99,12 @@ public class SubscriptionController {
     public ResponseEntity<?> deleteSubscription(@PathVariable String id, Authentication auth) {
         String endUserId = getEndUserId(auth);
 
-        //delete by is AND user id (onle delete subscription for the associated user)
+        //delete by id AND user id (only delete subscription for the associated user)
         Long deleteCount = subscriptionService.deleteByIdAndUserId(id, endUserId);
         return new ResponseEntity<>(deleteCount == 0 ? NOT_FOUND : OK);
     }
 
     private String getEndUserId(Authentication authentication) {
-
         return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
     }
 }

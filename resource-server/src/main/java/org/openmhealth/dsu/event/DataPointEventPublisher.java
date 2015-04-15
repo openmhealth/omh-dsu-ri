@@ -16,12 +16,15 @@
 
 package org.openmhealth.dsu.event;
 
-import org.openmhealth.dsu.domain.DataPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+
 /**
+ * Data point event publisher. It's called every time there is data point change.
+ *
  * Created by kkujovic on 4/12/15.
  */
 @Component
@@ -30,8 +33,16 @@ public class DataPointEventPublisher {
     @Autowired
     private ApplicationEventPublisher applicationEventPublisher;
 
+    /**
+     * Generates data point event and publishes it.
+     *
+     * @param userId
+     * @param dataPointId
+     * @param eventType
+     */
     public void publishEvent(String userId, String dataPointId, DataPointEvent.DataPointEventType eventType) {
-        DataPointEvent event = new DataPointEvent(this, userId, dataPointId, eventType);
+        String eventDateTime = OffsetDateTime.now().toString();
+        DataPointEvent event = new DataPointEvent(this, userId, dataPointId, eventType, eventDateTime);
         applicationEventPublisher.publishEvent(event);
     }
 }

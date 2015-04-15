@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.OffsetDateTime;
 
 /**
+ * Simple notification of a data point change event
+ *
  * Created by kkujovic on 4/12/15.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)

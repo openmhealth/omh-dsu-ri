@@ -7,6 +7,8 @@ import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 /**
+ * Overrides default event multicaster to support asynchronous processing.
+ *
  * Created by kkujovic on 4/14/15.
  */
 @Configuration

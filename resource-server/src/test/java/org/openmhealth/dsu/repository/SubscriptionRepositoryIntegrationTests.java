@@ -27,6 +27,9 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
+ * Subscription repository integration tests.
+ *
+ *
  * Created by kkujovic on 4/13/15.
  */
 public abstract class SubscriptionRepositoryIntegrationTests {

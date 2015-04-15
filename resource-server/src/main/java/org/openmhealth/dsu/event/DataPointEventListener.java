@@ -37,6 +37,9 @@ import static org.springframework.http.HttpStatus.*;
 
 
 /**
+ * Simple event listener that listens for data point events.
+ * It creates POST request for every subscription for a given user.
+ * <p>
  * Created by kkujovic on 4/12/15.
  */
 @Component
@@ -50,17 +53,18 @@ public class DataPointEventListener implements ApplicationListener<DataPointEven
 
     private RestTemplate restTemplate = new RestTemplate();
 
+    /**
+     * Processes data point event by sending POST request for each subscription created.
+     *
+     * @param event
+     */
     @Override
     public void onApplicationEvent(DataPointEvent event) {
 
+        Notification notification = createNotification(event);
         String userId = event.getUserId();
-
         Iterable<Subscription> subscriptions = subscriptionService.findByUserId(userId);
-        Notification notification = new Notification();
-        notification.setDataPointId(event.getDataPointId());
-        notification.setEventType(event.getEventType());
 
-        notification.setEventDateTime(OffsetDateTime.now().toString());
         subscriptions.forEach(sub -> {
                     try {
                         ResponseEntity<?> responseEntity = restTemplate.postForEntity(sub.getCallbackUrl(), notification, Notification.class);
@@ -73,5 +77,13 @@ public class DataPointEventListener implements ApplicationListener<DataPointEven
                 }
         );
 
+    }
+
+    private Notification createNotification(DataPointEvent event) {
+        Notification notification = new Notification();
+        notification.setDataPointId(event.getDataPointId());
+        notification.setEventType(event.getEventType());
+        notification.setEventDateTime(event.getEventDateTime());
+        return notification;
     }
 }

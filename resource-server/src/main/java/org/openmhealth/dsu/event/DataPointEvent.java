@@ -20,6 +20,7 @@ import org.openmhealth.dsu.domain.DataPoint;
 import org.springframework.context.ApplicationEvent;
 
 /**
+ * Event used in subscription API. It's created for every data point change (create and delete)
  * Created by kkujovic on 4/12/15.
  */
 public class DataPointEvent extends ApplicationEvent {
@@ -27,16 +28,18 @@ public class DataPointEvent extends ApplicationEvent {
     private final DataPointEventType eventType;
     private final String dataPointId;
     private final String userId;
+    private final String eventDateTime;
 
     public enum DataPointEventType {
         CREATE, DELETE
     }
 
-    public DataPointEvent(Object source, String userId,  String dataPointId, DataPointEventType eventType) {
+    public DataPointEvent(Object source, String userId, String dataPointId, DataPointEventType eventType, String eventDateTime) {
         super(source);
         this.dataPointId = dataPointId;
         this.userId = userId;
         this.eventType = eventType;
+        this.eventDateTime = eventDateTime;
     }
 
     public DataPointEventType getEventType() {
@@ -49,5 +52,9 @@ public class DataPointEvent extends ApplicationEvent {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getEventDateTime() {
+        return eventDateTime;
     }
 }

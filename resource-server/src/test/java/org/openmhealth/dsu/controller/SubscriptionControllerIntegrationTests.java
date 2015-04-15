@@ -46,6 +46,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
+ * Integration tests for subscription controller.
+ *
  * Created by kkujovic on 4/13/15.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
