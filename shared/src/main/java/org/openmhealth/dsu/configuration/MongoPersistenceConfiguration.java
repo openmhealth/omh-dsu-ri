@@ -27,10 +27,10 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mapping.model.FieldNamingStrategy;
+import org.springframework.data.mapping.model.SnakeCaseFieldNamingStrategy;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
-import org.springframework.data.mongodb.core.mapping.FieldNamingStrategy;
-import org.springframework.data.mongodb.core.mapping.SnakeCaseFieldNamingStrategy;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import javax.annotation.PreDestroy;
