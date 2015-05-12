@@ -3,15 +3,15 @@ apply plugin: 'maven' // used for deploying artifacts to Maven repositories
 buildscript {
     repositories {
         mavenLocal()
-        mavenCentral()
+        jcenter()
     }
 
     ext {
-        springPlatformVersion = '1.0.3.RELEASE'
-        springBootVersion = '1.1.9.RELEASE'
+        springBootVersion = "1.2.3.RELEASE"
     }
 
     dependencies {
+        classpath 'io.spring.gradle:dependency-management-plugin:0.5.1.RELEASE'
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
     }
 }
@@ -22,18 +22,18 @@ allprojects {
 
     repositories {
         mavenLocal()
-        mavenCentral()
+        jcenter()
     }
 }
 
 subprojects {
     apply plugin: 'java'
-    apply plugin: 'spring-boot' // used for blessed dependencies and auto-configuration
+    apply plugin: 'spring-boot' // used for auto-configuration
+    apply plugin: 'io.spring.dependency-management'
 
     ext {
-        gradleVersion = '2.1'
+        gradleVersion = '2.4'
         javaVersion = 1.8
-        jacksonVersion = '2.4.2' // platform's still on 2.3.4, 2.4 required for Java 8
         mailApiVersion = '1.5.2'
         postgresqlVersion = '9.3-1102-jdbc41'
     }
@@ -42,14 +42,11 @@ subprojects {
     targetCompatibility = javaVersion
 
     dependencies {
-        // Spring IO (http://platform.spring.io/platform) gives us curated and harmonised dependencies, whose versions
-        // you can find at http://docs.spring.io/platform/docs/${springPlatformVersion}/reference/htmlsingle/#appendix-dependency-versions
-        versionManagement "io.spring.platform:platform-versions:${springPlatformVersion}@properties"
-
         compile 'org.hibernate:hibernate-validator'
-        compile "com.fasterxml.jackson.core:jackson-core:${jacksonVersion}"
-        compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
-        compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:${jacksonVersion}"
+        compile "com.fasterxml.jackson.core:jackson-core"
+        compile "com.fasterxml.jackson.core:jackson-databind"
+        compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
+        compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
         compile "com.sun.mail:mailapi:${mailApiVersion}"
         compile "javax.mail:javax.mail-api:${mailApiVersion}" // required to support InternetAddress fields
         compile 'org.slf4j:jcl-over-slf4j'
@@ -59,6 +56,7 @@ subprojects {
         compile 'org.springframework:spring-beans'
         compile "org.springframework.boot:spring-boot-autoconfigure"
         compile 'org.springframework:spring-context'
+        compile "org.springframework.security.oauth:spring-security-oauth2:2.0.7.RELEASE"
         compile 'javax.validation:validation-api'
 
         testCompile 'org.hamcrest:hamcrest-library'
@@ -79,7 +77,6 @@ configure([
         compile("org.springframework.boot:spring-boot-starter-web") {
             exclude module: "spring-boot-starter-tomcat"
         }
-        compile 'org.springframework.security.oauth:spring-security-oauth2'
         compile 'org.springframework:spring-web'
         compile 'org.springframework:spring-webmvc'
 
