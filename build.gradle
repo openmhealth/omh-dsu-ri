@@ -45,6 +45,7 @@ subprojects {
         compile 'org.hibernate:hibernate-validator'
         compile "com.fasterxml.jackson.core:jackson-core"
         compile "com.fasterxml.jackson.core:jackson-databind"
+        compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
         compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
         compile "com.sun.mail:mailapi:${mailApiVersion}"
         compile "javax.mail:javax.mail-api:${mailApiVersion}" // required to support InternetAddress fields
