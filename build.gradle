@@ -31,7 +31,7 @@ subprojects {
     apply plugin: 'spring-boot' // used for blessed dependencies and auto-configuration
 
     ext {
-        gradleVersion = '2.1'
+        gradleVersion = '2.4'
         javaVersion = 1.8
         jacksonVersion = '2.4.2' // platform's still on 2.3.4, 2.4 required for Java 8
         mailApiVersion = '1.5.2'
