@@ -1,0 +1,21 @@
+mongo:
+  image: mongo:latest
+
+postgres:
+  image: openmhealth/omh-postgres:latest
+
+authorization:
+  image: openmhealth/omh-dsu-authorization-server:latest
+  links:
+    - mongo:omh-mongo
+    - postgres:omh-postgres
+  ports:
+    - "8082:8082"
+
+resource:
+  image: openmhealth/omh-dsu-resource-server:latest
+  links:
+    - mongo:omh-mongo
+    - postgres:omh-postgres
+  ports:
+    - "8083:8083"
