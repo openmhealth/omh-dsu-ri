@@ -2,18 +2,18 @@ mongo:
   image: mongo:latest
 
 postgres:
-  image: openmhealth/omh-postgres:latest
+  build: resources/rdbms/postgresql
 
-authorization:
-  image: openmhealth/omh-dsu-authorization-server:latest
+authorizationserver:
+  build: authorization-server/docker
   links:
     - mongo:omh-mongo
     - postgres:omh-postgres
   ports:
     - "8082:8082"
 
-resource:
-  image: openmhealth/omh-dsu-resource-server:latest
+resourceserver:
+  build: resource-server/docker
   links:
     - mongo:omh-mongo
     - postgres:omh-postgres
