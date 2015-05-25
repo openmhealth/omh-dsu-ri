@@ -85,6 +85,15 @@ configure([
         // compile 'mysql:mysql-connector-java'
         compile "org.postgresql:postgresql:${postgresqlVersion}"
     }
+
+    task copyArchiveJarToDockerContext(dependsOn: build, type: Copy) {
+        from 'build/libs'
+        into 'docker'
+        include "${jar.archiveName}"
+        rename { String fileName ->
+            fileName.replace("${jar.archiveName}", "${jar.baseName}.jar")
+        }
+    }
 }
 
 // FIXME add integration test support
