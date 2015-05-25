@@ -112,7 +112,8 @@ public class EndUserControllerIntegrationTests {
 
         mockMvc.perform(
                 post(REGISTER_USER_URI)
-                        .contentType(MediaType.APPLICATION_XML))
+                        .contentType(MediaType.APPLICATION_XML)
+                        .content("<data />"))
                 .andExpect(status().isUnsupportedMediaType());
     }
 
