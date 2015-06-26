@@ -8,7 +8,7 @@ This repository contains a Java reference implementation of an [Open mHealth](ht
 ### tl;dr
 
 * this repository contains a secure endpoint that offers an API for storing and retrieving data points
-* data points conform to the Open mHealth [data point schema](http://www.openmhealth.org/developers/schemas/#data-point)
+* data points conform to the Open mHealth [data point schema](http://www.openmhealth.org/documentation/#/schema-docs/schema-library/schemas/omh_data-point)
 * the code consists of an [OAuth 2.0](http://oauth.net/2/) authorization server and resource server
 * the authorization server manages access tokens
 * the resource server implements the data point API documented [here](docs/raml/API.yml)
@@ -21,8 +21,8 @@ This repository contains a Java reference implementation of an [Open mHealth](ht
 ### Overview
 
 A *data point* is a JSON document that represents a piece of data and conforms to
-the [data-point](http://www.openmhealth.org/developers/schemas/#data-point) schema. The header of a data point conforms to
-  the [header](http://www.openmhealth.org/developers/schemas/#header) schema, and the body can conform to any schema you like.
+the [data-point](http://www.openmhealth.org/documentation/#/schema-docs/schema-library/schemas/omh_data-point) schema. The header of a data point conforms to
+  the [header](http://www.openmhealth.org/documentation/#/schema-docs/schema-library/schemas/omh_header) schema, and the body can conform to any schema you like.
 The header is designed to contain operational metadata, such as identifiers and provenance, whereas the body contains
 the data being acquired or computed.
 
