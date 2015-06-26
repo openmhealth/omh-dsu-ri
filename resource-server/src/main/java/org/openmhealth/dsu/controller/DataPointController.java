@@ -17,12 +17,11 @@
 package org.openmhealth.dsu.controller;
 
 import com.google.common.collect.Range;
-import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.openmhealth.schema.domain.omh.DataPoint;
+import org.openmhealth.schema.domain.omh.DataPointHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -32,6 +31,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -48,8 +48,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
  */
 @ApiController
 public class DataPointController {
-
-    private static final Logger log = LoggerFactory.getLogger(DataPointController.class);
 
     /*
      * These filtering parameters are temporary. They will likely change when a more generic filtering approach is
@@ -83,6 +81,7 @@ public class DataPointController {
     // TODO confirm if HEAD handling needs anything additional
     // only allow clients with read scope to read data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
+    // TODO look into any meaningful @PostAuthorize filtering
     @RequestMapping(value = "/dataPoints", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
     @ResponseBody
@@ -144,7 +143,7 @@ public class DataPointController {
     // only allow clients with read scope to read a data point
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
     // ensure that the returned data point belongs to the user associated with the access token
-    @PostAuthorize("returnObject.body == null || returnObject.body.userId == principal.username")
+    @PostAuthorize("returnObject.body == null || returnObject.body.header.userId == principal.username")
     @RequestMapping(value = "/dataPoints/{id}", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     public
     @ResponseBody
@@ -171,18 +170,30 @@ public class DataPointController {
     public ResponseEntity<?> writeDataPoint(@RequestBody @Valid DataPoint dataPoint, Authentication authentication) {
 
         // FIXME test validation
-        if (dataPointService.exists(dataPoint.getId())) {
+        if (dataPointService.exists(dataPoint.getHeader().getId())) {
             return new ResponseEntity<>(CONFLICT);
         }
 
         String endUserId = getEndUserId(authentication);
 
         // set the owner of the data point to be the user associated with the access token
-        dataPoint.setUserId(endUserId);
+        setUserId(dataPoint.getHeader(), endUserId);
 
         dataPointService.save(dataPoint);
 
         return new ResponseEntity<>(CREATED);
+    }
+
+    // this is currently implemented using reflection, until we see other use cases where mutability would be useful
+    private void setUserId(DataPointHeader header, String endUserId) {
+        try {
+            Field userIdField = header.getClass().getDeclaredField("userId");
+            userIdField.setAccessible(true);
+            userIdField.set(header, endUserId);
+        }
+        catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new IllegalStateException("A user identifier property can't be changed in the data point header.", e);
+        }
     }
 
     /**
