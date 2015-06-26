@@ -16,9 +16,9 @@
 
 package org.openmhealth.dsu.service;
 
-import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.repository.DataPointRepository;
+import org.openmhealth.schema.domain.omh.DataPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,6 +108,6 @@ public class DataPointServiceImpl implements DataPointService {
         checkNotNull(userId);
         checkArgument(!userId.isEmpty());
 
-        return repository.deleteByIdAndUserId(id, userId);
+        return repository.deleteByIdAndHeaderUserId(id, userId);
     }
 }

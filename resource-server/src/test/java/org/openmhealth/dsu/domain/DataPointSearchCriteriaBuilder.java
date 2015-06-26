@@ -17,7 +17,7 @@
 package org.openmhealth.dsu.domain;
 
 import com.google.common.collect.Range;
-import org.openmhealth.schema.domain.SchemaVersion;
+import org.openmhealth.schema.domain.omh.SchemaVersion;
 
 import java.time.OffsetDateTime;
 

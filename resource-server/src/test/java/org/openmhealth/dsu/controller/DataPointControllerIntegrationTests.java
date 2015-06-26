@@ -24,9 +24,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.openmhealth.dsu.configuration.Application;
 import org.openmhealth.dsu.configuration.TestConfiguration;
-import org.openmhealth.dsu.domain.DataPoint;
-import org.openmhealth.dsu.domain.DataPointHeader;
 import org.openmhealth.dsu.service.DataPointService;
+import org.openmhealth.schema.domain.omh.DataPoint;
+import org.openmhealth.schema.domain.omh.DataPointHeader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -128,10 +128,10 @@ public class DataPointControllerIntegrationTests {
         DataPoint dataPoint = newDataPointBuilder().setBody(newKcalBurnedBody()).build();
         DataPointHeader header = dataPoint.getHeader();
 
-        when(mockDataPointService.findOne(dataPoint.getId())).thenReturn(Optional.of(dataPoint));
+        when(mockDataPointService.findOne(dataPoint.getHeader().getId())).thenReturn(Optional.of(dataPoint));
 
         mockMvc.perform(
-                get(CONTROLLER_URI + "/" + dataPoint.getId())
+                get(CONTROLLER_URI + "/" + dataPoint.getHeader().getId())
                         .accept(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON))
