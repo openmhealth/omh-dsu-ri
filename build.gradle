@@ -32,7 +32,7 @@ subprojects {
     ext {
         gradleVersion = '2.4'
         javaVersion = 1.8
-        omhSchemaSdkVersion = '1.0.1'
+        omhSchemaSdkVersion = '1.0.2'
         mailApiVersion = '1.5.2'
         postgresqlVersion = '9.3-1102-jdbc41'
     }
