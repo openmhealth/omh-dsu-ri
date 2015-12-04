@@ -1,4 +1,4 @@
-# Open mHealth DSU RI
+# Open mHealth Data Storage Component
 
 This repository contains a Java reference implementation of an [Open mHealth](http://www.openmhealth.org/) data storage component. This component supports the 1.0.M1 data point API.
 
