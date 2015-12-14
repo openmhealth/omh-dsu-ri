@@ -1,0 +1,64 @@
+#%RAML 0.8
+title: Open mHealth Data Point API
+version: v1.0.M1
+
+baseUri: https://{endpointUrl}/{version}
+baseUriParameters:
+  domain:
+    endpointUrl: the location of the API endpoint
+    type: string
+
+mediaType: application/json
+
+
+securitySchemes:
+  - oauth_2_0:
+    type: OAuth 2.0
+    describedBy:
+      headers:
+        Authorization:
+          description: the access token
+          type: string
+      responses:
+        401:
+          description: the access token is not valid or has not been granted the required scope
+
+    settings:
+      authorizationUri: http://domain/oauth/authorize
+      accessTokenUri: http://domain/oauth/token
+      authorizationGrants: [code, token, owner]
+      scopes: [read_data_points, write_data_points, delete_data_points,subscription]
+
+/subscriptions:
+
+  post:
+    description: create a subscription
+    securedBy: [oauth_2_0]
+    body:
+      application/json
+    responses:
+      201:
+        description: the subscription has been created
+      409:
+        description: a subscription with the same user id and callback URL already exists
+  get:
+      description: get list of subscriptions
+      securedBy: [oauth_2_0]
+      responses:
+        200:
+          body:
+            application/json
+  /{id}:
+    uriParameters:
+      id:
+        description: the identifier of subscription
+        type: string
+
+    delete:
+      description: delete a subscription
+      securedBy: [oauth_2_0]
+      responses:
+        200:
+          description: the subscription has been deleted
+        404:
+          description: the subscription does not exist

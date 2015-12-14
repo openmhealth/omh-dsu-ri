@@ -20,6 +20,8 @@ import com.google.common.collect.Range;
 import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
+import org.openmhealth.dsu.event.DataPointEvent;
+import org.openmhealth.dsu.event.DataPointEventPublisher;
 import org.openmhealth.dsu.service.DataPointService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +69,9 @@ public class DataPointController {
 
     @Autowired
     private DataPointService dataPointService;
+
+    @Autowired
+    private DataPointEventPublisher dataPointEventPublisher;
 
     /**
      * Reads data points.
@@ -182,6 +187,9 @@ public class DataPointController {
 
         dataPointService.save(dataPoint);
 
+        //create event for subscription API
+        dataPointEventPublisher.publishEvent(endUserId, dataPoint.getId(), DataPointEvent.DataPointEventType.CREATE);
+
         return new ResponseEntity<>(CREATED);
     }
 
@@ -201,6 +209,13 @@ public class DataPointController {
         // only delete the data point if it belongs to the user associated with the access token
         Long dataPointsDeleted = dataPointService.deleteByIdAndUserId(id, endUserId);
 
-        return new ResponseEntity<>(dataPointsDeleted == 0 ? NOT_FOUND : OK);
+        if (dataPointsDeleted > 0) {
+            //publish notification
+            dataPointEventPublisher.publishEvent(endUserId, id, DataPointEvent.DataPointEventType.DELETE);
+
+            return new ResponseEntity<>(OK);
+        } else {
+            return new ResponseEntity<>(NOT_FOUND);
+        }
     }
 }

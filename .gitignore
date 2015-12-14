@@ -1,3 +1,7 @@
 *.iml
 .idea
 target
+.DS_Store
+build
+.gradle
+**/docker/*.jar
