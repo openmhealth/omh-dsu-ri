@@ -1,9 +1,3 @@
-// disable trying to make this project's JAR file executable
-bootRepackage {
-    enabled = false
-    mainClassName = ''
-}
-
 dependencies {
     compile 'org.springframework.data:spring-data-commons'
     compile 'org.springframework.data:spring-data-mongodb'
@@ -15,6 +9,6 @@ dependencies {
 
     testCompile 'org.mongodb:mongo-java-driver'
     // if you're using MySQL instead of PostgreSQL, pull in the mysql-connector-java dependency
-    // test 'mysql:mysql-connector-java'
-    testCompile "org.postgresql:postgresql:${postgresqlVersion}"
+    // testCompile 'mysql:mysql-connector-java'
+    testCompile "org.postgresql:postgresql"
 }
