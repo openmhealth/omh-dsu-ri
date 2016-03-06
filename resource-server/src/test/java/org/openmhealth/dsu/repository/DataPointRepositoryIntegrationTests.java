@@ -16,7 +16,6 @@
 
 package org.openmhealth.dsu.repository;
 
-import com.mongodb.util.JSON;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -99,11 +98,7 @@ public abstract class DataPointRepositoryIntegrationTests {
     }
 
     public void assertThatDataPointsAreEqual(DataPoint actual, DataPoint expected) {
-
-        assertThat(actual.getHeader(), equalTo(expected.getHeader()));
-
-        // although this uses Mongo libraries to check deep equality, it should work with other data stores
-        assertThat(JSON.serialize(actual.getBody()), equalTo(JSON.serialize(expected.getBody())));
+        assertThat(actual, equalTo(expected));
     }
 
     @Test(expected = NullPointerException.class)
@@ -254,7 +249,8 @@ public abstract class DataPointRepositoryIntegrationTests {
     @Test
     public void deleteByIdAndUserIdShouldReturnZeroOnUnrecognizedUserId() {
 
-        assertThat(repository.deleteByIdAndHeaderUserId(testDataPoint.getHeader().getId(), UNRECOGNIZED_ID), equalTo(0l));
+        assertThat(repository.deleteByIdAndHeaderUserId(testDataPoint.getHeader().getId(), UNRECOGNIZED_ID),
+                equalTo(0l));
     }
 
     @Test
