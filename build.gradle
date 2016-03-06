@@ -64,9 +64,21 @@ subprojects {
     }
 }
 
+configure(project(":shared")) {
+
+    // disable trying to make this project's JAR file executable
+    bootRepackage {
+        enabled = false
+    }
+}
+
 configure([
         project(":authorization-server"),
         project(":resource-server")]) {
+
+    bootRepackage {
+        mainClass = "org.openmhealth.dsu.configuration.Application"
+    }
 
     dependencies {
         compile project(':shared')
