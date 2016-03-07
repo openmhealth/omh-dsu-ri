@@ -1,0 +1,25 @@
+# MongoDB is used to store data points and user account information.
+mongo:
+  image: mongo:latest
+
+# PostgreSQL is used to store OAuth 2.0 client credentials and access tokens. Instead of pulling the vanilla image,
+# this Compose file builds a custom PostgreSQL image that adds initialization scripts to the container.
+# These scripts create the database tables necessary to store credentials and tokens.
+postgres:
+  build: resources/rdbms/postgresql
+
+authorizationserver:
+  build: authorization-server/docker
+  links:
+    - mongo:omh-mongo
+    - postgres:omh-postgres
+  ports:
+    - "8082:8082"
+
+resourceserver:
+  build: resource-server/docker
+  links:
+    - mongo:omh-mongo
+    - postgres:omh-postgres
+  ports:
+    - "8083:8083"
