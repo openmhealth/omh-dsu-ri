@@ -68,7 +68,7 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
 
         Query query = new Query();
 
-        query.addCriteria(where("user_id").is(searchCriteria.getUserId()));
+        query.addCriteria(where("header.user_id").is(searchCriteria.getUserId()));
         query.addCriteria(where("header.schema_id.namespace").is(searchCriteria.getSchemaNamespace()));
         query.addCriteria(where("header.schema_id.name").is(searchCriteria.getSchemaName()));
         query.addCriteria(where("header.schema_id.version.major").is(searchCriteria.getSchemaVersion().getMajor()));
