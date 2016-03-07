@@ -96,7 +96,7 @@ configure([
         compile "org.postgresql:postgresql"
     }
 
-    task copyArchiveJarToDockerContext(dependsOn: build, type: Copy) {
+    task copyArchiveJarToDockerContext(dependsOn: assemble, type: Copy) {
         from 'build/libs'
         into 'docker'
         include "${jar.archiveName}"
@@ -104,6 +104,7 @@ configure([
             fileName.replace("${jar.archiveName}", "${jar.baseName}.jar")
         }
     }
+    build.dependsOn copyArchiveJarToDockerContext
 }
 
 // FIXME add integration test support
