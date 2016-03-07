@@ -1,5 +1,4 @@
 #%RAML 0.8
-# TODO confirm the name
 title: Open mHealth Data Point API
 version: v1.0.M1
 
@@ -12,7 +11,7 @@ baseUriParameters:
 mediaType: application/json
 
 schemas:
-  - data-point: !include http://www.openmhealth.org/schema/omh/generic/data-point-1.0.json
+  - data-point: !include http://www.openmhealth.org/schema/omh/data-point-1.0.json
 
 traits:
   - paginated:
