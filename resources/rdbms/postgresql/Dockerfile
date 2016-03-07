@@ -4,4 +4,4 @@ FROM postgres:latest
 MAINTAINER Emerson Farrugia <emerson@openmhealth.org>
 # Originally contributed by Matthew Schulkind <mschulkind@gmail.com>.
 
-COPY create-database.sql oauth2-ddl.sql oauth2-sample-data.sql /docker-entrypoint-initdb.d/
+COPY create-database.sql oauth2-ddl.sql /docker-entrypoint-initdb.d/
