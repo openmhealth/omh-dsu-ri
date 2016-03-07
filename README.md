@@ -1,4 +1,4 @@
-# Open mHealth Storage Endpoint
+# Open mHealth Storage Endpoint [![Build Status](https://travis-ci.org/openmhealth/omh-dsu-ri.svg?branch=feature%2support-docker-compose)](https://travis-ci.org/openmhealth/omh-dsu-ri)
 
 This repository contains the Java reference implementation of an [Open mHealth](http://www.openmhealth.org/)
 [Data Point API](docs/raml/API.yml) storage endpoint.
