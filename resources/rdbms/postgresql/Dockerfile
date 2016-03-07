@@ -1,8 +1,7 @@
 # This image adds the authorization schema and sample OAuth 2.0 credentials to a PostgreSQL database.
-# Contributed by Matthew Schulkind <mschulkind@gmail.com>.
 
 FROM postgres:latest
 MAINTAINER Emerson Farrugia <emerson@openmhealth.org>
+# Originally contributed by Matthew Schulkind <mschulkind@gmail.com>.
 
-COPY oauth2-ddl.sql oauth2-sample-data.sql /tmp/
-COPY initialize-database.sh /docker-entrypoint-initdb.d/
+COPY create-database.sql oauth2-ddl.sql oauth2-sample-data.sql /docker-entrypoint-initdb.d/

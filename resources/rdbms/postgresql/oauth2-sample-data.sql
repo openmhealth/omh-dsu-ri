@@ -1,3 +1,5 @@
+\c omh
+
 INSERT INTO oauth_client_details (
   client_id,
   client_secret,

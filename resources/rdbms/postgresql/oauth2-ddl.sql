@@ -1,4 +1,3 @@
-CREATE DATABASE omh;
 \c omh
 
 CREATE TABLE oauth_access_token (
