@@ -12,4 +12,16 @@ cache:
   directories:
     - $HOME/.gradle/wrapper/dists/gradle-2.11-bin
 
+addons:
+  hosts:
+    - omh-mongo
+    - omh-postgres
+
+services:
+  - mongodb
+  - postgresql
+
+before_script:
+  - psql -f resources/rdbms/postgresql/create-database.sql -U postgres
+  - psql -f resources/rdbms/postgresql/oauth2-ddl.sql -U postgres
 

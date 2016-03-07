@@ -134,7 +134,7 @@ can take once they have an access token. Specifically, the client details table 
 
 To create a client,
 
-1. Connect to the `omh` PostgreSQL database using the same mechanism you used during the installation.
+1. Connect to the `omh` PostgreSQL database.
 1. Add a row to the `oauth_client_details` table, as shown in this [sample script](resources/rdbms/common/oauth2-sample-data.sql).
 
 
