@@ -32,11 +32,9 @@ spring:
     driverClassName: org.postgresql.Driver
     url: jdbc:postgresql://omh-postgres:5432/omh
     username: postgres
-    password: postgres
-
-http:
-  mappers:
-    jsonPrettyPrint: true
+  jackson:
+    serialization:
+      INDENT_OUTPUT: true
 
 logging:
   level:

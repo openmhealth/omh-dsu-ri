@@ -16,6 +16,7 @@
 
 package org.openmhealth.dsu.configuration;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClientOptions;
 import org.openmhealth.dsu.converter.OffsetDateTimeToStringConverter;
@@ -27,10 +28,11 @@ import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.data.mapping.model.FieldNamingStrategy;
+import org.springframework.data.mapping.model.JsonPropertyPreservingFieldNamingStrategy;
+import org.springframework.data.mapping.model.SnakeCaseFieldNamingStrategy;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
-import org.springframework.data.mongodb.core.mapping.FieldNamingStrategy;
-import org.springframework.data.mongodb.core.mapping.SnakeCaseFieldNamingStrategy;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import javax.annotation.PreDestroy;
@@ -40,8 +42,8 @@ import java.util.List;
 
 
 /**
- * A configuration for Spring Data MongoDB. It controls the repositories to scan for and sets up converters to
- * support persistence of Java 8 {@link java.time.OffsetDateTime}. The remaining boilerplate is mostly a copy of {@link
+ * A configuration for Spring Data MongoDB. It controls the repositories to scan for and sets up converters to support
+ * persistence of Java 8 {@link java.time.OffsetDateTime}. The remaining boilerplate is mostly a copy of {@link
  * MongoAutoConfiguration}.
  *
  * @author Emerson Farrugia
@@ -89,7 +91,12 @@ public class MongoPersistenceConfiguration extends AbstractMongoConfiguration {
         return new CustomConversions(converters);
     }
 
+    /**
+     * @return a naming strategy that makes persisted data match serialized data by converting camel case fields to
+     * snake case and respecting {@link JsonProperty} overrides
+     */
     protected FieldNamingStrategy fieldNamingStrategy() {
-        return new SnakeCaseFieldNamingStrategy();
+
+        return new JsonPropertyPreservingFieldNamingStrategy(new SnakeCaseFieldNamingStrategy());
     }
 }

@@ -16,7 +16,7 @@
 
 package org.openmhealth.dsu.repository;
 
-import org.openmhealth.dsu.domain.DataPoint;
+import org.openmhealth.schema.domain.omh.DataPoint;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
@@ -42,5 +42,5 @@ public interface DataPointRepository extends Repository<DataPoint, String>, Cust
 
     void delete(String id);
 
-    Long deleteByIdAndUserId(String id, String userId);
+    Long deleteByIdAndHeaderUserId(String id, String userId);
 }

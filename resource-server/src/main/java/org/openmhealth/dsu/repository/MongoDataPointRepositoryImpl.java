@@ -17,8 +17,8 @@
 package org.openmhealth.dsu.repository;
 
 import com.google.common.collect.Range;
-import org.openmhealth.dsu.domain.DataPoint;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
+import org.openmhealth.schema.domain.omh.DataPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -68,7 +68,7 @@ public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
 
         Query query = new Query();
 
-        query.addCriteria(where("user_id").is(searchCriteria.getUserId()));
+        query.addCriteria(where("header.user_id").is(searchCriteria.getUserId()));
         query.addCriteria(where("header.schema_id.namespace").is(searchCriteria.getSchemaNamespace()));
         query.addCriteria(where("header.schema_id.name").is(searchCriteria.getSchemaName()));
         query.addCriteria(where("header.schema_id.version.major").is(searchCriteria.getSchemaVersion().getMajor()));

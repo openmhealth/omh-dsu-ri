@@ -1,13 +1,7 @@
-// disable trying to make this project's JAR file executable
-bootRepackage {
-    enabled = false
-}
-
 dependencies {
     compile 'org.springframework.data:spring-data-commons'
     compile 'org.springframework.data:spring-data-mongodb'
     compile 'org.springframework:spring-jdbc'
-    compile 'org.springframework.security.oauth:spring-security-oauth2'
     compile 'org.springframework:spring-tx'
     // the tomcat-jdbc dependency chooses the connection pool to use when talking to a relational database and triggers
     // the creation of a javax.sql.DataSource by DataSourceAutoConfiguration
@@ -15,6 +9,6 @@ dependencies {
 
     testCompile 'org.mongodb:mongo-java-driver'
     // if you're using MySQL instead of PostgreSQL, pull in the mysql-connector-java dependency
-    // test 'mysql:mysql-connector-java'
-    testCompile 'org.postgresql:postgresql:9.3-1102-jdbc41'
+    // testCompile 'mysql:mysql-connector-java'
+    testCompile "org.postgresql:postgresql"
 }

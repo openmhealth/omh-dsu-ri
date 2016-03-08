@@ -1,27 +1,29 @@
-# Open mHealth Data Storage Component
+# Open mHealth Storage Endpoint [![Build Status](https://travis-ci.org/openmhealth/omh-dsu-ri.svg?branch=master)](https://travis-ci.org/openmhealth/omh-dsu-ri)
 
-This repository contains a Java reference implementation of an [Open mHealth](http://www.openmhealth.org/) data storage component. This component supports the 1.0.M1 data point API.
+This repository contains the Java reference implementation of an [Open mHealth](http://www.openmhealth.org/)
+[Data Point API](docs/raml/API.yml) storage endpoint.
 
 > This code is in its early stages and requires further work and testing. Please do not use it in production without proper testing.
 
 ### tl;dr
 
 * this repository contains a secure endpoint that offers an API for storing and retrieving data points
-* data points conform to the Open mHealth [data point schema](http://www.openmhealth.org/developers/schemas/#data-point)
+* data points conform to the Open mHealth [data point schema](http://www.openmhealth.org/documentation/#/schema-docs/schema-library/schemas/omh_data-point)
 * the code consists of an [OAuth 2.0](http://oauth.net/2/) authorization server and resource server
 * the authorization server manages access tokens
 * the resource server implements the data point API documented [here](docs/raml/API.yml)
 * the servers are written in Java using the [Spring Framework](http://projects.spring.io/spring-framework/), [Spring Security OAuth 2.0](http://projects.spring.io/spring-security-oauth/) and [Spring Boot](http://projects.spring.io/spring-boot/)
 * the authorization server needs [PostgreSQL](http://www.postgresql.org/) to store client credentials and access tokens, and [MongoDB](http://www.mongodb.org/) to store user accounts
 * the resource server needs PostgreSQL to read access tokens and MongoDB to store data points
+* you can get everything up and running in a few commands using Docker Compose
 * you can pull Docker containers for both servers from our [Docker Hub page](https://registry.hub.docker.com/repos/openmhealth/)
 * you can use a Postman [collection](https://www.getpostman.com/collections/18e6065476d59772c748) to easily issue API requests
   
 ### Overview
 
 A *data point* is a JSON document that represents a piece of data and conforms to
-the [data-point](http://www.openmhealth.org/developers/schemas/#data-point) schema. The header of a data point conforms to
-  the [header](http://www.openmhealth.org/developers/schemas/#header) schema, and the body can conform to any schema you like.
+the [data-point](http://www.openmhealth.org/documentation/#/schema-docs/schema-library/schemas/omh_data-point) schema. The header of a data point conforms to
+  the [header](http://www.openmhealth.org/documentation/#/schema-docs/schema-library/schemas/omh_header) schema, and the body can conform to any schema you like.
 The header is designed to contain operational metadata, such as identifiers and provenance, whereas the body contains
 the data being acquired or computed.
 
@@ -34,72 +36,66 @@ requests using OAuth 2.0 access tokens. An *authorization server* manages the gr
 
 ### Installation
 
-There are two ways to build and run the authorization and resource servers. 
+There are two ways to get up and running.
 
-1. You can run a Docker container for each server that executes a pre-built binary. 
+1. You can use Docker.
   * This is the fastest way to get up and running and isolates the install from your system.
-1. You can build all the code from source and run it on your host system.
-  * This is a quick way to get up and running if you don't need isolation and your system already has MongoDB, PostgreSQL and is prepped to build Java code. 
+1. You can build all the code from source and run it natively.
 
-#### Option 1. Running a pre-built binary in Docker
+### Option 1. Using Docker containers
 
-If you don't have Docker 1.2+ installed, download [Docker](https://docs.docker.com/installation/#installation/) 
- and follow the installation instructions for your platform.
+If you don't have Docker, Docker Compose, and Docker Machine installed, download [Docker Toolbox](https://www.docker.com/toolbox)
+and follow the installation instructions for your platform. If you don't have a running Docker machine, follow these instructions
+to [deploy one locally](https://docs.docker.com/machine/get-started/), or these instructions to
+[deploy to the cloud](https://docs.docker.com/machine/get-started-cloud/) on any of these
+[cloud platforms](https://docs.docker.com/machine/drivers/).
 
-The rest of the dependencies are handled via Docker. In a terminal,
+Once you have a running Docker host, in a terminal
 
-1. If you don't already have a MongoDB image, download one by running
-    * `docker pull mongo:latest`
-    * This will download up to 400 MB of images.
-1. If a MongoDB container isn't running or if you want a new container, start one by running
-    * `docker run --name omh-mongo -d mongo:latest`
-1. If you don't already have a PostgreSQL image, download one by running
-    * `docker pull postgres:latest`
-    * This will download up to 200 MB of images.
-1. If a PostgreSQL container isn't running or if you want a new container, start one by running
-    * `docker run --name omh-postgres -d postgres:latest`
-1. To source the Spring Security OAuth schema in the PostgreSQL container
-    * If you're on Docker 1.3
-        1. Run `docker exec -it omh-postgres bash` to start a shell on the `omh-postgres` container
-        1. Run `psql -U postgres` in the resulting shell to start `psql`
-        1. Copy and paste the contents of the [setup script](resources/rdbms/postgresql/oauth2-ddl.sql) to create the schema.
-        1. `\q` to exit `psql`
-        1. `exit` to exit the shell
-    * If you're on an older version of Docker
-        1. Start `psql` in its own container using `docker run -it --link omh-postgres:postgres --rm postgres sh -c 'exec psql -h "$POSTGRES_PORT_5432_TCP_ADDR" -p "$POSTGRES_PORT_5432_TCP_PORT" -U postgres'`
-        1. Copy and paste the contents of the [setup script](resources/rdbms/postgresql/oauth2-ddl.sql) to create the schema.
-        1. `\q` to exit `psql`
-1. Download the authorization server image by running
-    * `docker pull openmhealth/omh-dsu-authorization-server:latest`
-    * This will download up to 300 MB of Docker images, 25 MB of which is the application.
-1. Download the resource server image by running
-    * `docker pull openmhealth/omh-dsu-resource-server:latest`
-    * This will download up to 300 MB of Docker images, 25 MB of which is the application.
-1. Start the authorization server by running
-    * `docker run --name omh-dsu-authorization-server --link omh-postgres:omh-postgres --link omh-mongo:omh-mongo -d -p 8082:8082 'openmhealth/omh-dsu-authorization-server:latest'`
-1. Start the resource server by running
-    * `docker run --name omh-dsu-resource-server --link omh-postgres:omh-postgres --link omh-mongo:omh-mongo -d -p 8083:8083 'openmhealth/omh-dsu-resource-server:latest'`
+1. Clone this Git repository.
+1. Run `docker-machine ls` to find the name and IP address of your active Docker host.
+1. Run `eval "$(docker-machine env host)"` to prepare environment variables, *replacing `host` with the name of your Docker host*.
 
-The servers should now be running on your Docker host. Run `docker ps` to verify. 
+Now, if you want to use pre-built Docker containers,
 
-#### Option 2. Building from source and running on your host system
+1. Run `docker-compose -f docker-compose-init-postgres.yml up -d` to download and run the containers.
+  * If you want to keep the containers in the foreground and see logs, omit the `-d`.
+  * If you want to just want to see logs, run `docker-compose -f docker-compose-init-postgres.yml logs`.
 
-We will add documentation on running the servers on your host system shortly.
+Otherwise, if you prefer to build and run your own containers, e.g. to customize them,
 
-### Configuring the authorization server
+1. Run `./gradlew build -x test` to compile the code while skipping tests.
+  * If you want to run the tests, you'll need to bring up a MongoDB instance with hostname `omh-mongo`.
+1. Run `docker-compose -f docker-compose-build.yml up -d` to build and run the containers.
+  * If you want to keep the containers in the foreground and see logs, omit the `-d`.
+  * If you want to just want to see logs, run `docker-compose -f docker-compose-build.yml logs`.
 
-The authorization and resource servers are configured in YAML using [Spring Boot conventions](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-external-config).
-You can see the authorization server's configuration [here](authorization-server/src/main/resources/application.yml) and the
-resource server's configuration [here](resource-server/src/main/resources/application.yml).
+The authorization and resource servers will start running on ports 8082 and 8083, respectively.
+It can take up to a minute for the containers to start up.
 
-If you want to override the default configuration and you're running the servers on your host system, you can either
+#### Option 2. Building from source and running natively
 
-* Add an environment variable with `-e`to the Docker `run` command corresponding to the property you want to set.
-    * e.g. `docker run --name omh-dsu-authorization-server -e logging.level.org.springframework=DEBUG ...`
-    * e.g. `docker run --name omh-dsu-resource-server -e spring.data.mongodb.database=bar ...`
+We will add documentation on running the servers natively [on request](https://github.com/openmhealth/omh-dsu-ri/issues).
+
+The Docker commands in option 1 automatically initialize the Spring Security OAuth schema in the PostgreSQL database.
+To initialize the schema manually, you will need to source the
+ [OAuth 2.0 DDL script](resources/rdbms/postgresql/oauth2-ddl.sql).
+
+> Please note that the remainder of this document assumes you are using Docker. It should be straightforward to translate
+any commands over to running the servers natively, but feel free to ask for help if something isn't clear.
+
+### Configuring the servers
+
+The [authorization server configuration file](authorization-server/src/main/resources/application.yml) and [resource
+server configuration file](resource-server/src/main/resources/application.yml) are written in YAML using
+[Spring Boot conventions](http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-external-config).
+
+If you want to override the default configuration, you can either
+
+* Add [environment variables](https://docs.docker.com/compose/compose-file/#environment) to the Docker Compose file.
+    * e.g. setting `logging.level.org.springframework: DEBUG` will change the logging level
+    * e.g. setting `spring.data.mongodb.host: foo` will change the MongoDB host
 * Create an `application.yml` file in the `/opt/omh-dsu-ri/*-server` directory with the overriding YAML properties.
-    * This is particularly useful because you can change the configuration without running new containers.
-    * You may need to install an editor, e.g. using `apt-get install vim`.
 
 It is possible to use multiple resource servers with the same authorization server.
 
@@ -115,7 +111,7 @@ in this implementation. You can find the Spring Security OAuth 2.0 developer gui
 
 The authorization server uses Spring Security OAuth 2.0's `JdbcClientDetailsService` to store OAuth 2.0 client credentials.
 This necessitates access to a PostgreSQL database, although we intend to release a MongoDB service down the road to
-make this dependency optional.
+require either MongoDB or PostgreSQL, but not both.
 
 The client details in the `oauth_client_details` table controls the identity and authentication of clients, the grant
 types they can use to show they have been granted authorization, and the resources they can access and actions they
@@ -138,10 +134,9 @@ can take once they have an access token. Specifically, the client details table 
 
 To create a client,
 
-1. Connect to the `omh` PostgreSQL database using the same mechanism you used during the installation.
-1. Add a row to the `oauth_client_details` table. You can find a script with a sample `INSERT` statement [here](resources/rdbms/common/oauth2-sample-data.sql).
+1. Connect to the `omh` PostgreSQL database.
+1. Add a row to the `oauth_client_details` table, as shown in this [sample script](resources/rdbms/common/oauth2-sample-data.sql).
 
-> The remainder of this documentation is actively being worked on.
 
 #### Adding end-users
 
@@ -151,7 +146,7 @@ A client requests authorization from the authorization server to access the data
 The authorization server includes a simple RESTful endpoint to create users. To create a user, either execute the following command
 
 ```bash
-curl -H "Content-Type:application/json" --data '{"username": "testUser", "password": "testUserPassword"}' http://${DOCKER_IP}:8082/users
+curl -H "Content-Type:application/json" --data '{"username": "testUser", "password": "testUserPassword"}' http://host:8082/users
 ```
 
 or use the *create an end-user/success or conflict* request in the Postman collection discussed [below](#issuing-requests-with-postman).
@@ -180,13 +175,13 @@ packaged application whose UI lets you craft and send HTTP requests.
 
 To set up the collection,
 
-1. [Download](https://chrome.google.com/webstore/detail/postman-rest-client-packa/fhbjgbiflinjbdggehcddcbncdddomop) Postman.
+1. [Download Postman](https://chrome.google.com/webstore/detail/postman-rest-client-packa/fhbjgbiflinjbdggehcddcbncdddomop).
 1. [Start it](http://www.getpostman.com/docs/launch).
 1. Click the *Import* button, choose the *Download from link* tab and paste `https://www.getpostman.com/collections/18e6065476d59772c748`
 1. The collection should now be available. The folder names describe the requests, and the request names describe the expected outcome.
 1. Create an [environment](https://www.getpostman.com/docs/environments). Environments provide values for the `{{...}}` placeholders in the collection.
    Add the following environment keys and values, possibly changing the values if you've customised the installation.
-    * `authorizationServer.host` - IP address of your Docker host (on Mac OS X and Windows, `boot2docker ip` will print this IP to the console)
+    * `authorizationServer.host` - IP address of your Docker host (on Mac OS X and Windows, `docker-machine ip <host>` will print this IP to the console)
     * `authorizationServer.port` -  `8082`
     * `resourceServer.host` -  IP address of your Docker host
     * `resourceServer.port` -  `8083`
@@ -224,7 +219,8 @@ A data point looks something like this
         "acquisition_provenance": {
             "source_name": "RunKeeper",
             "modality": "sensed"
-        }
+        },
+        "user_id": "joe"
     },
     "body": {
         "activity_name": "walking",
@@ -250,12 +246,25 @@ We may add documentation here if we find that the Postman collection isn't suffi
 
 The following features are scheduled for future milestones
 
+* support the client credentials grant type
 * improve test coverage
 * support refresh tokens
-* support the client credentials grant type
 * make it easier to customise the authorization code and implicit grant forms
 * support SSL out of the box
+* filter data points based on effective time frames
 * filter data points based on their bodies
 
-If you have other feature requests, [create an issue for each](https://github.com/openmhealth/omh-dsu-ri/issues) and we'll figure out how to prioritise them. Or better yet, send us
-a pull request. And if you want to work on any of the above features, just let us know by submitting an issue.
+If you have other feature requests, [create an issue for each](https://github.com/openmhealth/omh-dsu-ri/issues)
+and we'll figure out how to prioritise them.
+
+
+### Contributing
+
+If you'd like to contribute any code
+
+1. [Open an issue](https://github.com/openmhealth/omh-dsu-ri/issues) to let us know what you're going to work on.
+  1. This lets us give you feedback early and lets us put you in touch with people who can help.
+2. Fork this repository.
+3. Create your feature branch `feature/do-x-y-z` from the `develop` branch.
+4. Commit and push your changes to your fork.
+5. Create a pull request.

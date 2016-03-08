@@ -17,7 +17,7 @@
 package org.openmhealth.dsu.domain;
 
 import com.google.common.collect.Range;
-import org.openmhealth.schema.domain.SchemaVersion;
+import org.openmhealth.schema.domain.omh.SchemaVersion;
 
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -25,9 +25,9 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.openmhealth.schema.domain.SchemaId.isValidName;
-import static org.openmhealth.schema.domain.SchemaId.isValidNamespace;
-import static org.openmhealth.schema.domain.SchemaVersion.isValidVersion;
+import static org.openmhealth.schema.domain.omh.SchemaId.isValidName;
+import static org.openmhealth.schema.domain.omh.SchemaId.isValidNamespace;
+import static org.openmhealth.schema.domain.omh.SchemaVersion.isValidVersion;
 
 
 /**
