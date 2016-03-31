@@ -83,7 +83,7 @@ securitySchemes:
                   "type": "array",
                   "items": {
                       "data_point": {
-                          "$ref": "http://www.openmhealth.org/schema/omh/generic/data-point-1.0.json"
+                          "$ref": "http://www.openmhealth.org/schema/omh/data-point-1.0.json"
                       }
                   }
               }
