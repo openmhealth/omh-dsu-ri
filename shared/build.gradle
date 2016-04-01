@@ -12,3 +12,8 @@ dependencies {
     // testCompile 'mysql:mysql-connector-java'
     testCompile "org.postgresql:postgresql"
 }
+
+// disable trying to make this project's JAR file executable
+bootRepackage {
+    enabled = false
+}

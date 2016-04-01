@@ -1,8 +1,10 @@
 description = 'An OAuth 2.0 resource server that manages data point resources.'
 
-dependencies {
-    compile 'com.github.fge:json-schema-validator:2.2.5'
-    compile "org.openmhealth.schema:omh-schema-sdk:${omhSchemaSdkVersion}"
+ext['hibernate.version'] = '5.0.8.Final'
 
-    testCompile 'com.jayway.jsonpath:json-path'
+dependencies {
+    compile 'com.google.code.findbugs:jsr305:3.0.1'
+    compile 'com.google.guava:guava:19.0'
+    compile 'org.hibernate:hibernate-entitymanager'
+    compile "org.openmhealth.schema:omh-schema-sdk:${omhSchemaSdkVersion}"
 }
