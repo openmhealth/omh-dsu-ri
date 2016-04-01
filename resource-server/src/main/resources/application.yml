@@ -29,12 +29,12 @@ spring:
       database: omh
       #port: 27017
   datasource:
-    driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://omh-postgres:5432/omh
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://md2k-postgres:5432/postgres
     username: postgres
   jackson:
     serialization:
-      INDENT_OUTPUT: true
+      indent-output: true
 
 logging:
   level:
