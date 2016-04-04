@@ -36,7 +36,6 @@ subprojects {
         omhSchemaSdkVersion = "1.0.5"
         validationApiVersion = "1.1.0.Final"
     }
-    ext["hibernate.version"] = "5.0.8.Final"
 
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
