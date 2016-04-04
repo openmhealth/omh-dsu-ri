@@ -14,8 +14,8 @@ buildscript {
 }
 
 allprojects {
-    group = 'org.openmhealth'
-    version = '1.0.0-SNAPSHOT'
+    group = "org.openmhealth"
+    version = "1.0.0-SNAPSHOT"
 
     repositories {
         mavenLocal()
@@ -24,20 +24,20 @@ allprojects {
 }
 
 subprojects {
-    apply plugin: 'java'
-    apply plugin: 'spring-boot' // used for auto-configuration
+    apply plugin: "java"
+    apply plugin: "spring-boot" // used for auto-configuration
 
     ext {
         javaVersion = 1.8
-        omhSchemaSdkVersion = '1.0.5'
-        mailApiVersion = '1.5.2'
+        omhSchemaSdkVersion = "1.0.5"
+        mailApiVersion = "1.5.2"
     }
 
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
 
     dependencies {
-        compile 'org.hibernate:hibernate-validator'
+        compile "org.hibernate:hibernate-validator"
         compile "com.fasterxml.jackson.core:jackson-core"
         compile "com.fasterxml.jackson.core:jackson-databind"
         compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
@@ -45,21 +45,21 @@ subprojects {
         compile "com.sun.mail:mailapi:${mailApiVersion}" // TODO confirm if both are necessary
         compile "javax.mail:javax.mail-api:${mailApiVersion}" // required to support InternetAddress fields
         compile "org.openmhealth.schema:omh-schema-sdk:${omhSchemaSdkVersion}"
-        compile 'org.slf4j:slf4j-api'
-        compile 'org.springframework:spring-beans'
+        compile "org.slf4j:slf4j-api"
+        compile "org.springframework:spring-beans"
         compile "org.springframework.boot:spring-boot-autoconfigure"
-        compile 'org.springframework:spring-context'
+        compile "org.springframework:spring-context"
         compile "org.springframework.security.oauth:spring-security-oauth2"
-        compile 'javax.validation:validation-api'
+        compile "javax.validation:validation-api"
 
-        testCompile 'org.hamcrest:hamcrest-library'
-        testCompile 'junit:junit'
-        testCompile 'org.mockito:mockito-core'
-        testCompile 'org.springframework:spring-test'
+        testCompile "org.hamcrest:hamcrest-library"
+        testCompile "junit:junit"
+        testCompile "org.mockito:mockito-core"
+        testCompile "org.springframework:spring-test"
 
-        runtime 'org.slf4j:jcl-over-slf4j'
-        runtime 'org.slf4j:log4j-over-slf4j'
-        runtime 'ch.qos.logback:logback-classic'
+        runtime "org.slf4j:jcl-over-slf4j"
+        runtime "org.slf4j:log4j-over-slf4j"
+        runtime "ch.qos.logback:logback-classic"
         runtime "org.yaml:snakeyaml"
     }
 }
@@ -73,24 +73,24 @@ configure([
     }
 
     dependencies {
-        compile project(':shared')
-        compile 'org.apache.httpcomponents:httpclient'
+        compile project(":shared")
+        compile "org.apache.httpcomponents:httpclient"
         compile "org.springframework.boot:spring-boot-starter-jetty"
         compile("org.springframework.boot:spring-boot-starter-web") {
             exclude module: "spring-boot-starter-tomcat"
         }
-        compile 'org.springframework:spring-web'
-        compile 'org.springframework:spring-webmvc'
+        compile "org.springframework:spring-web"
+        compile "org.springframework:spring-webmvc"
 
         // you can comment out any dependencies you know you don't need after this point
-        compile 'org.mongodb:mongo-java-driver'
-        // compile 'mysql:mysql-connector-java'
+        compile "org.mongodb:mongo-java-driver"
+        // compile "mysql:mysql-connector-java"
         compile "org.postgresql:postgresql"
     }
 
     task copyArchiveJarToDockerContext(dependsOn: assemble, type: Copy) {
-        from 'build/libs'
-        into 'docker'
+        from "build/libs"
+        into "docker"
         include "${jar.archiveName}"
         rename { String fileName ->
             fileName.replace("${jar.archiveName}", "${jar.baseName}.jar")
@@ -102,5 +102,5 @@ configure([
 // FIXME add integration test support
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.11'
+    gradleVersion = "2.11"
 }
