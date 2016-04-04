@@ -34,7 +34,7 @@ public interface DataPointRepository extends DataPointSearchRepository {
     /**
      * @see CrudRepository#save(Object)
      */
-    DataPoint save(DataPoint dataPoint);
+    <S extends DataPoint> S save(S dataPoint);
 
     /**
      * @see CrudRepository#save(Iterable)
