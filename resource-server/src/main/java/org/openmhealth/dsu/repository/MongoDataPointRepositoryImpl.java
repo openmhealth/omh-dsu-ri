@@ -36,7 +36,7 @@ import static org.springframework.data.mongodb.core.query.Criteria.where;
 /**
  * @author Emerson Farrugia
  */
-public class MongoDataPointRepositoryImpl implements CustomDataPointRepository {
+public class MongoDataPointRepositoryImpl implements DataPointSearchRepositoryCustom {
 
     @Autowired
     private MongoOperations mongoOperations;
