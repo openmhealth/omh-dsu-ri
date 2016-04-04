@@ -17,6 +17,7 @@
 package org.openmhealth.dsu.repository;
 
 import org.openmhealth.dsu.domain.EndUser;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.Repository;
 
 import java.util.Optional;
@@ -30,17 +31,17 @@ import java.util.Optional;
 public interface EndUserRepository extends Repository<EndUser, String> {
 
     /**
-     * @see org.springframework.data.repository.CrudRepository#findOne(java.io.Serializable)
+     * @see CrudRepository#findOne(java.io.Serializable)
      */
     Optional<EndUser> findOne(String username);
 
     /**
-     * @see org.springframework.data.repository.CrudRepository#save(Object)
+     * @see CrudRepository#save(Object)
      */
     EndUser save(EndUser endUser);
 
     /**
-     * @see org.springframework.data.repository.CrudRepository#delete(java.io.Serializable)
+     * @see CrudRepository#delete(java.io.Serializable)
      */
     void delete(String username);
 }
