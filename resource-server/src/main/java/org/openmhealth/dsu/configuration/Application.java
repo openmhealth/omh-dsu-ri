@@ -20,6 +20,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 
 /**
@@ -35,6 +36,7 @@ import org.springframework.context.annotation.Configuration;
                 @ComponentScan.Filter(value = EnableAutoConfiguration.class)
         })
 @EnableAutoConfiguration
+@EnableMongoRepositories(basePackages = "org.openmhealth.dsu.repository")
 public class Application {
 
     public static void main(String[] args) {

@@ -17,23 +17,24 @@
 package org.openmhealth.dsu.configuration;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mongodb.Mongo;
+import com.mongodb.MongoClient;
 import com.mongodb.MongoClientOptions;
 import org.openmhealth.dsu.converter.OffsetDateTimeToStringConverter;
 import org.openmhealth.dsu.converter.StringToOffsetDateTimeConverter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.env.Environment;
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mapping.model.JsonPropertyPreservingFieldNamingStrategy;
 import org.springframework.data.mapping.model.SnakeCaseFieldNamingStrategy;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.core.convert.CustomConversions;
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import javax.annotation.PreDestroy;
 import java.net.UnknownHostException;
@@ -42,42 +43,43 @@ import java.util.List;
 
 
 /**
- * A configuration for Spring Data MongoDB. It controls the repositories to scan for and sets up converters to support
- * persistence of Java 8 {@link java.time.OffsetDateTime}. The remaining boilerplate is mostly a copy of {@link
- * MongoAutoConfiguration}.
+ * A configuration for Spring Data MongoDB. It sets up converters to support persistence of Java 8 {@link
+ * java.time.OffsetDateTime}. The remaining boilerplate is mostly a copy of {@link MongoAutoConfiguration}.
  *
  * @author Emerson Farrugia
  */
 @Configuration
-@ConditionalOnExpression("'${dataStore}' == 'mongo'")
-@EnableMongoRepositories(basePackages = "org.openmhealth.dsu.repository")
+@ConditionalOnClass(MongoClient.class)
+@EnableConfigurationProperties(MongoProperties.class)
 public class MongoPersistenceConfiguration extends AbstractMongoConfiguration {
 
     @Autowired
-    private MongoProperties mongoProperties;
+    private MongoProperties properties;
 
     @Autowired(required = false)
     private MongoClientOptions clientOptions;
 
-    private Mongo mongo;
+    @Autowired
+    private Environment environment;
+
+    private MongoClient client;
 
     @PreDestroy
     public void close() {
-        if (mongo != null) {
-            mongo.close();
+        if (this.client != null) {
+            this.client.close();
         }
     }
 
     @Bean
-    public Mongo mongo() throws UnknownHostException {
-        mongo = mongoProperties.createMongoClient(clientOptions);
-        return mongo;
+    public MongoClient mongo() throws UnknownHostException {
+        this.client = this.properties.createMongoClient(this.clientOptions, this.environment);
+        return this.client;
     }
-
 
     @Override
     protected String getDatabaseName() {
-        return mongoProperties.getDatabase();
+        return properties.getDatabase();
     }
 
     @Override
