@@ -1,1 +1,18 @@
 description = "A simple OAuth2 authorisation server backed by a user data store."
+
+dependencies {
+    compile project(":shared")
+    compile "javax.servlet:javax.servlet-api"
+    compile "org.springframework:spring-web"
+    compile "org.springframework:spring-webmvc"
+
+    runtime "org.hibernate:hibernate-validator"
+    runtime "org.mongodb:mongo-java-driver"
+    runtime "org.postgresql:postgresql"
+    runtime "org.springframework.boot:spring-boot-starter-jetty"
+    runtime "org.apache.tomcat:tomcat-jdbc" // JDBC connection pool
+}
+
+bootRepackage {
+    mainClass = "org.openmhealth.dsu.configuration.Application"
+}

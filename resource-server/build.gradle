@@ -1,10 +1,22 @@
 description = "An OAuth 2.0 resource server that manages data point resources."
 
-ext["hibernate.version"] = "5.0.8.Final"
-
 dependencies {
-    compile "com.google.code.findbugs:jsr305:3.0.1"
-    compile "com.google.guava:guava:19.0"
+    compile project(":shared")
+    compile "com.google.guava:guava:${guavaVersion}"
     compile "org.hibernate:hibernate-entitymanager"
+    compile "com.google.code.findbugs:jsr305:${jsr305Version}"
+    compile "javax.servlet:javax.servlet-api"
     compile "org.openmhealth.schema:omh-schema-sdk:${omhSchemaSdkVersion}"
+    compile "org.springframework:spring-web"
+    compile "org.springframework:spring-webmvc"
+
+    runtime "org.hibernate:hibernate-validator"
+    runtime "org.mongodb:mongo-java-driver"
+    runtime "org.postgresql:postgresql"
+    runtime "org.springframework.boot:spring-boot-starter-jetty"
+    runtime "org.apache.tomcat:tomcat-jdbc" // JDBC connection pool
+}
+
+bootRepackage {
+    mainClass = "org.openmhealth.dsu.configuration.Application"
 }

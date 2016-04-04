@@ -29,28 +29,29 @@ subprojects {
 
     ext {
         javaVersion = 1.8
-        omhSchemaSdkVersion = "1.0.5"
+
+        guavaVersion = "19.0"
+        jsr305Version = "3.0.1"
         mailApiVersion = "1.5.2"
+        omhSchemaSdkVersion = "1.0.5"
+        validationApiVersion = "1.1.0.Final"
     }
+    ext["hibernate.version"] = "5.0.8.Final"
 
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
 
     dependencies {
-        compile "org.hibernate:hibernate-validator"
         compile "com.fasterxml.jackson.core:jackson-core"
         compile "com.fasterxml.jackson.core:jackson-databind"
         compile "com.fasterxml.jackson.datatype:jackson-datatype-jdk8"
         compile "com.fasterxml.jackson.datatype:jackson-datatype-jsr310"
-        compile "com.sun.mail:mailapi:${mailApiVersion}" // TODO confirm if both are necessary
-        compile "javax.mail:javax.mail-api:${mailApiVersion}" // required to support InternetAddress fields
-        compile "org.openmhealth.schema:omh-schema-sdk:${omhSchemaSdkVersion}"
         compile "org.slf4j:slf4j-api"
         compile "org.springframework:spring-beans"
+        compile "org.springframework.boot:spring-boot"
         compile "org.springframework.boot:spring-boot-autoconfigure"
         compile "org.springframework:spring-context"
         compile "org.springframework.security.oauth:spring-security-oauth2"
-        compile "javax.validation:validation-api"
 
         testCompile "org.hamcrest:hamcrest-library"
         testCompile "junit:junit"
@@ -67,26 +68,6 @@ subprojects {
 configure([
         project(":authorization-server"),
         project(":resource-server")]) {
-
-    bootRepackage {
-        mainClass = "org.openmhealth.dsu.configuration.Application"
-    }
-
-    dependencies {
-        compile project(":shared")
-        compile "org.apache.httpcomponents:httpclient"
-        compile "org.springframework.boot:spring-boot-starter-jetty"
-        compile("org.springframework.boot:spring-boot-starter-web") {
-            exclude module: "spring-boot-starter-tomcat"
-        }
-        compile "org.springframework:spring-web"
-        compile "org.springframework:spring-webmvc"
-
-        // you can comment out any dependencies you know you don't need after this point
-        compile "org.mongodb:mongo-java-driver"
-        // compile "mysql:mysql-connector-java"
-        compile "org.postgresql:postgresql"
-    }
 
     task copyArchiveJarToDockerContext(dependsOn: assemble, type: Copy) {
         from "build/libs"
