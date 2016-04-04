@@ -42,7 +42,7 @@ import static org.openmhealth.dsu.factory.DataPointFactory.*;
  */
 public abstract class DataPointRepositoryIntegrationTests {
 
-    public static final String UNRECOGNIZED_ID = "foo";
+    protected static final String UNRECOGNIZED_ID = "foo";
 
     @Autowired
     protected DataPointRepository repository;
@@ -243,20 +243,20 @@ public abstract class DataPointRepositoryIntegrationTests {
     @Test
     public void deleteByIdAndUserIdShouldReturnZeroOnUnrecognizedId() {
 
-        assertThat(repository.deleteByIdAndHeaderUserId(UNRECOGNIZED_ID, TEST_USER_ID), equalTo(0l));
+        assertThat(repository.deleteByIdAndHeaderUserId(UNRECOGNIZED_ID, TEST_USER_ID), equalTo(0L));
     }
 
     @Test
     public void deleteByIdAndUserIdShouldReturnZeroOnUnrecognizedUserId() {
 
         assertThat(repository.deleteByIdAndHeaderUserId(testDataPoint.getHeader().getId(), UNRECOGNIZED_ID),
-                equalTo(0l));
+                equalTo(0L));
     }
 
     @Test
     public void deleteByIdAndUserIdShouldReturnOneOnMatchingIdAndUserId() {
 
-        assertThat(repository.deleteByIdAndHeaderUserId(testDataPoint.getHeader().getId(), TEST_USER_ID), equalTo(1l));
+        assertThat(repository.deleteByIdAndHeaderUserId(testDataPoint.getHeader().getId(), TEST_USER_ID), equalTo(1L));
         assertThat(repository.exists(testDataPoint.getHeader().getId()), equalTo(false));
     }
 }

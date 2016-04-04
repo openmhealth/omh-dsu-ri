@@ -107,7 +107,7 @@ public class DataPointBuilder {
         return this;
     }
 
-    public DataPoint build() {
+    public DataPoint<?> build() {
 
         SchemaVersion schemaVersion = new SchemaVersion(schemaVersionMajor, schemaVersionMinor, schemaVersionQualifier);
         SchemaId schemaId = new SchemaId(schemaNamespace, schemaName, schemaVersion);
@@ -122,6 +122,6 @@ public class DataPointBuilder {
                 .setUserId(userId)
                 .build();
 
-        return new DataPoint(header, body);
+        return new DataPoint<>(header, body);
     }
 }
