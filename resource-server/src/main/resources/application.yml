@@ -30,7 +30,7 @@ spring:
       #port: 27017
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://md2k-postgres:5432/postgres
+    url: jdbc:postgresql://omh-postgres:5432/postgres
     username: postgres
   jackson:
     serialization:
