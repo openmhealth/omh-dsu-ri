@@ -19,6 +19,7 @@ package org.openmhealth.dsu.repository;
 import org.junit.runner.RunWith;
 import org.openmhealth.dsu.configuration.IntegrationTestConfiguration;
 import org.openmhealth.dsu.configuration.MongoPersistenceConfiguration;
+import org.openmhealth.dsu.configuration.RepositoryConfiguration;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -29,7 +30,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringApplicationConfiguration(classes = {
         IntegrationTestConfiguration.class,
-        MongoPersistenceConfiguration.class
+        MongoPersistenceConfiguration.class,
+        RepositoryConfiguration.class
 })
 public class MongoDataPointRepositoryIntegrationTests extends DataPointRepositoryIntegrationTests {
 
