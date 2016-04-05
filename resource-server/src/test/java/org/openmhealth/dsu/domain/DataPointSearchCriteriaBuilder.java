@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Open mHealth
+ * Copyright 2016 Open mHealth
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,7 @@
 
 package org.openmhealth.dsu.domain;
 
-import com.google.common.collect.Range;
 import org.openmhealth.schema.domain.omh.SchemaVersion;
-
-import java.time.OffsetDateTime;
 
 
 /**
@@ -35,8 +32,6 @@ public class DataPointSearchCriteriaBuilder {
     private Integer schemaVersionMajor;
     private Integer schemaVersionMinor;
     private String schemaVersionQualifier;
-    private Range<OffsetDateTime> creationTimestampLowerEndpoint = Range.all();
-    private Range<OffsetDateTime> creationTimestampUpperEndpoint = Range.all();
 
     public DataPointSearchCriteriaBuilder() {
 
@@ -88,26 +83,17 @@ public class DataPointSearchCriteriaBuilder {
         return this;
     }
 
-    public DataPointSearchCriteriaBuilder setCreationTimestampLowerEndpoint(OffsetDateTime lowerEndpoint) {
-        this.creationTimestampLowerEndpoint = lowerEndpoint != null ? Range.atLeast(lowerEndpoint) : Range.all();
-        return this;
-    }
-
-    public DataPointSearchCriteriaBuilder setCreationTimestampUpperEndpoint(OffsetDateTime upperEndpoint) {
-        this.creationTimestampUpperEndpoint = upperEndpoint != null ? Range.atMost(upperEndpoint) : Range.all();
-        return this;
-    }
-
     public DataPointSearchCriteria build() {
 
         // FIXME this will cause NPEs on unspecified major and minor numbers
         SchemaVersion schemaVersion = new SchemaVersion(schemaVersionMajor, schemaVersionMinor, schemaVersionQualifier);
 
-        DataPointSearchCriteria searchCriteria =
-                new DataPointSearchCriteria(userId, schemaNamespace, schemaName, schemaVersion.toString());
+        DataPointSearchCriteria searchCriteria = new DataPointSearchCriteria();
 
-        searchCriteria
-                .setCreationTimestampRange(creationTimestampLowerEndpoint.intersection(creationTimestampUpperEndpoint));
+        searchCriteria.setUserId(userId);
+        searchCriteria.setSchemaNamespace(schemaNamespace);
+        searchCriteria.setSchemaName(schemaName);
+        searchCriteria.setSchemaVersionString(schemaVersion.toString());
 
         return searchCriteria;
     }

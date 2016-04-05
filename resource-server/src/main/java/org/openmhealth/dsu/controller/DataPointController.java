@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Open mHealth
+ * Copyright 2016 Open mHealth
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.openmhealth.dsu.controller;
 
-import com.google.common.collect.Range;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointService;
@@ -31,6 +30,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.Validator;
 import java.lang.reflect.Field;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -38,6 +38,7 @@ import java.util.Optional;
 import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 
@@ -66,6 +67,10 @@ public class DataPointController {
     @Autowired
     private DataPointService dataPointService;
 
+    @Autowired
+    private Validator validator;
+
+
     /**
      * Reads data points.
      *
@@ -90,7 +95,6 @@ public class DataPointController {
             @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
             // TODO make this optional and update all associated code
             @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
-            // TODO replace with Optional<> in Spring MVC 4.1
             @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
             final OffsetDateTime createdOnOrAfter,
             @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,
@@ -98,22 +102,22 @@ public class DataPointController {
             @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit,
             Authentication authentication) {
 
-        // TODO add validation or explicitly comment that this is handled using exception translators
-
         // determine the user associated with the access token to restrict the search accordingly
         String endUserId = getEndUserId(authentication);
 
-        DataPointSearchCriteria searchCriteria =
-                new DataPointSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion);
+        DataPointSearchCriteria searchCriteria = new DataPointSearchCriteria();
 
-        if (createdOnOrAfter != null && createdBefore != null) {
-            searchCriteria.setCreationTimestampRange(Range.closedOpen(createdOnOrAfter, createdBefore));
-        }
-        else if (createdOnOrAfter != null) {
-            searchCriteria.setCreationTimestampRange(Range.atLeast(createdOnOrAfter));
-        }
-        else if (createdBefore != null) {
-            searchCriteria.setCreationTimestampRange(Range.lessThan(createdBefore));
+        searchCriteria.setUserId(endUserId);
+        searchCriteria.setSchemaNamespace(schemaNamespace);
+        searchCriteria.setSchemaName(schemaName);
+        searchCriteria.setSchemaVersionString(schemaVersion);
+        searchCriteria.setCreatedOnOrAfter(createdOnOrAfter);
+        searchCriteria.setCreatedBefore(createdBefore);
+
+        // TODO add validation or explicitly comment that this is handled using exception translators
+        if (!validator.validate(searchCriteria).isEmpty()) {
+            // TODO add feedback
+            return badRequest().body(null);
         }
 
         Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);

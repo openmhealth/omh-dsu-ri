@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Open mHealth
+ * Copyright 2016 Open mHealth
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,73 +17,184 @@
 package org.openmhealth.dsu.domain;
 
 import com.google.common.collect.Range;
+import org.openmhealth.dsu.validation.ValidDataPointSearchCriteria;
+import org.openmhealth.dsu.validation.ValidSchemaName;
+import org.openmhealth.dsu.validation.ValidSchemaNamespace;
+import org.openmhealth.dsu.validation.ValidSchemaVersion;
 import org.openmhealth.schema.domain.omh.SchemaVersion;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static org.openmhealth.schema.domain.omh.SchemaId.isValidName;
-import static org.openmhealth.schema.domain.omh.SchemaId.isValidNamespace;
-import static org.openmhealth.schema.domain.omh.SchemaVersion.isValidVersion;
-
 
 /**
- * A search criteria bean used to represent a search for data points.
+ * A bean that represents a search for data points.
  *
  * @author Emerson Farrugia
  */
+@ValidDataPointSearchCriteria
 public class DataPointSearchCriteria {
 
     private String userId;
     private String schemaNamespace;
     private String schemaName;
-    private SchemaVersion schemaVersion;
-    private Range<OffsetDateTime> creationTimestampRange;
+    private String schemaVersion;
+    private OffsetDateTime createdOnOrAfter;
+    private OffsetDateTime createdBefore;
+    private OffsetDateTime effectiveOnOrAfter;
+    private OffsetDateTime effectiveBefore;
+    private String acquisitionSourceId; // TODO confirm if we want to run with this name
 
-    public DataPointSearchCriteria(String userId, String schemaNamespace, String schemaName, String schemaVersion) {
 
-        checkNotNull(userId);
-        checkArgument(!isNullOrEmpty(userId));
-
-        // TODO determine how restrictive the search criteria should be
-        checkNotNull(schemaNamespace);
-        checkNotNull(schemaName);
-        checkNotNull(schemaVersion);
-
-        checkArgument(isValidNamespace(schemaNamespace));
-        checkArgument(isValidName(schemaName));
-        checkArgument(isValidVersion(schemaVersion));
-
-        this.userId = userId;
-        this.schemaNamespace = schemaNamespace;
-        this.schemaName = schemaName;
-        this.schemaVersion = new SchemaVersion(schemaVersion);
-    }
-
+    /**
+     * @return the user the data points belong to
+     */
+    @NotNull
+    @Size(min = 1)
     public String getUserId() {
         return userId;
     }
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    /**
+     * @return the schema namespace of the body of the data points
+     */
+    @NotNull
+    @ValidSchemaNamespace
     public String getSchemaNamespace() {
         return schemaNamespace;
     }
 
+    public void setSchemaNamespace(String schemaNamespace) {
+        this.schemaNamespace = schemaNamespace;
+    }
+
+    /**
+     * @return the schema name of the body of the data points
+     */
+    @NotNull
+    @ValidSchemaName
     public String getSchemaName() {
         return schemaName;
     }
 
-    public SchemaVersion getSchemaVersion() {
+    public void setSchemaName(String schemaName) {
+        this.schemaName = schemaName;
+    }
+
+    /**
+     * TODO make this optional
+     *
+     * @return the schema version of the body of the data points, as a string
+     */
+    @NotNull
+    @ValidSchemaVersion
+    public String getSchemaVersionString() {
         return schemaVersion;
     }
 
-    public Optional<Range<OffsetDateTime>> getCreationTimestampRange() {
-        return Optional.ofNullable(creationTimestampRange);
+    public void setSchemaVersionString(String schemaVersion) {
+        this.schemaVersion = schemaVersion;
     }
 
-    public void setCreationTimestampRange(Range<OffsetDateTime> creationTimestampRange) {
-        this.creationTimestampRange = creationTimestampRange;
+    /**
+     * @return the schema version of the body of the data points
+     */
+    public SchemaVersion getSchemaVersion() {
+        return new SchemaVersion(schemaVersion);
+    }
+
+    /**
+     * @return the oldest creation timestamp of the data points
+     */
+    public Optional<OffsetDateTime> getCreatedOnOrAfter() {
+        return Optional.ofNullable(createdOnOrAfter);
+    }
+
+    public void setCreatedOnOrAfter(OffsetDateTime createdOnOrAfter) {
+        this.createdOnOrAfter = createdOnOrAfter;
+    }
+
+    /**
+     * @return the newest creation timestamp of the data points
+     */
+    public Optional<OffsetDateTime> getCreatedBefore() {
+        return Optional.ofNullable(createdBefore);
+    }
+
+    public void setCreatedBefore(OffsetDateTime createdBefore) {
+        this.createdBefore = createdBefore;
+    }
+
+    /**
+     * @return the oldest effective timestamp of the data points
+     */
+    public Optional<OffsetDateTime> getEffectiveOnOrAfter() {
+        return Optional.ofNullable(effectiveOnOrAfter);
+    }
+
+    public void setEffectiveOnOrAfter(OffsetDateTime effectiveOnOrAfter) {
+        this.effectiveOnOrAfter = effectiveOnOrAfter;
+    }
+
+    /**
+     * @return the newest effective timestamp of the data points
+     */
+    public Optional<OffsetDateTime> getEffectiveBefore() {
+        return Optional.ofNullable(effectiveBefore);
+    }
+
+    public void setEffectiveBefore(OffsetDateTime effectiveBefore) {
+        this.effectiveBefore = effectiveBefore;
+    }
+
+    /**
+     * @return the creation timestamp range of the data points
+     */
+    public Range<OffsetDateTime> getCreationTimestampRange() {
+        return asRange(createdOnOrAfter, createdBefore);
+    }
+
+    /**
+     * @return the effective timestamp range of the data points
+     */
+    public Range<OffsetDateTime> getEffectiveTimestampRange() {
+        return asRange(effectiveOnOrAfter, effectiveBefore);
+    }
+
+    /**
+     * @return the identifier of the acquisition source
+     */
+    @Size(min = 1)
+    public Optional<String> getAcquisitionSourceId() {
+        return Optional.ofNullable(acquisitionSourceId);
+    }
+
+    public void setAcquisitionSourceId(String acquisitionSourceId) {
+        this.acquisitionSourceId = acquisitionSourceId;
+    }
+
+    /**
+     * @return a closed-open range corresponding to the specified date times
+     */
+    protected Range<OffsetDateTime> asRange(OffsetDateTime onOrAfterDateTime, OffsetDateTime beforeDateTime) {
+
+        if (onOrAfterDateTime != null && beforeDateTime != null) {
+            return Range.closedOpen(onOrAfterDateTime, beforeDateTime);
+        }
+
+        if (onOrAfterDateTime != null) {
+            return Range.atLeast(onOrAfterDateTime);
+        }
+        else if (beforeDateTime != null) {
+            return Range.lessThan(beforeDateTime);
+        }
+
+        return Range.all();
     }
 }

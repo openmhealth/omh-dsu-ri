@@ -1,5 +1,5 @@
 /*
- * Copyright 2014 Open mHealth
+ * Copyright 2016 Open mHealth
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,9 +82,7 @@ public class MongoDataPointRepositoryImpl implements DataPointSearchRepositoryCu
             query.addCriteria(where("header.schema_id.version.qualifier").exists(false));
         }
 
-        if (searchCriteria.getCreationTimestampRange().isPresent()) {
-            addCreationTimestampCriteria(query, searchCriteria.getCreationTimestampRange().get());
-        }
+        addCreationTimestampCriteria(query, searchCriteria.getCreationTimestampRange());
 
         return query;
     }
