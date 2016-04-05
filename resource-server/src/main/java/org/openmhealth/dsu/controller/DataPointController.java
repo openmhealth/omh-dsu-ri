@@ -16,13 +16,11 @@
 
 package org.openmhealth.dsu.controller;
 
-import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointService;
 import org.openmhealth.schema.domain.omh.DataPoint;
 import org.openmhealth.schema.domain.omh.DataPointHeader;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,15 +28,12 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.Validator;
 import java.lang.reflect.Field;
-import java.time.OffsetDateTime;
 import java.util.Optional;
 
 import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-import static org.springframework.http.ResponseEntity.badRequest;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 
@@ -50,91 +45,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @ApiController
 public class DataPointController {
 
-    /*
-     * These filtering parameters are temporary. They will likely change when a more generic filtering approach is
-     * implemented.
-     */
-    public static final String CREATED_ON_OR_AFTER_PARAMETER = "created_on_or_after";
-    public static final String CREATED_BEFORE_PARAMETER = "created_before";
-    public static final String SCHEMA_NAMESPACE_PARAMETER = "schema_namespace";
-    public static final String SCHEMA_NAME_PARAMETER = "schema_name";
-    public static final String SCHEMA_VERSION_PARAMETER = "schema_version";
-
-    public static final String RESULT_OFFSET_PARAMETER = "skip";
-    public static final String RESULT_LIMIT_PARAMETER = "limit";
-    public static final String DEFAULT_RESULT_LIMIT = "100";
-
     @Autowired
     private DataPointService dataPointService;
 
-    @Autowired
-    private Validator validator;
-
-
-    /**
-     * Reads data points.
-     *
-     * @param schemaNamespace the namespace of the schema the data points conform to
-     * @param schemaName the name of the schema the data points conform to
-     * @param schemaVersion the version of the schema the data points conform to
-     * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
-     * @param createdBefore the latest creation timestamp of the data points to return, exclusive
-     * @param offset the number of data points to skip
-     * @param limit the number of data points to return
-     * @return a list of matching data points
-     */
-    // TODO confirm if HEAD handling needs anything additional
-    // only allow clients with read scope to read data points
-    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
-    // TODO look into any meaningful @PostAuthorize filtering
-    @RequestMapping(value = "/dataPoints", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
-    public
-    @ResponseBody
-    ResponseEntity<Iterable<DataPoint>> readDataPoints(
-            @RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
-            @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
-            // TODO make this optional and update all associated code
-            @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
-            @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
-            final OffsetDateTime createdOnOrAfter,
-            @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,
-            @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
-            @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit,
-            Authentication authentication) {
-
-        // determine the user associated with the access token to restrict the search accordingly
-        String endUserId = getEndUserId(authentication);
-
-        DataPointSearchCriteria searchCriteria = new DataPointSearchCriteria();
-
-        searchCriteria.setUserId(endUserId);
-        searchCriteria.setSchemaNamespace(schemaNamespace);
-        searchCriteria.setSchemaName(schemaName);
-        searchCriteria.setSchemaVersionString(schemaVersion);
-        searchCriteria.setCreatedOnOrAfter(createdOnOrAfter);
-        searchCriteria.setCreatedBefore(createdBefore);
-
-        // TODO add validation or explicitly comment that this is handled using exception translators
-        if (!validator.validate(searchCriteria).isEmpty()) {
-            // TODO add feedback
-            return badRequest().body(null);
-        }
-
-        Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);
-
-        HttpHeaders headers = new HttpHeaders();
-
-        // FIXME add pagination headers
-        // headers.set("Next");
-        // headers.set("Previous");
-
-        return new ResponseEntity<>(dataPoints, headers, OK);
-    }
-
-    public String getEndUserId(Authentication authentication) {
-
-        return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
-    }
 
     /**
      * Reads a data point.
@@ -149,9 +62,8 @@ public class DataPointController {
     // ensure that the returned data point belongs to the user associated with the access token
     @PostAuthorize("returnObject.body == null || returnObject.body.header.userId == principal.username")
     @RequestMapping(value = "/dataPoints/{id}", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
-    public
     @ResponseBody
-    ResponseEntity<DataPoint> readDataPoint(@PathVariable String id) {
+    public ResponseEntity<DataPoint> readDataPoint(@PathVariable String id) {
 
         Optional<DataPoint> dataPoint = dataPointService.findOne(id);
 
@@ -181,15 +93,20 @@ public class DataPointController {
         String endUserId = getEndUserId(authentication);
 
         // set the owner of the data point to be the user associated with the access token
-        setUserId(dataPoint.getHeader(), endUserId);
+        setDataPointHeaderEndUserId(dataPoint.getHeader(), endUserId);
 
         dataPointService.save(dataPoint);
 
         return new ResponseEntity<>(CREATED);
     }
 
+    private String getEndUserId(Authentication authentication) {
+
+        return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
+    }
+
     // this is currently implemented using reflection, until we see other use cases where mutability would be useful
-    private void setUserId(DataPointHeader header, String endUserId) {
+    private void setDataPointHeaderEndUserId(DataPointHeader header, String endUserId) {
         try {
             Field userIdField = header.getClass().getDeclaredField("userId");
             userIdField.setAccessible(true);
