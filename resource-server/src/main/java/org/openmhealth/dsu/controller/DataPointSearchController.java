@@ -18,7 +18,7 @@ package org.openmhealth.dsu.controller;
 
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
-import org.openmhealth.dsu.service.DataPointService;
+import org.openmhealth.dsu.service.DataPointSearchService;
 import org.openmhealth.schema.domain.omh.DataPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -65,7 +65,7 @@ public class DataPointSearchController {
     public static final String DEFAULT_RESULT_LIMIT = "100";
 
     @Autowired
-    private DataPointService dataPointService;
+    private DataPointSearchService dataPointSearchService;
 
     @Autowired
     private Validator validator;
@@ -119,7 +119,7 @@ public class DataPointSearchController {
             return badRequest().body(null);
         }
 
-        Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);
+        Iterable<DataPoint> dataPoints = dataPointSearchService.findBySearchCriteria(searchCriteria, offset, limit);
 
         HttpHeaders headers = new HttpHeaders();
 

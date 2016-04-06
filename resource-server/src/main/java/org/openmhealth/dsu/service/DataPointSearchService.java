@@ -16,27 +16,25 @@
 
 package org.openmhealth.dsu.service;
 
+import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.schema.domain.omh.DataPoint;
 
-import java.util.Optional;
+import javax.annotation.Nullable;
 
 
 /**
- * A service that manages data points.
+ * A service that searches for data points.
  *
  * @author Emerson Farrugia
  */
-public interface DataPointService {
+public interface DataPointSearchService {
 
-    boolean exists(String id);
-
-    Optional<DataPoint> findOne(String id);
-
-    DataPoint save(DataPoint dataPoint);
-
-    Iterable<DataPoint> save(Iterable<DataPoint> dataPoints);
-
-    void delete(String id);
-
-    Long deleteByIdAndUserId(String id, String userId);
+    /**
+     * @param searchCriteria the criteria that data points should match
+     * @param offset the index of the first matching data point to return
+     * @param limit the number of matching data points to return
+     * @return the result of the search
+     */
+    Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
+            @Nullable Integer limit);
 }
