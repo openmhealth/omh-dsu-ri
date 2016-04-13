@@ -57,7 +57,7 @@ public class DataPointSearchController {
     public static final String CREATED_BEFORE_PARAMETER = "created_before";
     public static final String SCHEMA_NAMESPACE_PARAMETER = "schema_namespace";
     public static final String SCHEMA_NAME_PARAMETER = "schema_name";
-    // TODO searching by schema version should support wildcards, which requires more thought
+    // TODO searching by schema version should support wildcards, sticking to exact match for now
     public static final String SCHEMA_VERSION_PARAMETER = "schema_version";
 
     public static final String RESULT_OFFSET_PARAMETER = "skip";
@@ -92,8 +92,7 @@ public class DataPointSearchController {
     public ResponseEntity<Iterable<DataPoint>> findDataPoints(
             @RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
             @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
-            // TODO make this optional and update all associated code
-            @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
+            @RequestParam(value = SCHEMA_VERSION_PARAMETER, required = false) final String schemaVersion,
             @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
             final OffsetDateTime createdOnOrAfter,
             @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,

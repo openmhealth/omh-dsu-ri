@@ -88,14 +88,11 @@ public class DataPointSearchCriteria {
     }
 
     /**
-     * TODO make this optional
-     *
      * @return the schema version of the body of the data points, as a string
      */
-    @NotNull
     @ValidSchemaVersion
-    public String getSchemaVersionString() {
-        return schemaVersion;
+    public Optional<String> getSchemaVersionString() {
+        return Optional.ofNullable(schemaVersion);
     }
 
     public void setSchemaVersionString(String schemaVersion) {
@@ -105,8 +102,9 @@ public class DataPointSearchCriteria {
     /**
      * @return the schema version of the body of the data points
      */
-    public SchemaVersion getSchemaVersion() {
-        return new SchemaVersion(schemaVersion);
+    public Optional<SchemaVersion> getSchemaVersion() {
+
+        return getSchemaVersionString().map(SchemaVersion::new);
     }
 
     /**

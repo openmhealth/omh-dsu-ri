@@ -71,16 +71,19 @@ public class MongoDataPointRepositoryImpl implements DataPointSearchRepositoryCu
         query.addCriteria(where("header.user_id").is(searchCriteria.getUserId()));
         query.addCriteria(where("header.schema_id.namespace").is(searchCriteria.getSchemaNamespace()));
         query.addCriteria(where("header.schema_id.name").is(searchCriteria.getSchemaName()));
-        query.addCriteria(where("header.schema_id.version.major").is(searchCriteria.getSchemaVersion().getMajor()));
-        query.addCriteria(where("header.schema_id.version.minor").is(searchCriteria.getSchemaVersion().getMinor()));
 
-        if (searchCriteria.getSchemaVersion().getQualifier().isPresent()) {
-            query.addCriteria(where("header.schema_id.version.qualifier")
-                    .is(searchCriteria.getSchemaVersion().getQualifier().get()));
-        }
-        else {
-            query.addCriteria(where("header.schema_id.version.qualifier").exists(false));
-        }
+        searchCriteria.getSchemaVersion().ifPresent(schemaVersion -> {
+
+            query.addCriteria(where("header.schema_id.version.major").is(schemaVersion.getMajor()));
+            query.addCriteria(where("header.schema_id.version.minor").is(schemaVersion.getMinor()));
+
+            if (schemaVersion.getQualifier().isPresent()) {
+                query.addCriteria(where("header.schema_id.version.qualifier").is(schemaVersion.getQualifier().get()));
+            }
+            else {
+                query.addCriteria(where("header.schema_id.version.qualifier").exists(false));
+            }
+        });
 
         addCreationTimestampCriteria(query, searchCriteria.getCreationTimestampRange());
 
