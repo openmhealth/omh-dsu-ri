@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import static org.openmhealth.schema.domain.omh.SchemaId.NAMESPACE_PATTERN_STRING;
 
 
 /**
@@ -36,7 +37,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Documented
 @Constraint(validatedBy = {})
-@Pattern(regexp = "^[a-zA-Z0-9.-]+$") // TODO reference the pattern in SchemaId
+@Pattern(regexp = "^" + NAMESPACE_PATTERN_STRING + "$")
 public @interface ValidSchemaNamespace {
 
     String message() default "A schema name isn't valid.";
