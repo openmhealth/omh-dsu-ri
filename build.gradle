@@ -5,7 +5,7 @@ buildscript {
     }
 
     ext {
-        springBootVersion = "1.3.3.RELEASE"
+        springBootVersion = "1.3.5.RELEASE"
     }
 
     dependencies {
@@ -36,6 +36,8 @@ subprojects {
         omhSchemaSdkVersion = "1.0.6"
         validationApiVersion = "1.1.0.Final"
     }
+
+    ext["spring-data-releasetrain.version"] = "Hopper-SR2"
 
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
