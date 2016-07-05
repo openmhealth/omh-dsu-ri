@@ -60,7 +60,7 @@ public class DataPointController {
     // only allow clients with read scope to read a data point
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
     // ensure that the returned data point belongs to the user associated with the access token
-    @PostAuthorize("returnObject.body == null || returnObject.body.header.userId == principal.username")
+    @PostAuthorize("returnObject.body == null || (principal instanceof T(org.springframework.security.oauth2.provider.OAuth2Authentication) && returnObject.body.header.userId == principal) || (principal instanceof T(org.openmhealth.dsu.domain.EndUserUserDetails) && returnObject.body.header.userId == principal.username)")
     @RequestMapping(value = "/dataPoints/{id}", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<DataPoint> readDataPoint(@PathVariable String id) {
