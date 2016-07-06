@@ -17,7 +17,6 @@
 package org.openmhealth.dsu.controller;
 
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
-import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointSearchService;
 import org.openmhealth.schema.domain.omh.DataPoint;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.validation.Validator;
 import java.time.OffsetDateTime;
 
+import static org.openmhealth.dsu.common.Util.getEndUserId;
 import static org.openmhealth.dsu.configuration.OAuth2Properties.CLIENT_ROLE;
 import static org.openmhealth.dsu.configuration.OAuth2Properties.DATA_POINT_READ_SCOPE;
 import static org.springframework.http.HttpStatus.OK;
@@ -129,8 +129,4 @@ public class DataPointSearchController {
         return new ResponseEntity<>(dataPoints, headers, OK);
     }
 
-    public String getEndUserId(Authentication authentication) {
-
-        return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
-    }
 }

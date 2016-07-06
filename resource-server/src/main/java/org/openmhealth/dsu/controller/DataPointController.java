@@ -16,7 +16,6 @@
 
 package org.openmhealth.dsu.controller;
 
-import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointService;
 import org.openmhealth.schema.domain.omh.DataPoint;
 import org.openmhealth.schema.domain.omh.DataPointHeader;
@@ -31,6 +30,7 @@ import javax.validation.Valid;
 import java.lang.reflect.Field;
 import java.util.Optional;
 
+import static org.openmhealth.dsu.common.Util.getEndUserId;
 import static org.openmhealth.dsu.configuration.OAuth2Properties.*;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -100,10 +100,6 @@ public class DataPointController {
         return new ResponseEntity<>(CREATED);
     }
 
-    private String getEndUserId(Authentication authentication) {
-
-        return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
-    }
 
     // this is currently implemented using reflection, until we see other use cases where mutability would be useful
     private void setDataPointHeaderEndUserId(DataPointHeader header, String endUserId) {
