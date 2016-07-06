@@ -111,8 +111,7 @@ public class DataPointController {
             Field userIdField = header.getClass().getDeclaredField("userId");
             userIdField.setAccessible(true);
             userIdField.set(header, endUserId);
-        }
-        catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalStateException("A user identifier property can't be changed in the data point header.", e);
         }
     }

@@ -2,8 +2,9 @@ description = "An OAuth 2.0 resource server that manages data point resources."
 
 dependencies {
     compile project(":shared")
-    compile "com.google.guava:guava:${guavaVersion}"
+    compile "com.github.rutledgepaulv:rest-query-engine:${rsqlmongoVersion}"
     compile "com.google.code.findbugs:jsr305:${jsr305Version}"
+    compile "com.google.guava:guava:${guavaVersion}"
     compile "javax.servlet:javax.servlet-api"
     compile "org.openmhealth.schema:omh-schema-sdk:${omhSchemaSdkVersion}"
     compile "org.springframework.data:spring-data-mongodb"

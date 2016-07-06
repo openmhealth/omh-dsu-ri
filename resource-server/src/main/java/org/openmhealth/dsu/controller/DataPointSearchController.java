@@ -53,16 +53,19 @@ public class DataPointSearchController {
      * These filtering parameters are temporary. They will likely change when a more generic filtering approach is
      * implemented.
      */
-    public static final String CREATED_ON_OR_AFTER_PARAMETER = "created_on_or_after";
     public static final String CREATED_BEFORE_PARAMETER = "created_before";
-    public static final String SCHEMA_NAMESPACE_PARAMETER = "schema_namespace";
+    public static final String CREATED_ON_OR_AFTER_PARAMETER = "created_on_or_after";
+    public static final String END_USER_ID_PARAMETER = "end_user_id";
+    public static final String QUERY_PARAMETER = "query";
     public static final String SCHEMA_NAME_PARAMETER = "schema_name";
+    public static final String SCHEMA_NAMESPACE_PARAMETER = "schema_namespace";
     // TODO searching by schema version should support wildcards, sticking to exact match for now
     public static final String SCHEMA_VERSION_PARAMETER = "schema_version";
 
     public static final String RESULT_OFFSET_PARAMETER = "skip";
     public static final String RESULT_LIMIT_PARAMETER = "limit";
     public static final String DEFAULT_RESULT_LIMIT = "100";
+
 
     @Autowired
     private DataPointSearchService dataPointSearchService;
@@ -77,6 +80,7 @@ public class DataPointSearchController {
      * @param schemaNamespace the namespace of the schema the data points conform to
      * @param schemaName the name of the schema the data points conform to
      * @param schemaVersion the version of the schema the data points conform to
+     * @param queryFilter an optional RSQL-formatted query to filter results with
      * @param createdOnOrAfter the earliest creation timestamp of the data points to return, inclusive
      * @param createdBefore the latest creation timestamp of the data points to return, exclusive
      * @param offset the number of data points to skip
@@ -93,7 +97,10 @@ public class DataPointSearchController {
             @RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
             @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
             @RequestParam(value = SCHEMA_VERSION_PARAMETER, required = false) final String schemaVersion,
+            @RequestParam(value = QUERY_PARAMETER, required = false) final String queryFilter,
+            @RequestParam(value = END_USER_ID_PARAMETER, required = false) final String specifiedEndUserId,
             @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
+
             final OffsetDateTime createdOnOrAfter,
             @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,
             @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
@@ -118,7 +125,8 @@ public class DataPointSearchController {
             return badRequest().body(null);
         }
 
-        Iterable<DataPoint> dataPoints = dataPointSearchService.findBySearchCriteria(searchCriteria, offset, limit);
+        Iterable<DataPoint> dataPoints = dataPointSearchService.findBySearchCriteria(queryFilter, searchCriteria, offset, limit);
+
 
         HttpHeaders headers = new HttpHeaders();
 

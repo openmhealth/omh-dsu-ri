@@ -40,13 +40,13 @@ public class DataPointSearchServiceImpl implements DataPointSearchService {
 
     @Override
     @Transactional(readOnly = true)
-    public Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
-            @Nullable Integer limit) {
+    public Iterable<DataPoint> findBySearchCriteria(String queryFilter, DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
+                                                    @Nullable Integer limit) {
 
         checkNotNull(searchCriteria);
         checkArgument(offset == null || offset >= 0);
         checkArgument(limit == null || limit >= 0);
 
-        return repository.findBySearchCriteria(searchCriteria, offset, limit);
+        return repository.findBySearchCriteria(queryFilter, searchCriteria, offset, limit);
     }
 }

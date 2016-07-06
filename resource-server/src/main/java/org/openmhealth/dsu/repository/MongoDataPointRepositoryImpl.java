@@ -16,6 +16,13 @@
 
 package org.openmhealth.dsu.repository;
 
+import com.github.rutledgepaulv.qbuilders.builders.GeneralQueryBuilder;
+import com.github.rutledgepaulv.qbuilders.conditions.Condition;
+import com.github.rutledgepaulv.qbuilders.structures.FieldPath;
+import com.github.rutledgepaulv.qbuilders.visitors.MongoVisitor;
+import com.github.rutledgepaulv.rqe.pipes.DefaultArgumentConversionPipe;
+import com.github.rutledgepaulv.rqe.pipes.QueryConversionPipeline;
+import com.github.rutledgepaulv.rqe.resolvers.MongoPersistentEntityFieldTypeResolver;
 import com.google.common.collect.Range;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.schema.domain.omh.DataPoint;
@@ -41,17 +48,33 @@ public class MongoDataPointRepositoryImpl implements DataPointSearchRepositoryCu
     @Autowired
     private MongoOperations mongoOperations;
 
+
+    private QueryConversionPipeline pipeline = QueryConversionPipeline.builder()
+            .useNonDefaultArgumentConversionPipe(DefaultArgumentConversionPipe
+                    .builder()
+                    .useNonDefaultFieldResolver(new MongoPersistentEntityFieldTypeResolver() {
+                        @Override
+                        public Class<?> apply(FieldPath path, Class<?> root) {
+                            return Object.class;
+                        }
+                    })
+                    .build()
+            ).build();
+
+
+
     // if a data point is filtered by its data and not just its header, these queries will need to be written using
     // the MongoDB Java driver instead of Spring Data MongoDB, since there is no mapping information to work against
     @Override
-    public Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
-            @Nullable Integer limit) {
+    public Iterable<DataPoint> findBySearchCriteria(String queryFilter, DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
+                                                    @Nullable Integer limit) {
+
 
         checkNotNull(searchCriteria);
         checkArgument(offset == null || offset >= 0);
         checkArgument(limit == null || limit >= 0);
 
-        Query query = newQuery(searchCriteria);
+        Query query = newQuery(queryFilter, searchCriteria);
 
         if (offset != null) {
             query.skip(offset);
@@ -64,9 +87,19 @@ public class MongoDataPointRepositoryImpl implements DataPointSearchRepositoryCu
         return mongoOperations.find(query, DataPoint.class);
     }
 
-    private Query newQuery(DataPointSearchCriteria searchCriteria) {
+    private void maybeAddFilter(String queryFilter, Query query) {
+
+        if (queryFilter != null) {
+            Condition<GeneralQueryBuilder> condition = pipeline.apply(queryFilter.replace("&&", ";").replace("||", ","), DataPoint.class);
+            query.addCriteria(condition.query(new MongoVisitor()));
+        }
+
+    }
+
+    private Query newQuery(String queryFilter, DataPointSearchCriteria searchCriteria) {
 
         Query query = new Query();
+        maybeAddFilter(queryFilter, query);
 
         query.addCriteria(where("header.user_id").is(searchCriteria.getUserId()));
         query.addCriteria(where("header.schema_id.namespace").is(searchCriteria.getSchemaNamespace()));

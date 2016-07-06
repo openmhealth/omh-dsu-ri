@@ -241,18 +241,62 @@ A data point looks something like this
 
 We may add documentation here if we find that the Postman collection isn't sufficient.
 
+### Filtering syntax
+
+ Query syntax
+ 
+ The query syntax for datapoint filtering follows mostly the [RSQL syntax](https://github.com/jirutka/rsql-parser)
+ 
+ Therefore the following rules apply:
+ 
+ **Logical operators:**
+ `AND:` `;`  or  `and`
+ `OR:`  `,`  or `or`
+ 
+ **Boolean operators:**
+ Equal to : `==`
+ Not equal to : `!=`
+ Less than : `=lt=` or `<`
+ Less than or equal to : `=le=` or `<=`
+ Greater than operator : `=gt=` or `>`
+ Greater than or equal to : `=ge=` or `>=`
+ 
+ **Lists operators:**
+ In : `=in=`
+ Not in : `=out=`
+ 
+ 
+ Exists: `=ex=`
+ 
+ **Arguments:**
+ Argument can be a single value, or multiple values in parenthesis separated by comma. Value that doesn’t contain any reserved character or a white space can be unquoted, other arguments must be enclosed in single or double quotes.
+ 
+ 
+ Query is rooted at datapoint. Some examples:
+ 
+ Find entries whose provenance matches "RunKeeper":
+ `(header.acquisition_provenance.source_name=='RunKeeper')`
+ 
+ AND example (remember to escape spaces or use `;`)
+ `((header.acquisition_provenance.source_name=='RunKeeper') and (header.user_id=='testUser'))`
+  
+ `IN` operator:
+ `(header.id=in=('foo1', 'foo3'))`
+ 
+ An example of a complex query:
+ `((header.schema_id.namespace=='omh') and (header.schema_id.name=='blood-glucose') and (header.schema_id.version.major==1) and (header.schema_id.version.minor==0) and (body.blood_glucose.value > 100)) or ((header.schema_id.namespace=='omh') and (header.schema_id.name=='physical-activity')) or ((header.schema_id.namespace=='omh') and (header.schema_id.name=='physical-activity'))`
+
+
 
 ### Roadmap
 
 The following features are scheduled for future milestones
 
-* support the client credentials grant type
 * improve test coverage
 * support refresh tokens
 * make it easier to customise the authorization code and implicit grant forms
 * support SSL out of the box
 * filter data points based on effective time frames
-* filter data points based on their bodies
 
 If you have other feature requests, [create an issue for each](https://github.com/openmhealth/omh-dsu-ri/issues)
 and we'll figure out how to prioritise them.

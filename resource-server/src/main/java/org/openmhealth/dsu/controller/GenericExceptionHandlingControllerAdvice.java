@@ -16,6 +16,8 @@
 
 package org.openmhealth.dsu.controller;
 
+import com.github.rutledgepaulv.rqe.exceptions.FailedArgumentConversionException;
+import cz.jirutka.rsql.parser.RSQLParserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -60,4 +62,13 @@ public class GenericExceptionHandlingControllerAdvice {
 
         log.warn("A {} request for '{}' failed.", request.getMethod(), request.getPathInfo(), e);
     }
+
+
+    @ExceptionHandler({RSQLParserException.class, FailedArgumentConversionException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public void handleException(RSQLParserException e, HttpServletRequest request) {
+
+        log.warn("A {} request for '{}' failed.", request.getMethod(), request.getPathInfo(), e);
+    }
+
 }

@@ -29,6 +29,9 @@ import javax.annotation.Nullable;
  */
 public interface DataPointSearchRepositoryCustom {
 
-    Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
-            @Nullable Integer limit);
+
+    Iterable<DataPoint> findBySearchCriteria(String queryFilter, DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
+                                             @Nullable Integer limit);
+
+
 }

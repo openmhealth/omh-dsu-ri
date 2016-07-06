@@ -30,11 +30,12 @@ import javax.annotation.Nullable;
 public interface DataPointSearchService {
 
     /**
+     * @param queryFilter RSQL-formatted query to parse and pass along to mongo
      * @param searchCriteria the criteria that data points should match
      * @param offset the index of the first matching data point to return
      * @param limit the number of matching data points to return
      * @return the result of the search
      */
-    Iterable<DataPoint> findBySearchCriteria(DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
-            @Nullable Integer limit);
+    Iterable<DataPoint> findBySearchCriteria(String queryFilter, DataPointSearchCriteria searchCriteria, @Nullable Integer offset,
+                                             @Nullable Integer limit);
 }
