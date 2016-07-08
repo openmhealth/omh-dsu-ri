@@ -37,7 +37,7 @@ securitySchemes:
     settings:
       authorizationUri: http://domain/oauth/authorize
       accessTokenUri: http://domain/oauth/token
-      authorizationGrants: [code, token, owner]
+      authorizationGrants: [code, token, owner, credentials]
       scopes: [read_data_points, write_data_points, delete_data_points]
 
 /dataPoints:
@@ -52,6 +52,11 @@ securitySchemes:
         pattern: "^[a-zA-Z0-9.-]+"
         example: "omh"
         required: true
+      query:
+        description: the optional filter to further restrict points
+        type: string
+        pattern: "^[a-zA-Z0-9.-]+"
+        example: "header.id=ex=true"
       schema_name:
         description: the name of the schema the data points conform to
         type: string

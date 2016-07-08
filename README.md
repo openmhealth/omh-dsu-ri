@@ -129,7 +129,7 @@ can take once they have an access token. Specifically, the client details table 
     * `implicit`, documented in the [Implicit](http://tools.ietf.org/html/rfc6749#section-1.3.2) section
     * `password`, documented in the [Resource Owner Password Credentials](http://tools.ietf.org/html/rfc6749#section-1.3.3) section of the OAuth 2.0 spec
     * `refresh_token`, documented in the [Refresh Token](http://tools.ietf.org/html/rfc6749#section-1.5) section
-    * N.B. the `client_credentials` grant type in the [Client Credentials](http://tools.ietf.org/html/rfc6749#section-1.3.4) section is not yet supported, but slated to be
+    * `client_credentials` grant type in the [Client Credentials](http://tools.ietf.org/html/rfc6749#section-1.3.4) section
 * the Spring Security authorities (column `authorities`) the token bearer has, in our case `ROLE_CLIENT`
 
 To create a client,
@@ -241,7 +241,7 @@ A data point looks something like this
 
 We may add documentation here if we find that the Postman collection isn't sufficient.
 
-### Filtering syntax
+### DataPoint query syntax
 
  Query syntax
  
