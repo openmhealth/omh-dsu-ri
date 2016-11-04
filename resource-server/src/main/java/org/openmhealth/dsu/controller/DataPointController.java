@@ -171,6 +171,7 @@ public class DataPointController {
 
         // FIXME test validation
         if (dataPointService.exists(dataPoint.getHeader().getId())) {
+        	
             return new ResponseEntity<>(CONFLICT);
         }
 
