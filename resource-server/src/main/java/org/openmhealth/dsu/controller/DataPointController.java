@@ -16,12 +16,20 @@
 
 package org.openmhealth.dsu.controller;
 
+import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.common.collect.Range;
+
+import utils.DataFile;
+import utils.SchemaFile;
+import utils.ValidationSummary;
+
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointService;
 import org.openmhealth.schema.domain.omh.DataPoint;
 import org.openmhealth.schema.domain.omh.DataPointHeader;
+import org.openmhealth.schema.domain.omh.SchemaId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +37,24 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.examples.Utils;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 import javax.validation.Valid;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -163,26 +186,65 @@ public class DataPointController {
      * Writes a data point.
      *
      * @param dataPoint the data point to write
+     * @throws URISyntaxException 
+     * @throws ProcessingException 
+     * @throws IOException 
+     * @throws JsonProcessingException 
      */
     // only allow clients with write scope to write data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints", method = POST, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> writeDataPoint(@RequestBody @Valid DataPoint dataPoint, Authentication authentication) {
+    public ResponseEntity<?> writeDataPoint(@RequestBody @Valid DataPoint dataPoint, Authentication authentication) throws URISyntaxException, ProcessingException, JsonProcessingException, IOException {
+       ClassLoader classLoader = getClass().getClassLoader();	
+       final JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.byDefault();
+ 	   final ObjectMapper objectMapper = new ObjectMapper();
+       
+ 	   String jsonSchemaFileName = "schema/omh/"+dataPoint.getHeader().getBodySchemaId().getName() + "-" + dataPoint.getHeader().getBodySchemaId().getVersion() + ".json";
+       String jsonFileName = "validation/omh/validate-schemas/"+ dataPoint.getHeader().getBodySchemaId().getVersion() + "/shouldPass/data.json";
 
-        // FIXME test validation
-        if (dataPointService.exists(dataPoint.getHeader().getId())) {
+       //create file and fill IT
+       
+ 	   File jsonFile = new File(classLoader.getResource(jsonFileName).getFile());
+ 	   if(jsonFile.delete())
+ 		 jsonFile.createNewFile();
+ 	   
+ 	   System.out.println("toFile->"+ jsonFile.getAbsolutePath() + "\n" + "Content->" + objectMapper.writeValueAsString(dataPoint.getBody()) + "\n" + dataPoint.getBody().toString());
+ 	   FileWriter fw = new FileWriter(jsonFile.getAbsoluteFile());
+ 	   BufferedWriter bw = new BufferedWriter(fw);
+ 	   bw.write(objectMapper.writeValueAsString(dataPoint.getBody()));
+ 	   bw.close();
+    	
+
+ 	   File jsonSchemaFile = new File(classLoader.getResource(jsonSchemaFileName).getFile());
+ 	   JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(jsonSchemaFile.toURI().toString());
+ 	   JsonNode testData = objectMapper.readTree(jsonFile);
+ 	   SchemaFile fileSchema =  new SchemaFile(jsonSchemaFile.toURI(), jsonSchema);
+ 	   DataFile fileData = new DataFile(jsonFile.toURI(), testData);
+
+ 	   ProcessingReport report = fileSchema.getJsonSchema().validate(fileData.getData());
+        
+     
+ 	   if (report.isSuccess()) {
+        	System.out.println("PASSED!!!!!!!!!!!!!!!!");
+       }
+       else {	
+    	   System.out.println("NOT PASSED!!!!!!!!!!!!!!!!");
+    	   return new ResponseEntity<>(NOT_ACCEPTABLE);
+       }
+       // FIXME test validation
+       if (dataPointService.exists(dataPoint.getHeader().getId())) {
         	
             return new ResponseEntity<>(CONFLICT);
-        }
+       }
 
-        String endUserId = getEndUserId(authentication);
+       String endUserId = getEndUserId(authentication);
 
-        // set the owner of the data point to be the user associated with the access token
-        setUserId(dataPoint.getHeader(), endUserId);
+       // set the owner of the data point to be the user associated with the access token
+       setUserId(dataPoint.getHeader(), endUserId);
 
-        dataPointService.save(dataPoint);
+       dataPointService.save(dataPoint);
 
-        return new ResponseEntity<>(CREATED);
+       return new ResponseEntity<>(CREATED);
     }
 
     // this is currently implemented using reflection, until we see other use cases where mutability would be useful
