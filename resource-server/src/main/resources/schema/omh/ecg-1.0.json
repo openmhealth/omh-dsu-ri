@@ -32,7 +32,7 @@
           "type":"string",
           "enum":["microVolt", "uV"]
        },
-       episode:{
+       "episode":{
        	  "type":"integer",
        	  "minimum": 0
        }
