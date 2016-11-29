@@ -31,6 +31,10 @@
        "unit":{
           "type":"string",
           "enum":["microVolt", "uV"]
+       },
+       episode:{
+       	  "type":"integer",
+       	  "minimum": 0
        }
    },
 
@@ -46,9 +50,12 @@
         },
         "unit": {
           "$ref": "#/definitions/unit"
+        },
+        "episode":{
+          "$ref": "#/definitions/episode"
         }
       },
-      "required": ["values", "part_number","unit"]
+      "required": ["values", "part_number","unit", "episode"]
     },
 
    	"effective_time_frame": {
