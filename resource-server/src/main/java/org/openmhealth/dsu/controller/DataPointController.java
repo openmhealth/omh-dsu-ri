@@ -199,39 +199,38 @@ public class DataPointController {
        final JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.byDefault();
  	   final ObjectMapper objectMapper = new ObjectMapper();
        
+ 	   // files name
  	   String jsonSchemaFileName = "schema/omh/"+dataPoint.getHeader().getBodySchemaId().getName() + "-" + dataPoint.getHeader().getBodySchemaId().getVersion() + ".json";
        String jsonFileName = "validation/omh/validate-schemas/"+ dataPoint.getHeader().getBodySchemaId().getVersion() + "/shouldPass/data.json";
-
-       //create file and fill IT
+       System.out.println("schema file:" +jsonSchemaFileName);
        
+       //create file and fill it
  	   File jsonFile = new File(classLoader.getResource(jsonFileName).getFile());
  	   if(jsonFile.delete())
  		 jsonFile.createNewFile();
- 	   
- 	   System.out.println("toFile->"+ jsonFile.getAbsolutePath() + "\n" + "Content->" + objectMapper.writeValueAsString(dataPoint.getBody()) + "\n" + dataPoint.getBody().toString());
+ 	   String toValidate = objectMapper.writeValueAsString(dataPoint.getBody());
  	   FileWriter fw = new FileWriter(jsonFile.getAbsoluteFile());
  	   BufferedWriter bw = new BufferedWriter(fw);
- 	   bw.write(objectMapper.writeValueAsString(dataPoint.getBody()));
+ 	   bw.write(toValidate);
  	   bw.close();
     	
-
+ 	   // validate Json with Json Schema
  	   File jsonSchemaFile = new File(classLoader.getResource(jsonSchemaFileName).getFile());
  	   JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(jsonSchemaFile.toURI().toString());
  	   JsonNode testData = objectMapper.readTree(jsonFile);
  	   SchemaFile fileSchema =  new SchemaFile(jsonSchemaFile.toURI(), jsonSchema);
  	   DataFile fileData = new DataFile(jsonFile.toURI(), testData);
-
  	   ProcessingReport report = fileSchema.getJsonSchema().validate(fileData.getData());
         
      
- 	   if (report.isSuccess()) {
-        	System.out.println("PASSED!!!!!!!!!!!!!!!!");
+ 	   if (! report.isSuccess()) {
+        	System.out.println("Valid Json!");
        }
        else {	
-    	   System.out.println("NOT PASSED!!!!!!!!!!!!!!!!");
+    	   System.out.println("Invalid Json!");
     	   return new ResponseEntity<>(NOT_ACCEPTABLE);
        }
-       // FIXME test validation
+ 	   
        if (dataPointService.exists(dataPoint.getHeader().getId())) {
         	
             return new ResponseEntity<>(CONFLICT);
