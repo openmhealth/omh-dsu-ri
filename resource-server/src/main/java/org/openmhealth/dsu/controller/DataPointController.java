@@ -213,7 +213,7 @@ public class DataPointController {
  	   BufferedWriter bw = new BufferedWriter(fw);
  	   bw.write(toValidate);
  	   bw.close();
-    	
+ 	   System.out.print("to validate :" + toValidate);
  	   // validate Json with Json Schema
  	   File jsonSchemaFile = new File(classLoader.getResource(jsonSchemaFileName).getFile());
  	   JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(jsonSchemaFile.toURI().toString());
@@ -223,7 +223,7 @@ public class DataPointController {
  	   ProcessingReport report = fileSchema.getJsonSchema().validate(fileData.getData());
         
      
- 	   if (! report.isSuccess()) {
+ 	   if (report.isSuccess()) {
         	System.out.println("Valid Json!");
        }
        else {	
