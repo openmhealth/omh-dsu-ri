@@ -1,0 +1,154 @@
+#%RAML 1.0
+title: "Open mHealth Data Point API"
+version: "v1.0.M1"
+protocols:
+- "HTTPS"
+baseUri: "https://{endpointUrl}/v1.0.M1"
+mediaType:
+- "application/json"
+types:
+  data-point:
+    type: "object"
+    properties:
+      header:
+        type: "header"
+      body:
+        type: "object"
+        description: "The body of the data point. This object should conform to the\
+          \ schema identifier in the header property."
+  header:
+    type: "object"
+    properties:
+      id:
+        type: "string"
+        description: "The identifier of this data point. We strongly recommend this\
+          \ to be a globally unique value."
+      creation_date_time:
+        type: "date_time"
+      schema_id:
+        type: "schema_id"
+      acquisition_provenance:
+        type: "object"
+        required: false
+        properties:
+          source_name:
+            type: "string"
+            description: "The name of the source of the data."
+          source_creation_date_time:
+            type: "date_time"
+            required: false
+          modality:
+            type: "string"
+            description: "The modality whereby the measure is obtained."
+            enum:
+            - "sensed"
+            - "self-reported"
+            required: false
+      user_id:
+        type: "string"
+        description: "The user this data point belongs to."
+        required: false
+  date_time:
+    type: "string"
+  schema_id:
+    type: "object"
+    properties:
+      namespace:
+        type: "string"
+        description: "The namespace of the schema. A namespace serves to disambiguate\
+          \ schemas with conflicting names."
+      name:
+        type: "string"
+        description: "The name of the schema."
+      version:
+        type: "string"
+        description: "The version of the schema, e.g. 1.0."
+securitySchemes:
+  oauth_2_0:
+    type: "OAuth 2.0"
+    settings:
+      authorizationUri: "http://domain/oauth/authorize"
+      accessTokenUri: "http://domain/oauth/token"
+      authorizationGrants:
+      - "authorization_code"
+      - "implicit"
+      - "password"
+      scopes:
+      - "read_data_points"
+      - "write_data_points"
+      - "delete_data_points"
+securedBy:
+- "oauth_2_0"
+/dataPoints:
+  get:
+    description: "get a list of data points matching some criteria"
+    queryParameters:
+      schema_namespace:
+        type: "string"
+        description: "the namespace of the schema the data points conform to"
+        pattern: "^[a-zA-Z0-9.-]+"
+        example: "omh"
+      schema_name:
+        type: "string"
+        description: "the name of the schema the data points conform to"
+        pattern: "[a-zA-Z0-9.-]+"
+        example: "blood-pressure"
+      schema_version:
+        type: "string"
+        description: "the version of the schema the data points conform to"
+        pattern: "\\d+\\.\\d+(\\.[a-zA-Z0-9]+)?"
+        example: "1.1.RC1"
+      created_on_or_after:
+        type: "string"
+        description: "the earliest creation timestamp of the data points to return,\
+          \ inclusive, in ISO8601 format"
+        example: "2013-02-05T07:25:00Z"
+      created_before:
+        type: "string"
+        description: "the latest creation timestamp of the data points to return,\
+          \ exclusive, in ISO8601 format"
+        example: "2013-04-05T07:25:00.123+03:00"
+      skip:
+        type: "string"
+        description: "the number of data points to skip"
+      limit:
+        type: "string"
+        description: "the number of data points to return"
+        default: "100"
+    responses:
+      200:
+        description: "a list of matching data points belonging to the user associated\
+          \ with the access token"
+        body:
+          type: "array"
+          items:
+            type: "data-point"
+  post:
+    description: "create a data point"
+    body:
+      type: "data-point"
+    responses:
+      201:
+        description: "the data point has been created"
+      409:
+        description: "a data point with the same identifier already exists"
+/dataPoints/{id}:
+  uriParameters:
+    id:
+      type: "string"
+      description: "the identifier of the data point"
+  get:
+    description: "get a data point"
+    responses:
+      200:
+        body:
+          type: "data-point"
+      404:
+        description: "the data point does not exist"
+  delete:
+    description: "delete a data point"
+    responses:
+      200:
+        description: "the data point has been deleted"
+      404:
+        description: "the data point does not exist"
