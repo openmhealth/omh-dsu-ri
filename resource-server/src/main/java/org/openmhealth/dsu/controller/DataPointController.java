@@ -81,7 +81,8 @@ public class DataPointController {
     public static final String SCHEMA_NAMESPACE_PARAMETER = "schema_namespace";
     public static final String SCHEMA_NAME_PARAMETER = "schema_name";
     public static final String SCHEMA_VERSION_PARAMETER = "schema_version";
-
+    public static final String USER_ID = "user_id";
+    public static final String CAREGIVER_KEY = "CAREGIVER_KEY";
     public static final String RESULT_OFFSET_PARAMETER = "skip";
     public static final String RESULT_LIMIT_PARAMETER = "limit";
     public static final String DEFAULT_RESULT_LIMIT = "100";
@@ -126,6 +127,55 @@ public class DataPointController {
         // determine the user associated with the access token to restrict the search accordingly
         String endUserId = getEndUserId(authentication);
 
+        DataPointSearchCriteria searchCriteria =
+                new DataPointSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion);
+
+        if (createdOnOrAfter != null && createdBefore != null) {
+            searchCriteria.setCreationTimestampRange(Range.closedOpen(createdOnOrAfter, createdBefore));
+        }
+        else if (createdOnOrAfter != null) {
+            searchCriteria.setCreationTimestampRange(Range.atLeast(createdOnOrAfter));
+        }
+        else if (createdBefore != null) {
+            searchCriteria.setCreationTimestampRange(Range.lessThan(createdBefore));
+        }
+
+        Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);
+
+        HttpHeaders headers = new HttpHeaders();
+
+        // FIXME add pagination headers
+        // headers.set("Next");
+        // headers.set("Previous");
+
+        return new ResponseEntity<>(dataPoints, headers, OK);
+    }
+
+    
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
+    // TODO look into any meaningful @PostAuthorize filtering
+    @RequestMapping(value = "/dataPoints/caregiver", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
+    public
+    @ResponseBody
+    ResponseEntity<Iterable<DataPoint>> readDataPointsCareGiver(
+            @RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
+            @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
+            // TODO make this optional and update all associated code
+            @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
+            @RequestParam(value = USER_ID) final String endUserId,
+            @RequestParam(value = CAREGIVER_KEY) final String careGiverKey,
+            // TODO replace with Optional<> in Spring MVC 4.1
+            @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
+            final OffsetDateTime createdOnOrAfter,
+            @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,
+            @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
+            @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit,
+            Authentication authentication) {
+
+    	if (!careGiverKey.equals("someKey"))
+    	{
+    		return new ResponseEntity<>(NOT_ACCEPTABLE);
+    	}
         DataPointSearchCriteria searchCriteria =
                 new DataPointSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion);
 
