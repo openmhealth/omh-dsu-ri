@@ -35,6 +35,9 @@
        "address_type":{
           "type":"string",
           "enum":["postal", "physic", "both"]
+       },
+       "date_time": {
+           "$ref": "date-time-1.x.json"
        }
    },
 
@@ -103,7 +106,10 @@
       "items": {
         "type": "object",
         "properties": {
-          "url" : { "type": "string"}
+          "url" : { "type": "string"},
+          "creation" : { "$ref": "#/definitions/date_time" },
+          "data":{ "type": "string"},
+          "title": { "type": "string"}
         }
       }
     }
