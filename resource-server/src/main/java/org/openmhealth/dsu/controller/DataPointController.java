@@ -24,6 +24,8 @@ import utils.DataFile;
 import utils.SchemaFile;
 import utils.ValidationSummary;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointService;
@@ -52,9 +54,12 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -271,7 +276,7 @@ public class DataPointController {
  	   SchemaFile fileSchema =  new SchemaFile(jsonSchemaFile.toURI(), jsonSchema);
  	   DataFile fileData = new DataFile(jsonFile.toURI(), testData);
  	   ProcessingReport report = fileSchema.getJsonSchema().validate(fileData.getData());
-        
+       
      
  	   if (report.isSuccess()) {
         	System.out.println("Valid Json!");
@@ -285,6 +290,66 @@ public class DataPointController {
         	
             return new ResponseEntity<>(CONFLICT);
        }
+       
+       
+       
+       String address = dataPoint.getHeader().getBodySchemaId().getName();
+       JSONObject objToSend = new JSONObject();
+       JSONObject toValidadeObj = null;
+       try {
+		toValidadeObj = new JSONObject(toValidate);
+		objToSend.put("address", address);
+	    objToSend.put("data_point", toValidadeObj);
+	} catch (JSONException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
+       
+       /*Send Data Point to analyser*/
+       
+       //String toSend = "{\"address\":\""+address+"\", \"data_point\":"+toValidate+"}";
+       
+       StringBuilder received = new StringBuilder();
+       URL url = new URL("http://localhost:8080/requestpub");
+
+       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+       conn.setDoOutput(true);
+       conn.setDoInput(true);
+       conn.setRequestMethod("POST");
+
+       try {
+           conn.connect();
+       }catch(Exception e)
+       {
+           e.printStackTrace();              
+       }
+
+       String input = objToSend.toString();
+       System.out.println("input:" + input);
+
+       OutputStream os=null;
+       try {
+           os = conn.getOutputStream();
+       }catch(Exception e)
+       {
+           e.printStackTrace();
+       }
+       os.write(input.getBytes());
+       os.flush();
+
+       if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+           System.out.println("Error:"+conn.getResponseCode());
+       }
+       else{ 
+           System.out.println("Sent to Analyser");
+       }
+
+
+       conn.disconnect();
+       
+
+       
+       /*               */
 
        String endUserId = getEndUserId(authentication);
 

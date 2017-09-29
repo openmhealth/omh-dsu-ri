@@ -40,3 +40,8 @@ spring:
 logging:
   level:
     org.springframework: INFO
+
+#security.oauth2.client.clientId: testClient
+#security.oauth2.client.clientSecret: testClientSecret
+#security.oauth2.client.authorized-grant-types: authorization_code,refresh_token,password
+#security.oauth2.client.scope: openid

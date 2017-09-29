@@ -57,5 +57,11 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 
         clients.withClientDetails(clientDetailsService);
+        /*clients.inMemory()
+        .withClient("testClient")
+          .secret("testClientSecret")
+          .authorizedGrantTypes("authorization_code", "refresh_token",
+              "password")
+          .scopes("openid").autoApprove(true);*/
     }
 }
