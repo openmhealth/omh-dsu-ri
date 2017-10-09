@@ -90,7 +90,7 @@ public class DataPointController {
     public static final String CAREGIVER_KEY = "CAREGIVER_KEY";
     public static final String RESULT_OFFSET_PARAMETER = "skip";
     public static final String RESULT_LIMIT_PARAMETER = "limit";
-    public static final String DEFAULT_RESULT_LIMIT = "100";
+    public static final String DEFAULT_RESULT_LIMIT = "5000";
 
     @Autowired
     private DataPointService dataPointService;
