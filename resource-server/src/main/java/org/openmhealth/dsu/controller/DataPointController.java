@@ -250,106 +250,21 @@ public class DataPointController {
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints", method = POST, consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<?> writeDataPoint(@RequestBody @Valid DataPoint dataPoint, Authentication authentication) throws URISyntaxException, ProcessingException, JsonProcessingException, IOException {
-       ClassLoader classLoader = getClass().getClassLoader();	
-       final JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.byDefault();
- 	   final ObjectMapper objectMapper = new ObjectMapper();
-       
- 	   // files name
- 	   String jsonSchemaFileName = "schema/omh/"+dataPoint.getHeader().getBodySchemaId().getName() + "-" + dataPoint.getHeader().getBodySchemaId().getVersion() + ".json";
-       String jsonFileName = "validation/omh/validate-schemas/"+ dataPoint.getHeader().getBodySchemaId().getVersion() + "/shouldPass/data.json";
-       System.out.println("schema file:" +jsonSchemaFileName);
-       
-       //create file and fill it
- 	   File jsonFile = new File(classLoader.getResource(jsonFileName).getFile());
- 	   if(jsonFile.delete())
- 		 jsonFile.createNewFile();
- 	   String toValidate = objectMapper.writeValueAsString(dataPoint.getBody());
- 	   FileWriter fw = new FileWriter(jsonFile.getAbsoluteFile());
- 	   BufferedWriter bw = new BufferedWriter(fw);
- 	   bw.write(toValidate);
- 	   bw.close();
- 	   System.out.print("to validate :" + toValidate);
- 	   // validate Json with Json Schema
- 	   File jsonSchemaFile = new File(classLoader.getResource(jsonSchemaFileName).getFile());
- 	   JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(jsonSchemaFile.toURI().toString());
- 	   JsonNode testData = objectMapper.readTree(jsonFile);
- 	   SchemaFile fileSchema =  new SchemaFile(jsonSchemaFile.toURI(), jsonSchema);
- 	   DataFile fileData = new DataFile(jsonFile.toURI(), testData);
- 	   ProcessingReport report = fileSchema.getJsonSchema().validate(fileData.getData());
-       
-     
- 	   if (report.isSuccess()) {
-        	System.out.println("Valid Json!");
-       }
-       else {	
-    	   System.out.println("Invalid Json!");
-    	   return new ResponseEntity<>(NOT_ACCEPTABLE);
-       }
+    	
+    	DataPointValidatorUnit validator = new DataPointValidatorUnit(dataPoint);
+    	if (! validator.isValidBody()) {
+    		return new ResponseEntity<>(NOT_ACCEPTABLE);
+    	}
+ 	   
  	   
        if (dataPointService.exists(dataPoint.getHeader().getId())) {
         	
             return new ResponseEntity<>(CONFLICT);
-       }
-       
-       
-       
+       } 
        String address = dataPoint.getHeader().getBodySchemaId().getName();
-       JSONObject objToSend = new JSONObject();
-       JSONObject toValidadeObj = null;
-       try {
-		toValidadeObj = new JSONObject(toValidate);
-		objToSend.put("address", address);
-	    objToSend.put("data_point", toValidadeObj);
-	} catch (JSONException e1) {
-		// TODO Auto-generated catch block
-		e1.printStackTrace();
-	}
-       
        /*Send Data Point to analyser*/
+       sentDataToVertxModule(address, validator.getToValidate());
        
-       //String toSend = "{\"address\":\""+address+"\", \"data_point\":"+toValidate+"}";
-       
-       StringBuilder received = new StringBuilder();
-       URL url = new URL("http://localhost:8080/requestpub");
-
-       HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-       conn.setDoOutput(true);
-       conn.setDoInput(true);
-       conn.setRequestMethod("POST");
-
-       try {
-           conn.connect();
-       }catch(Exception e)
-       {
-           e.printStackTrace();              
-       }
-
-       String input = objToSend.toString();
-       System.out.println("input:" + input);
-
-       OutputStream os=null;
-       try {
-           os = conn.getOutputStream();
-       }catch(Exception e)
-       {
-           e.printStackTrace();
-       }
-       os.write(input.getBytes());
-       os.flush();
-
-       if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
-           System.out.println("Error:"+conn.getResponseCode());
-       }
-       else{ 
-           System.out.println("Sent to Analyser");
-       }
-
-
-       conn.disconnect();
-       
-
-       
-       /*               */
 
        String endUserId = getEndUserId(authentication);
 
@@ -370,6 +285,44 @@ public class DataPointController {
         }
         catch (NoSuchFieldException | IllegalAccessException e) {
             throw new IllegalStateException("A user identifier property can't be changed in the data point header.", e);
+        }
+    }
+    
+    
+    private void sentDataToVertxModule(String address, String data) {
+        JSONObject objToSend = new JSONObject();
+        JSONObject toValidadeObj = null;
+        try {
+        	toValidadeObj = new JSONObject(data);
+ 			objToSend.put("address", address);
+ 			objToSend.put("data_point", toValidadeObj);
+ 			
+ 			URL url = new URL("http://localhost:8080/requestpub");
+
+ 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+ 			conn.setDoOutput(true);
+ 			conn.setDoInput(true);
+ 			conn.setRequestMethod("POST");
+ 			conn.connect();
+ 	  
+
+ 			String input = objToSend.toString();
+ 			System.out.println("input:" + input);
+
+ 			OutputStream os = conn.getOutputStream();
+ 	        os.write(input.getBytes());
+ 	        os.flush();
+
+ 	        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
+ 	           System.out.println("Error:"+conn.getResponseCode());
+ 	        }
+ 	        else{ 
+ 	           System.out.println("Sent to Analyser");
+ 	        }
+ 	       
+ 	        conn.disconnect();     
+        } catch (JSONException | IOException e1) {
+	 		e1.printStackTrace();
         }
     }
 
