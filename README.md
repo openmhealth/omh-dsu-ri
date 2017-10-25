@@ -75,14 +75,13 @@ It can take up to a minute for the containers to start up.
 
 #### Option 2. Building from source and running natively
 
-We will add documentation on running the servers natively [on request](https://github.com/openmhealth/omh-dsu-ri/issues).
-
-The Docker commands in option 1 automatically initialize the Spring Security OAuth schema in the PostgreSQL database.
-To initialize the schema manually, you will need to source the
- [OAuth 2.0 DDL script](resources/rdbms/postgresql/oauth2-ddl.sql).
-
-> Please note that the remainder of this document assumes you are using Docker. It should be straightforward to translate
-any commands over to running the servers natively, but feel free to ask for help if something isn't clear.
+1. Get a Mongo instance and a Postgres instance up and running.
+1. Source the two SQL scripts in resources/rdbms/postgresql in Postgres.
+1. Source the SQL script resources/rdbms/common/oauth2-sample-data.sql in Postgres to create an OAuth 2.0 test client.
+1. Update the spring.data.mongodb and spring.datasource properties in authorization-server/src/main/resources/application.yml and ./resource-server/src/main/resources/application.yml to match the settings of your Mongo and Postgres instances.
+1. In one terminal, run ./gradlew authorization-server:bootRun to start the authorization server.
+1. In another terminal, run ./gradlew resource-server:bootRun to start the resource server.
+1. To stop the servers, press Ctrl-C in the terminals.
 
 ### Configuring the servers
 
