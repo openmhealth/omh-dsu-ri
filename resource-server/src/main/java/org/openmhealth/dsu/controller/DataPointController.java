@@ -295,7 +295,7 @@ public class DataPointController {
         try {
         	toValidadeObj = new JSONObject(data);
  			objToSend.put("address", address);
- 			objToSend.put("data_point", toValidadeObj);
+ 			objToSend.put("data", toValidadeObj);
  			
  			URL url = new URL("http://localhost:8080/requestpub");
 
