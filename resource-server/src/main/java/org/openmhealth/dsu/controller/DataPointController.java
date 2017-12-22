@@ -261,10 +261,6 @@ public class DataPointController {
         	
             return new ResponseEntity<>(CONFLICT);
        } 
-       String address = dataPoint.getHeader().getBodySchemaId().getName();
-       /*Send Data Point to analyser*/
-       sentDataToVertxModule(address, validator.getToValidate());
-       
 
        String endUserId = getEndUserId(authentication);
 
@@ -288,43 +284,6 @@ public class DataPointController {
         }
     }
     
-    
-    private void sentDataToVertxModule(String address, String data) {
-        JSONObject objToSend = new JSONObject();
-        JSONObject toValidadeObj = null;
-        try {
-        	toValidadeObj = new JSONObject(data);
- 			objToSend.put("address", address);
- 			objToSend.put("data", toValidadeObj);
- 			
- 			URL url = new URL("http://localhost:8080/requestpub");
-
- 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
- 			conn.setDoOutput(true);
- 			conn.setDoInput(true);
- 			conn.setRequestMethod("POST");
- 			conn.connect();
- 	  
-
- 			String input = objToSend.toString();
- 			System.out.println("input:" + input);
-
- 			OutputStream os = conn.getOutputStream();
- 	        os.write(input.getBytes());
- 	        os.flush();
-
- 	        if (conn.getResponseCode() != HttpURLConnection.HTTP_OK) {
- 	           System.out.println("Error:"+conn.getResponseCode());
- 	        }
- 	        else{ 
- 	           System.out.println("Sent to Analyser");
- 	        }
- 	       
- 	        conn.disconnect();     
-        } catch (JSONException | IOException e1) {
-	 		e1.printStackTrace();
-        }
-    }
 
     /**
      * Deletes a data point.
