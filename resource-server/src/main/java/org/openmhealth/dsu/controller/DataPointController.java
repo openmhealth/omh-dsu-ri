@@ -16,12 +16,22 @@
 
 package org.openmhealth.dsu.controller;
 
+import com.github.fge.jackson.JsonLoader;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
 import com.google.common.collect.Range;
+
+import utils.DataFile;
+import utils.SchemaFile;
+import utils.ValidationSummary;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.openmhealth.dsu.domain.DataPointSearchCriteria;
 import org.openmhealth.dsu.domain.EndUserUserDetails;
 import org.openmhealth.dsu.service.DataPointService;
 import org.openmhealth.schema.domain.omh.DataPoint;
 import org.openmhealth.schema.domain.omh.DataPointHeader;
+import org.openmhealth.schema.domain.omh.SchemaId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +39,27 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.fge.jsonschema.core.exceptions.ProcessingException;
+import com.github.fge.jsonschema.core.report.ProcessingReport;
+import com.github.fge.jsonschema.examples.Utils;
+import com.github.fge.jsonschema.main.JsonSchema;
+import com.github.fge.jsonschema.main.JsonSchemaFactory;
 
 import javax.validation.Valid;
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.reflect.Field;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -58,10 +86,11 @@ public class DataPointController {
     public static final String SCHEMA_NAMESPACE_PARAMETER = "schema_namespace";
     public static final String SCHEMA_NAME_PARAMETER = "schema_name";
     public static final String SCHEMA_VERSION_PARAMETER = "schema_version";
-
+    public static final String USER_ID = "user_id";
+    public static final String CAREGIVER_KEY = "CAREGIVER_KEY";
     public static final String RESULT_OFFSET_PARAMETER = "skip";
     public static final String RESULT_LIMIT_PARAMETER = "limit";
-    public static final String DEFAULT_RESULT_LIMIT = "100";
+    public static final String DEFAULT_RESULT_LIMIT = "5000";
 
     @Autowired
     private DataPointService dataPointService;
@@ -127,6 +156,55 @@ public class DataPointController {
         return new ResponseEntity<>(dataPoints, headers, OK);
     }
 
+    
+    @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_READ_SCOPE + "')")
+    // TODO look into any meaningful @PostAuthorize filtering
+    @RequestMapping(value = "/dataPoints/caregiver", method = {HEAD, GET}, produces = APPLICATION_JSON_VALUE)
+    public
+    @ResponseBody
+    ResponseEntity<Iterable<DataPoint>> readDataPointsCareGiver(
+            @RequestParam(value = SCHEMA_NAMESPACE_PARAMETER) final String schemaNamespace,
+            @RequestParam(value = SCHEMA_NAME_PARAMETER) final String schemaName,
+            // TODO make this optional and update all associated code
+            @RequestParam(value = SCHEMA_VERSION_PARAMETER) final String schemaVersion,
+            @RequestParam(value = USER_ID) final String endUserId,
+            @RequestParam(value = CAREGIVER_KEY) final String careGiverKey,
+            // TODO replace with Optional<> in Spring MVC 4.1
+            @RequestParam(value = CREATED_ON_OR_AFTER_PARAMETER, required = false)
+            final OffsetDateTime createdOnOrAfter,
+            @RequestParam(value = CREATED_BEFORE_PARAMETER, required = false) final OffsetDateTime createdBefore,
+            @RequestParam(value = RESULT_OFFSET_PARAMETER, defaultValue = "0") final Integer offset,
+            @RequestParam(value = RESULT_LIMIT_PARAMETER, defaultValue = DEFAULT_RESULT_LIMIT) final Integer limit,
+            Authentication authentication) {
+
+    	if (!careGiverKey.equals("someKey"))
+    	{
+    		return new ResponseEntity<>(NOT_ACCEPTABLE);
+    	}
+        DataPointSearchCriteria searchCriteria =
+                new DataPointSearchCriteria(endUserId, schemaNamespace, schemaName, schemaVersion);
+
+        if (createdOnOrAfter != null && createdBefore != null) {
+            searchCriteria.setCreationTimestampRange(Range.closedOpen(createdOnOrAfter, createdBefore));
+        }
+        else if (createdOnOrAfter != null) {
+            searchCriteria.setCreationTimestampRange(Range.atLeast(createdOnOrAfter));
+        }
+        else if (createdBefore != null) {
+            searchCriteria.setCreationTimestampRange(Range.lessThan(createdBefore));
+        }
+
+        Iterable<DataPoint> dataPoints = dataPointService.findBySearchCriteria(searchCriteria, offset, limit);
+
+        HttpHeaders headers = new HttpHeaders();
+
+        // FIXME add pagination headers
+        // headers.set("Next");
+        // headers.set("Previous");
+
+        return new ResponseEntity<>(dataPoints, headers, OK);
+    }
+
     public String getEndUserId(Authentication authentication) {
 
         return ((EndUserUserDetails) authentication.getPrincipal()).getUsername();
@@ -163,25 +241,35 @@ public class DataPointController {
      * Writes a data point.
      *
      * @param dataPoint the data point to write
+     * @throws URISyntaxException 
+     * @throws ProcessingException 
+     * @throws IOException 
+     * @throws JsonProcessingException 
      */
     // only allow clients with write scope to write data points
     @PreAuthorize("#oauth2.clientHasRole('" + CLIENT_ROLE + "') and #oauth2.hasScope('" + DATA_POINT_WRITE_SCOPE + "')")
     @RequestMapping(value = "/dataPoints", method = POST, consumes = APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> writeDataPoint(@RequestBody @Valid DataPoint dataPoint, Authentication authentication) {
-
-        // FIXME test validation
-        if (dataPointService.exists(dataPoint.getHeader().getId())) {
+    public ResponseEntity<?> writeDataPoint(@RequestBody @Valid DataPoint dataPoint, Authentication authentication) throws URISyntaxException, ProcessingException, JsonProcessingException, IOException {
+    	
+    	DataPointValidatorUnit validator = new DataPointValidatorUnit(dataPoint);
+    	if (! validator.isValidBody()) {
+    		return new ResponseEntity<>(NOT_ACCEPTABLE);
+    	}
+ 	   
+ 	   
+       if (dataPointService.exists(dataPoint.getHeader().getId())) {
+        	
             return new ResponseEntity<>(CONFLICT);
-        }
+       } 
 
-        String endUserId = getEndUserId(authentication);
+       String endUserId = getEndUserId(authentication);
 
-        // set the owner of the data point to be the user associated with the access token
-        setUserId(dataPoint.getHeader(), endUserId);
+       // set the owner of the data point to be the user associated with the access token
+       setUserId(dataPoint.getHeader(), endUserId);
 
-        dataPointService.save(dataPoint);
+       dataPointService.save(dataPoint);
 
-        return new ResponseEntity<>(CREATED);
+       return new ResponseEntity<>(CREATED);
     }
 
     // this is currently implemented using reflection, until we see other use cases where mutability would be useful
@@ -195,6 +283,7 @@ public class DataPointController {
             throw new IllegalStateException("A user identifier property can't be changed in the data point header.", e);
         }
     }
+    
 
     /**
      * Deletes a data point.

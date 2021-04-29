@@ -51,6 +51,7 @@ subprojects {
         compile 'org.springframework:spring-context'
         compile "org.springframework.security.oauth:spring-security-oauth2"
         compile 'javax.validation:validation-api'
+        
 
         testCompile 'org.hamcrest:hamcrest-library'
         testCompile 'junit:junit'
@@ -94,6 +95,7 @@ configure([
         compile 'org.mongodb:mongo-java-driver'
         // compile 'mysql:mysql-connector-java'
         compile "org.postgresql:postgresql"
+        compile "com.googlecode.json-simple:json-simple:1.1"
     }
 
     task copyArchiveJarToDockerContext(dependsOn: assemble, type: Copy) {

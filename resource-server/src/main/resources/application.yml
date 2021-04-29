@@ -19,19 +19,25 @@ dataStore: mongo
 
 server:
   port: 8083
+  max-http-post-size: 10Mb
 
 spring:
+  http:
+    multipart:
+      max-file-size: 10Mb
+      max-request-size: 10Mb
   application:
     name: Open mHealth DSU resource server
   data:
     mongodb:
-      host: omh-mongo
+      host: localhost
       database: omh
       #port: 27017
   datasource:
     driverClassName: org.postgresql.Driver
-    url: jdbc:postgresql://omh-postgres:5432/omh
+    url: jdbc:postgresql://localhost:5432/omh
     username: postgres
+    password: postgres
   jackson:
     serialization:
       INDENT_OUTPUT: true
